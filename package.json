@@ -8,12 +8,17 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "author": "Brad Traversy",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^1.14.6"
+    "nodemon": "^1.14.6",
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
   },
   "dependencies": {
     "concurrently": "^3.5.1",

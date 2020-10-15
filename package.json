@@ -8,11 +8,13 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "twillio-webhook": "cd twillio && twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://localhost:1337/sms\"",
+    "twillio-server": "cd twillio && node server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run twillio-webhook\" \"npm run twillio-server\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "author": "Brad Traversy",
+  "author": "Kahzum",
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^1.14.6",
@@ -21,6 +23,7 @@
     "eslint-plugin-import": "^2.22.0"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "concurrently": "^3.5.1",
     "express": "^4.16.2",
     "twilio": "^3.49.4"

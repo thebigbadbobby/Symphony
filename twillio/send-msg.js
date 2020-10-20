@@ -9,7 +9,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
-const reservedPhoneNumber = '+14302390178';
+const reservedPhoneNumber = process.env.RESERVED_PHONE_NUMBER;
 exports.send_msg = (msg, to) => {
   client.messages
     .create({

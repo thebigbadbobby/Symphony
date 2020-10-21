@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "client-install": "cd client && npm install",
+    "client-test": "cd client && npm run test",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",

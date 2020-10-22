@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const businessSchema = new Schema({
-  businessName: {
+const ownerSchema = new Schema({
+  name: {
     type: String,
     required: true,
   },
-  businessPhone: {
+  phone: {
     type: String,
     validate: {
       validator(v) {
@@ -17,16 +17,11 @@ const businessSchema = new Schema({
     },
     required: [true, 'User phone number required'],
   },
-  pickupAddress: {
+  email: {
     type: String,
     required: true,
   },
-  owners: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Owner',
-    required: true,
-  }],
 }, { timestamps: true });
 
-const Business = mongoose.model('Business', businessSchema);
-module.exports = Business;
+const Owner = mongoose.model('Owner', ownerSchema);
+module.exports = Owner;

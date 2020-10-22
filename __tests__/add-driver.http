@@ -1,2 +1,2 @@
-GET localhost:5000/add-driver
+GET localhost:5000/driver/add-driver
 

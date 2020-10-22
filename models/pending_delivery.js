@@ -8,9 +8,6 @@ const pendingDeliverySchema = new Schema({
     ref: 'Business',
     required: true,
   },
-  geolocation: {
-    type: String,
-  },
   googleMapsLink: {
     type: String,
   },

@@ -8,7 +8,7 @@ const pendingPickupSchema = new Schema({
     ref: 'Business',
     required: true,
   },
-  deliveries: [{ type: Schema.Types.ObjectId, ref: 'PendingDelivery'}],
+  deliveries: [{ type: Schema.Types.ObjectId, ref: 'PendingDelivery' }],
 }, { timestamps: true });
 
 const PendingPickup = mongoose.model('PendingPickup', pendingPickupSchema);

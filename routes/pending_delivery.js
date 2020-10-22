@@ -1,16 +1,18 @@
 const express = require('express');
-const Owner = require('../models/driver');
+const Driver = require('../models/driver');
 
 const router = express.Router();
 
-router.get('/add-owner', (req, res) => {
+router.get('/add-delivery', (req, res) => {
   // const driver = new Driver({
   //   fullName: 'John Smith',
   //   phone: '408-435-5532',
   //   email: 'smith@gmail.com',
   // });
 
-  Owner.save()
+  // get google maps link
+  res.send(req.body);
+  driver.save()
     .then((result) => {
       res.send(result);
     })
@@ -20,7 +22,7 @@ router.get('/add-owner', (req, res) => {
 });
 
 router.get('/all-deliveries', (req, res) => {
-  Owner.find()
+  Driver.find()
     .then((result) => {
       res.send(result);
     })
@@ -39,8 +41,13 @@ router.get('/all-deliveries', (req, res) => {
 //         });
 // });
 
-router.get('/:ownerID', (req, res) => {
-  Owner.findById(req.params.ownerID)
+// /completed-delivery/32748236748
+router.get('/complete-delivery/:deliveryID', ((req, res) => {
+  // req.params.deliveryID
+}));
+
+router.get('/:deliveryID', (req, res) => {
+  Driver.findById(req.params.deliveryID)
     .then((result) => {
       res.send(result);
     })

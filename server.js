@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const driver = require('./routes/driver');
+const twilio = require('./routes/twilio');
+const pending = require('/routes/pending_delivery');
 
 const app = express();
 
@@ -15,7 +17,8 @@ const port = process.env.SERVER_PORT || 5000;
 
 app.use(express.json());
 app.use('/driver', driver);
-
+app.use('/pending-delivery', pending);
+app.use('/twilio', twilio);
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {

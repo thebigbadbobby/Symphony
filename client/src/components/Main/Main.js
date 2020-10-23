@@ -1,16 +1,45 @@
 import React from "react";
-import { Container } from '@material-ui/core';
-import styles from './Main.styles'
+import { Container } from "@material-ui/core";
+import styles from "./Main.styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import { LogIn } from "../LogIn/LogIn";
 
 export const Main = (props) => {
-  const style = styles()
-  console.log("here are the props", props)
- return (
-   <React.Fragment>
-     <Container component="div" maxWidth="lg" className={style.signInContainer}>
-       Main Works!
-     </Container>
+  const style = styles();
 
-   </React.Fragment>
- )
-}
+  return (
+    <React.Fragment>
+      <AppBar position="static" color="inherit">
+        <Toolbar>
+          <IconButton
+            edge="start"
+            className={style.menuButton}
+            color="inherit"
+            aria-label="menu"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" className={style.title}>
+            Kahzum Same Day
+          </Typography>
+          <LogIn
+            className={style.signOutButton}
+            isSignedIn={props.isSignedIn}
+            handleSignOut={props.signOut}
+          />
+        </Toolbar>
+      </AppBar>
+      <Container
+        component="div"
+        maxWidth="lg"
+        className={style.signInContainer}
+      >
+        Main Works!
+      </Container>
+    </React.Fragment>
+  );
+};

@@ -2,8 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const driver = require('./routes/driver');
+const business = require('./routes/business');
 const twilio = require('./routes/twilio');
-const pendingPickup = require('./routes/pending_pickup');
+// const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
 
@@ -17,7 +18,8 @@ const port = process.env.SERVER_PORT || 5000;
 
 app.use(express.json());
 app.use('/driver', driver);
-app.use('/pickup', pendingPickup);
+app.use('/business', business);
+// app.use('/pickup', pendingPickup);
 app.use('/twilio', twilio);
 
 app.post('/api/deliveries', (req, res) => {

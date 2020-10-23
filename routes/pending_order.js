@@ -1,14 +1,17 @@
 const express = require('express');
-const PendingPickup = require('../models/pending_delivery');
-const PendingDelivery = require('../models/pending_delivery');
+const PendingOrder = require('../models/pending_order');
+const Delivery = require('../models/delivery');
 
 const router = express.Router();
 
 // @params
 // business: businessID,
-// deliveries: Array of addresses
+// deliveries: array of addresses
+// customer_name: string
+// customer_phone: string
 
-router.post('/add-pickup', (req, res) => {
+
+router.post('/newOrders', (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
   }
@@ -17,11 +20,11 @@ router.post('/add-pickup', (req, res) => {
   }
   const deliveries = [];
   req.body.deliveries.forEach((address) => {
-    const pendingDelivery = new PendingDelivery({
+    const delivery = new Delivery({
       business: req.body.business,
       address,
     });
-    pendingDelivery.save()
+    Delivery.save()
       .then((result) => {
         deliveries.push(result._id);
       })
@@ -30,11 +33,36 @@ router.post('/add-pickup', (req, res) => {
         res.status(500).send(`${JSON.stringify(err)}`);
       });
   });
-  const pendingOrder = new PendingOrder({
+  const order = new Order({
     business: req.body.business,
     deliveries,
   });
-  pendingOrder.save()
+  Order.save()
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
+    });
+});
+
+// @params
+// business: businessID,
+// delivery: address
+
+router.post('/newOrder', (req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  }
+  if (!req.body.hasOwnProperty('delivery')) {
+    res.status(400).send('Missing delivery');
+  }
+  const order = new Order({
+    business: req.body.business,
+    delivery: req.body.delivery
+  });
+  Order.save()
     .then((result) => {
       res.send(result);
     })

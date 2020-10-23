@@ -30,11 +30,11 @@ router.post('/add-pickup', (req, res) => {
         res.status(500).send(`${JSON.stringify(err)}`);
       });
   });
-  const pendingPickup = new PendingPickup({
+  const pendingOrder = new PendingOrder({
     business: req.body.business,
     deliveries,
   });
-  pendingPickup.save()
+  pendingOrder.save()
     .then((result) => {
       res.send(result);
     })

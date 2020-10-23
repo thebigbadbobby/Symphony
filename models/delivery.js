@@ -24,5 +24,5 @@ const completedDeliverySchema = new Schema({
   },
 }, { timestamps: true });
 
-const CompletedDelivery = mongoose.model('CompletedDelivery', completedDeliverySchema);
-module.exports = CompletedDelivery;
+const Delivery = mongoose.model('CompletedDelivery', completedDeliverySchema);
+module.exports = Delivery;

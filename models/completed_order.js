@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const completedPickupSchema = new Schema({
+const completedOrderSchema = new Schema({
   business: {
     type: Schema.Types.ObjectId,
     ref: 'Business',
@@ -13,8 +13,8 @@ const completedPickupSchema = new Schema({
     ref: 'Driver',
     required: true,
   },
-  deliveries: [{ type: Schema.Types.ObjectId, ref: 'CompletedDelivery' }],
+  deliveries: [{ type: Schema.Types.ObjectId, ref: 'Delivery' }],
 }, { timestamps: true });
 
-const CompletedPickup = mongoose.model('CompletedPickup', completedPickupSchema);
-module.exports = CompletedPickup;
+const CompletedOrder = mongoose.model('CompletedOrder', completedOrderSchema);
+module.exports = CompletedOrder;

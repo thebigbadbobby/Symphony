@@ -97,7 +97,7 @@ export default function App() {
   initSignIn();
 
   return (
-    <Container className={style.app} component="div" maxWidth="lg" disableGutters={true}>
+    <Container className={style.app} component="div" maxWidth="false" disableGutters={true}>
       <CssBaseline />
       <ThemeProvider theme={theme}>
         {signedIn ? (

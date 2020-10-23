@@ -1,19 +1,38 @@
-import { makeStyles } from '@material-ui/core/styles';
-
+import { makeStyles } from "@material-ui/core/styles";
 
 const styles = makeStyles((theme) => ({
   app: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "100vh",
   },
-  logIn: {
-    //margin: theme.spacing(1),
-    //backgroundColor: theme.palette.secondary.main,
+  signInContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: "auto",
+    marginBottom: "auto",
   },
-  mainContent: {
-   // width: '100%', // Fix IE 11 issue.
-    //marginTop: theme.spacing(1),
+  imageIcon: {
+    [theme.breakpoints.down("xs")]: {
+      height: "120px",
+    },
+    height: "180px",
+    marginBottom: theme.spacing(5),
+    marginTop: theme.spacing(5),
+  },
+  tagLine: {
+    marginBottom: theme.spacing(3),
+    fontWeight: "bold",
+    textAlign: "center",
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.2rem",
+    },
+  },
+  copyright: {
+    marginTop: "auto",
+    marginBottom: theme.spacing(3),
   },
 }));
 

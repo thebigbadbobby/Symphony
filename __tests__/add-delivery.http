@@ -1,5 +1,0 @@
-POST localhost:5000/pending-delivery/add-driver
-{
-     business: 'John Smith',
-     address: '234 hi',
-}

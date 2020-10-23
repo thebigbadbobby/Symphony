@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { MessagingResponse } = require('twilio').twiml;
 
-app.post('/sms', (req, res) => {
+router.post('/sms', (req, res) => {
   const twiml = new MessagingResponse();
 
   const message = twiml.message();

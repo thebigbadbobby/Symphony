@@ -1,24 +1,46 @@
 const express = require('express');
 const PendingPickup = require('../models/pending_delivery');
+const PendingDelivery = require('../models/pending_delivery');
 
 const router = express.Router();
 
-router.get('/add-pickup', (req, res) => {
-  const pendingPickup = PendingPickup({});
-  // const driver = new Driver({
-  //   fullName: 'John Smith',
-  //   phone: '408-435-5532',
-  //   email: 'smith@gmail.com',
-  // });
+// @params
+// business: businessID,
+// deliveries: Array of addresses
 
-  // get google maps link
-  res.send(req.body);
-  driver.save()
+router.post('/add-pickup', (req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  }
+  if (!req.body.hasOwnProperty('deliveries')) {
+    res.status(400).send('Missing deliveries');
+  }
+  const deliveries = [];
+  req.body.deliveries.forEach((address) => {
+    const pendingDelivery = new PendingDelivery({
+      business: req.body.business,
+      address,
+    });
+    pendingDelivery.save()
+      .then((result) => {
+        deliveries.push(result._id);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send(`${JSON.stringify(err)}`);
+      });
+  });
+  const pendingPickup = new PendingPickup({
+    business: req.body.business,
+    deliveries,
+  });
+  pendingPickup.save()
     .then((result) => {
       res.send(result);
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
     });
 });
 
@@ -29,6 +51,7 @@ router.get('/all-pickups', (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
     });
 });
 

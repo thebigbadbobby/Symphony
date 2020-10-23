@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const ownerSchema = new Schema({
-  name: {
+  fullName: {
     type: String,
     required: true,
   },

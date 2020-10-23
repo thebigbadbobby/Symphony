@@ -11,19 +11,28 @@ const router = express.Router();
 //   .put((req, res) => {
 //     res.send(`hi put /things/cars/${req.params.carid}`);
 //   });
-router.get('/add-driver', (req, res) => {
+router.post('/add-driver', (req, res) => {
+  if (!req.body.hasOwnProperty('fullName')) {
+    res.status(400).send('Missing fullName');
+  }
+  if (!req.body.hasOwnProperty('phone')) {
+    res.status(400).send('Missing phone');
+  }
+  if (!req.body.hasOwnProperty('email')) {
+    res.status(400).send('Missing email');
+  }
   const driver = new Driver({
-    fullName: 'John Smith',
-    phone: '408-435-5532',
-    email: 'smith@gmail.com',
+    fullName: req.body.fullName,
+    phone: req.body.phone,
+    email: req.body.email,
   });
-
   driver.save()
     .then((result) => {
       res.send(result);
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
     });
 });
 
@@ -34,6 +43,7 @@ router.get('/all-drivers', (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
     });
 });
 
@@ -44,6 +54,7 @@ router.get('/:driverID', (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
     });
 });
 

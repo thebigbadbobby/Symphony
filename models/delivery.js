@@ -4,15 +4,10 @@ const { Schema } = mongoose;
 
 // how to do referencing in mongoose
 // https://mongoosejs.com/docs/populate.html
-const completedDeliverySchema = new Schema({
+const deliverySchema = new Schema({
   business: {
     type: Schema.Types.ObjectId,
     ref: 'Business',
-    required: true,
-  },
-  driver: {
-    type: Schema.Types.ObjectId,
-    ref: 'Driver',
     required: true,
   },
   googleMapsLink: {

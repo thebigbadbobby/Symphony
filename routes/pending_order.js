@@ -1,68 +1,63 @@
 const express = require('express');
 const PendingOrder = require('../models/pending_order');
-const Delivery = require('../models/delivery');
 
 const router = express.Router();
 
+// @description Adds new orders to database
 // @params
-// business: businessID,
-// deliveries: array of addresses
-// customer_name: string
-// customer_phone: string
-
-
-router.post('/newOrders', (req, res) => {
+// {
+//   business: 'businessID',
+//   orders: [{
+//     addresses: 'string',
+//     customer_name: 'string',
+//     customer_phone: 'string'
+//   }],
+// }
+// @payload returns a success message
+router.post('/new-orders', (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
   }
-  if (!req.body.hasOwnProperty('deliveries')) {
-    res.status(400).send('Missing deliveries');
+  if (!req.body.hasOwnProperty('orders')) {
+    res.status(400).send('Missing orders');
   }
-  const deliveries = [];
-  req.body.deliveries.forEach((address) => {
-    const delivery = new Delivery({
+  const pendingOrders = [];
+  req.body.orders.forEach((order) => {
+    const pendingOrder = new PendingOrder({
       business: req.body.business,
-      address,
+      customer_name: order.customer_name,
+      customer_phone: order.customer_phone,
+      address: order.address,
     });
-    Delivery.save()
+    pendingOrder.save()
       .then((result) => {
-        deliveries.push(result._id);
+        pendingOrders.push(result);
       })
       .catch((err) => {
         console.log(err);
         res.status(500).send(`${JSON.stringify(err)}`);
       });
   });
-  const order = new Order({
-    business: req.body.business,
-    deliveries,
-  });
-  Order.save()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(`${JSON.stringify(err)}`);
-    });
+  // TODO change to success message
+  res.send(`${JSON.stringify(pendingOrders)}`);
 });
 
+// @description returns the pending orders for a specific business
 // @params
-// business: businessID,
-// delivery: address
-
-router.post('/newOrder', (req, res) => {
+// {
+//   business: 'businessID',
+// }
+// @payload
+// [{
+//     addresses: 'string',
+//     customer_name: 'string',
+//     customer_phone: 'string'
+// }],
+router.get('/my-orders', (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
   }
-  if (!req.body.hasOwnProperty('delivery')) {
-    res.status(400).send('Missing delivery');
-  }
-  const order = new Order({
-    business: req.body.business,
-    delivery: req.body.delivery
-  });
-  Order.save()
+  PendingOrder.find({ business: req.body.business })
     .then((result) => {
       res.send(result);
     })
@@ -72,36 +67,25 @@ router.post('/newOrder', (req, res) => {
     });
 });
 
-router.get('/all-pickups', (req, res) => {
-  Driver.find()
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send(`${JSON.stringify(err)}`);
-    });
-});
-
-// {
-//     pendingPickups: [id1, id2]
-// }
-router.get('/best-route/:pickupID', ((req, res) => {
-  // req.params.deliveryID
-}));
-
-router.get('/complete-pickup/:pickupID', ((req, res) => {
-  // req.params.deliveryID
-}));
-
-router.get('/:pickupID', (req, res) => {
-  PendingPickup.findById(req.params.pickupID)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+// // {
+// //     pendingPickups: [id1, id2]
+// // }
+// router.get('/best-route/:pickupID', ((req, res) => {
+//   // req.params.deliveryID
+// }));
+//
+// router.get('/complete-pickup/:pickupID', ((req, res) => {
+//   // req.params.deliveryID
+// }));
+//
+// router.get('/:pickupID', (req, res) => {
+//   PendingPickup.findById(req.params.pickupID)
+//     .then((result) => {
+//       res.send(result);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// });
 
 module.exports = router;

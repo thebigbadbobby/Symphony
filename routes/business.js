@@ -4,6 +4,33 @@ const Owner = require('../models/owner');
 
 const router = express.Router();
 
+// @description finds owners business
+// @params
+// owner_email: String
+// @payload
+// businessID
+router.get('/my-businessID', (req, res) => {
+  if (!req.body.hasOwnProperty('owner_email')) {
+    res.status(400).send('Missing owner_email');
+  }
+  Owner.find({ email: req.body.owner_email })
+    .then((owner) => {
+      Business.find({ owners: { $in: owner._id } })
+        .then((business) => {
+          res.send(business._id);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(404).send(`Owner ${owner._id} does not belong to any business`);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(404).send(`${req.body.owner_email} not found`);
+    });
+});
+
+// @description adds a new business to the database
 // @params
 // businessName: String
 // businessPhone: String
@@ -16,7 +43,7 @@ const router = express.Router();
 //     ref: 'Owner',
 //     required: true,
 //   }],
-
+// @payload success message
 router.post('/add-business', (req, res) => {
   if (!req.body.hasOwnProperty('businessName')) {
     res.status(400).send('Missing businessName');

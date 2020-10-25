@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import { LogIn } from "../LogIn/LogIn";
+import { Dashboard } from "./Dashboard.js";
 
 export const Main = (props) => {
   const style = styles();
@@ -33,13 +34,16 @@ export const Main = (props) => {
           />
         </Toolbar>
       </AppBar>
-      <Container
+      {/* <Container
         component="div"
         maxWidth="lg"
         className={style.signInContainer}
       >
         Main Works!
-      </Container>
+        
+      </Container> */}
+    <Dashboard />  
     </React.Fragment>
+    
   );
 };

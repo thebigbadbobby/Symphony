@@ -11,7 +11,6 @@ module.exports = {
     sourceType: 'module',
   },
   rules: {
-    'no-console': 'error',
     'class-methods-use-this': 0,
     curly: ['error', 'all'],
     'brace-style': ['error', '1tbs'],

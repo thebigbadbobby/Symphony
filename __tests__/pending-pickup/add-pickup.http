@@ -1,4 +1,0 @@
-POST localhost:5000/pending-pickup/add-pickup
-Content-Type: application/json
-
-{ "business": "add id","deliveries" : ["123 hi lane", "567 bye street"] }

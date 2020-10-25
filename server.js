@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const driver = require('./routes/driver');
 const business = require('./routes/business');
 const twilio = require('./routes/twilio');
+const owner = require('./routes/owner');
 // const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
@@ -19,7 +20,7 @@ const port = process.env.SERVER_PORT || 5000;
 app.use(express.json());
 app.use('/driver', driver);
 app.use('/business', business);
-// app.use('/pickup', pendingPickup);
+app.use('/owner', owner);
 app.use('/twilio', twilio);
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })

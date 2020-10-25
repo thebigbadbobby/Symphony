@@ -1,0 +1,9 @@
+POST localhost:5000/owner/add-owner
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4",
+  "owner": {
+    "email": "bob1234@gmail.com",
+    "fullName": "Bob Goldman",
+    "phone": "435-343-3243"
+  }}

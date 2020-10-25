@@ -49,6 +49,8 @@ router.post('/new-orders', (req, res) => {
 // }
 // @payload
 // [{
+//     _id: 'orderID'
+//     business: 'businessID'
 //     addresses: 'string',
 //     customer_name: 'string',
 //     customer_phone: 'string'

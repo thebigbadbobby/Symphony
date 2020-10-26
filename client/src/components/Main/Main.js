@@ -1,5 +1,4 @@
 import React from "react";
-import { Container } from "@material-ui/core";
 import styles from "./Main.styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";

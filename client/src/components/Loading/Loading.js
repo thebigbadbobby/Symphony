@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "@material-ui/core";
 import styles from "./Loading.styles";
 import ReactLoading from 'react-loading';
 import loadingIcon from '../../assets/mint-icon.svg'

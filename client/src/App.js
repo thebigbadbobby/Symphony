@@ -102,7 +102,7 @@ export default function App() {
   };
 
   /** Initialize Sign In setup on boot */
-  //initSignIn();
+  initSignIn();
 
   return (
     <Container

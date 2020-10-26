@@ -2,14 +2,11 @@ import React from "react";
 import {
   Container,
   Typography,
-  Grid,
   TextField,
   CssBaseline,
-  Box,
   Button,
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./Dashboard.styles";
 
@@ -84,7 +81,6 @@ const TodaysOrders = (props) => {
 };
 
 export const Dashboard = (props) => {
-  const style = styles();
   return (
     <React.Fragment>
       {/* <Container component="div" maxWidth="lg"> */}

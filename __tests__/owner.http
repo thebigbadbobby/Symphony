@@ -1,3 +1,11 @@
+GET http://localhost:5000/owner/5f952b0ceb639a09f055fa1c
+Accept: application/json
+
+###
+GET http://localhost:5000/owner/all-owners
+Accept: application/json
+
+###
 POST localhost:5000/owner/add-owner
 Content-Type: application/json
 
@@ -7,3 +15,4 @@ Content-Type: application/json
     "fullName": "Bob Goldman",
     "phone": "435-343-3243"
   }}
+

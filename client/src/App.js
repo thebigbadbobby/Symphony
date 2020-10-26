@@ -8,11 +8,17 @@ import { Main } from "./components/Main/Main";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import styles from "./App.styles";
 import logo from "./assets/mint-stacked.svg";
+import { Loading } from "./components/Loading/Loading";
 
 const Copyright = () => {
   const style = styles();
   return (
-    <Typography className={style.copyright} variant="inherit" color="textSecondary" align="center">
+    <Typography
+      className={style.copyright}
+      variant="inherit"
+      color="textSecondary"
+      align="center"
+    >
       {"Copyright © "}
       <Link color="inherit" href="https://kahzum.com/">
         Kahzum
@@ -29,6 +35,7 @@ export default function App() {
   let [signedIn, setSignIn] = useState(false);
   let [auth, setAuth] = useState({});
   let [user, setUser] = useState({});
+  let [loading, setLoading] = useState(true);
   const style = styles();
 
   /** Create a theme */
@@ -36,20 +43,19 @@ export default function App() {
     palette: {
       primary: {
         main: "#74d2ad",
-        contrastText: "#ffffff"
+        contrastText: "#ffffff",
       },
       secondary: {
         main: "#90e0c3",
       },
       default: {
         main: "#ffffff",
-      }
+      },
     },
   });
 
   /** Initializes sign in for auto log in. */
   const initSignIn = () => {
-    console.log("init signIn");
     window.gapi.load("client:auth2", () => {
       window.gapi.client
         .init({
@@ -58,8 +64,10 @@ export default function App() {
           scope: "email", // and whatever else passed as a string...
         })
         .then(() => {
+          console.log("signIn initialized");
           auth = window.gapi.auth2.getAuthInstance();
           handleAuthChange();
+          setLoading(false);
           auth.isSignedIn.listen(handleAuthChange);
         });
     });
@@ -94,34 +102,43 @@ export default function App() {
   };
 
   /** Initialize Sign In setup on boot */
-  initSignIn();
+  //initSignIn();
 
   return (
-    <Container className={style.app} component="div" maxWidth="false" disableGutters={true}>
+    <Container
+      className={style.app}
+      component="div"
+      maxWidth={false}
+      disableGutters={true}
+    >
       <CssBaseline />
-      <ThemeProvider theme={theme}>
-        {signedIn ? (
-          <Main
-            isSignedIn={signedIn}
-            user={user}
-            auth={auth}
-            signOut={handleSignOut}
-          />
-        ) : (
-          <Container
-            component="div"
-            maxWidth="lg"
-            className={style.signInContainer}
-          >
-            <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
-            <Typography className={style.tagLine} variant="h5">
-              Same-day Delivery for Your Small Business
-            </Typography>
-            <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
-          </Container>
-        )}
-        <Copyright />
-      </ThemeProvider>
+      {loading ? (
+        <Loading />
+      ) : (
+        <ThemeProvider theme={theme}>
+          {signedIn ? (
+            <Main
+              isSignedIn={signedIn}
+              user={user}
+              auth={auth}
+              signOut={handleSignOut}
+            />
+          ) : (
+            <Container
+              component="div"
+              maxWidth="lg"
+              className={style.signInContainer}
+            >
+              <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
+              <Typography className={style.tagLine} variant="h5">
+                Same-day Delivery for Your Small Business
+              </Typography>
+              <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
+            </Container>
+          )}
+          <Copyright />
+        </ThemeProvider>
+      )}
     </Container>
   );
 }

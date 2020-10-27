@@ -15,5 +15,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE ${SERVER_PORT}
+# https://we-are.bookmyshow.com/understanding-expose-in-dockerfile-266938b6a33d
+EXPOSE 8080
 CMD [ "node", "server.js" ]

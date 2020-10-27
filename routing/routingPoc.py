@@ -5,7 +5,7 @@ import json
 import requests
 import time
 
-API_KEY = "5b3ce3597851110001cf62485277a934bcd74a1c90f6d634fddfaec6"
+API_KEY = ""
 
 
 # load destination data for today's deliveries
@@ -40,7 +40,7 @@ def request_distance_data(locations):
         # prepare request
         #XXX need change to send an array of addresses, including starting location (could be arbitrary for now)
         template = 'https://api.openrouteservice.org/v2/matrix/driving-car'
-        headers = {"Authorization": "5b3ce3597851110001cf62485277a934bcd74a1c90f6d634fddfaec6"} #XXX API key
+        headers = {"Authorization": API_KEY } #XXX API key
         body = {"locations": geocodeList}#XXX locations matrix
 
         # print(template+start+end)

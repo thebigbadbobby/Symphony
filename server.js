@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const driver = require('./routes/driver');
 const business = require('./routes/business');
-const twilio = require('./routes/twilio');
 const owner = require('./routes/owner');
+const order = require('./routes/pending_order');
+const twilio = require('./routes/twilio');
 // const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
@@ -18,9 +19,10 @@ const dbURI = process.env.MONGO_URL;
 const port = process.env.SERVER_PORT || 5000;
 
 app.use(express.json());
-app.use('/driver', driver);
 app.use('/business', business);
+app.use('/driver', driver);
 app.use('/owner', owner);
+app.use('/order', order);
 app.use('/twilio', twilio);
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })

@@ -14,32 +14,30 @@ const router = express.Router();
 //   }],
 // }
 // @payload returns a success message
-router.post('/new-orders', (req, res) => {
+router.post('/add-orders', async (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
   }
   if (!req.body.hasOwnProperty('orders')) {
     res.status(400).send('Missing orders');
   }
-  const pendingOrders = [];
-  req.body.orders.forEach((order) => {
+  for (let i = 0; i < req.body.orders.length; i += 1) {
+    const order = req.body.orders[i];
     const pendingOrder = new PendingOrder({
       business: req.body.business,
       customer_name: order.customer_name,
       customer_phone: order.customer_phone,
       address: order.address,
     });
-    pendingOrder.save()
-      .then((result) => {
-        pendingOrders.push(result);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).send(`${JSON.stringify(err)}`);
-      });
-  });
-  // TODO change to success message
-  res.send(`${JSON.stringify(pendingOrders)}`);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      await pendingOrder.save();
+    } catch (e) {
+      console.log(e);
+      res.status(400).send(`${JSON.stringify(e)}`);
+    }
+  }
+  res.send('successfully added orders');
 });
 
 // @description returns the pending orders for a specific business
@@ -54,6 +52,9 @@ router.post('/new-orders', (req, res) => {
 //     addresses: 'string',
 //     customer_name: 'string',
 //     customer_phone: 'string'
+//     createdAt: "2020-10-27T04:15:43.538Z",
+//     updatedAt: "2020-10-27T04:15:43.538Z",
+//     __v: 0
 // }],
 router.get('/my-orders', (req, res) => {
   if (!req.body.hasOwnProperty('business')) {

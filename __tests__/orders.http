@@ -1,0 +1,16 @@
+POST http://localhost:5000/order/add-orders
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4",
+   "orders": [{
+     "address": "sesame street",
+     "customer_name": "Adam",
+     "customer_phone": "408-423-5321"
+   }]
+}
+
+###
+GET http://localhost:5000/order/my-orders
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4"}

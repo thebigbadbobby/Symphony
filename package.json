@@ -9,9 +9,8 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "twillio-webhook": "cd twillio && twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://localhost:1337/sms\"",
-    "twillio-server": "cd twillio && node server.js",
-    "twillio": "concurrently \"npm run twillio-webhook\" \"npm run twillio-server\"",
+    "twilio-webhook": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://localhost:5000/twilio/sms\"",
+    "twilio": "concurrently \"npm run twilio-webhook\" \"npm run server\"",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

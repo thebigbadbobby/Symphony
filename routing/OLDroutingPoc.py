@@ -24,7 +24,6 @@ def request_distance_data(locations):
         #prepare request 
         template = 'https://api.openrouteservice.org/geocode/search?api_key=' + API_KEY
         text = '&text=' + address
-        print(API_KEY)
 
         #send request
         r = requests.get(template + text)
@@ -83,6 +82,7 @@ def request_distance_data(locations):
     data['distance_matrix'] = []
     for geocode1 in geocodeList:
         data['distance_matrix'].append([])
+        print(geocode1)
         for geocode2 in geocodeList:
             data['distance_matrix'][-1].append(get_travel_time(geocode1,geocode2))
             time.sleep(1.5) # open route service has a 40 time/min request cap
@@ -114,6 +114,7 @@ def print_solution(data, manager, routing, solution):
 
 def main():
     with open("cred.json") as file:
+        global API_KEY 
         API_KEY = json.load(file)['API_KEY']
 
     destinationlist = get_destination_list()

@@ -12,6 +12,7 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./Dashboard.styles";
+import { EditBusiness } from "./EditBusiness/EditBusiness";
 
 const TodaysOrders = (props) => {
   const style = styles();
@@ -83,13 +84,34 @@ const TodaysOrders = (props) => {
   );
 };
 
+const ChoosePage = (props) => {
+  switch(props.page) {
+    case 'edit-business':
+      return (
+        <EditBusiness />
+      )
+    case 'todays-orders':
+      return (
+        <TodaysOrders />
+      )
+    case 'order-history':
+      return (
+        "Order History"
+      )
+    default:
+      return (
+        <TodaysOrders />
+      )
+  }
+}
+
 export const Dashboard = (props) => {
   const style = styles();
+  const page = 'edit-business'
   return (
     <React.Fragment>
       {/* <Container component="div" maxWidth="lg"> */}
-      <TodaysOrders />
-
+      <ChoosePage page={page}/>
       {/* </Container> */}
     </React.Fragment>
   );

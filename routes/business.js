@@ -1,8 +1,52 @@
 const express = require('express');
 const Business = require('../models/business');
 const Owner = require('../models/owner');
+const PendingOrder = require('../models/pending_order');
+const CompletedOrder = require('../models/completed_order');
 
 const router = express.Router();
+
+// @description gets a business's completed order history
+// @params
+// {
+//   business: id,
+// }
+// @payload
+// array of completed order objects
+router.get('/completed-orders', (req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  }
+  CompletedOrder.find({ business: req.body.business }, (docs, err) => {
+    if (err) {
+      res.status(404).send('Could not find order');
+    }
+    res.send(JSON.stringify(docs));
+  });
+});
+
+// @description deletes a business's order
+// @params
+// {
+//   business: id,
+//   order: id
+// }
+// @payload
+// Return success message
+router.post('/delete-order', ((req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  } if (!req.body.hasOwnProperty('order')) {
+    res.status(400).send('Missing order');
+  }
+  PendingOrder.deleteOne({ _id: req.body.order, business: req.body.business }, (err) => {
+    if (err) {
+      res.status(404).send('Could not find order');
+    }
+    // deleted at most one pendingOrder document
+  });
+  res.send('Success deleted order');
+}));
 
 // @description finds owners business
 // @params

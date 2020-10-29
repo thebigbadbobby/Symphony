@@ -1,3 +1,9 @@
+POST http://localhost:5000/business/delete-order
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4", "order": "5f9a2247176e8a97179bf978"}
+
+###
 PATCH http://localhost:5000/business/update-business
 Content-Type: application/json
 

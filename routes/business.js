@@ -17,9 +17,10 @@ router.get('/completed-orders', (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
   }
-  CompletedOrder.find({ business: req.body.business }, (docs, err) => {
+  CompletedOrder.find({ business: req.body.business }, (err, docs) => {
     if (err) {
-      res.status(404).send('Could not find order');
+      console.log(err);
+      res.status(404).send('Could not find business');
     }
     res.send(JSON.stringify(docs));
   });

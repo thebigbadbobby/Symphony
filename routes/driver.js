@@ -14,13 +14,14 @@ const router = express.Router();
 // }
 // @payload
 // array of completed order objects
-router.post('/complete-order', (req, res) => {
+router.post('/complete-order', async (req, res) => {
   if (!req.body.hasOwnProperty('driver')) {
     res.status(400).send('Missing driver');
   }
   if (!req.body.hasOwnProperty('order')) {
     res.status(400).send('Missing order');
   }
+  // code is a mess because query and methods are asynchronous
   Driver.findById(req.body.driver, (err, driver) => {
     if (err) {
       res.status(404).send('Could not find driver');
@@ -32,18 +33,27 @@ router.post('/complete-order', (req, res) => {
         if (errP) {
           res.status(404).send('Could not find order inside of pending order');
         }
-        pendingOrder.driver = req.body.driver;
-        delete pendingOrder._id;
-        console.log(JSON.stringify(pendingOrder));
-        const completedOrder = new CompletedOrder(pendingOrder);
-        console.log('dsjkfkf');
-        completedOrder.save()
-          .catch((errSave) => {
-            console.log(err);
-            res.status(500).send(`${JSON.stringify(errSave)}`);
-          });
+        const completedOrder = new CompletedOrder(
+          {
+            business: pendingOrder.business,
+            driver: req.body.driver,
+            customer_name: pendingOrder.customer_name,
+            customer_phone: pendingOrder.customer_phone,
+            address: pendingOrder.address,
+          },
+        );
         driver.ordersDelivering.splice(index, 1);
         driver.save()
+          .then(() => {
+            completedOrder.save()
+              .then(() => {
+                res.send('success completed order');
+              })
+              .catch((errSave) => {
+                console.log(err);
+                res.status(500).send(`${JSON.stringify(errSave)}`);
+              });
+          })
           .catch((errSave) => {
             console.log(err);
             res.status(500).send(`${JSON.stringify(errSave)}`);
@@ -53,17 +63,20 @@ router.post('/complete-order', (req, res) => {
       res.status(404).send('Could not find order');
     }
   });
-  res.send('Success completed order');
 });
 
 // let driver;
+// console.log('hi 1')
 // try {
 //   driver = await Driver.findById(req.body.driver);
 // } catch (e) {
 //   res.status(404).send('Could not find driver');
 // }
+// console.log('hi 2')
 // const index = driver.ordersDelivering.indexOf(req.body.order);
+// console.log('hi 3')
 // if (index > -1) {
+//   console.log('hi 4')
 //   const pendingOrderID = driver.ordersDelivering[index];
 //   let pendingOrder;
 //   try {
@@ -73,11 +86,11 @@ router.post('/complete-order', (req, res) => {
 //   }
 //   pendingOrder.driver = req.body.driver;
 //   delete pendingOrder._id;
-//   console.log(JSON.stringify(pendingOrder))
+//   console.log(JSON.stringify(pendingOrder));
 //   const completedOrder = new CompletedOrder();
-//   console.log('dsjkfkf')
+//   console.log('dsjkfkf');
 //   await completedOrder.save();
-//   PendingOrder.findByIdAndDelete(pendingOrderID);
+//   await PendingOrder.findByIdAndDelete(pendingOrderID);
 //   // remove pending order from drivers ordersDelivering
 //   driver.ordersDelivering.splice(index, 1);
 //   await driver.save();

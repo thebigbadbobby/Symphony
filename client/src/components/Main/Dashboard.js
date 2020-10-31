@@ -17,7 +17,16 @@ const TodaysOrders = (props) => {
   function SaveOrd() {
     alert("Save Order!");
     axios
-      .post(`http://localhost:5000/business/add-business`, { "businessName": "CodyCody", "businessPhone": "408-435-3532", "pickupAddress": "123 great lane", "ownerFullName": "Sam Smith", "ownerEmail": "smith2@gmail.com", "ownerPhone":"909-999-5890" })
+      .post(`http://localhost:5000/order/add-orders`, {
+        business: "5f94ac5610989b2208a9d7a4",
+        orders: [
+          {
+            address: "sesame street",
+            customer_name: "Adam",
+            customer_phone: "408-423-5321",
+          },
+        ],
+      })
       .catch(function (error) {
         alert("error");
         alert(JSON.stringify(error));
@@ -25,7 +34,6 @@ const TodaysOrders = (props) => {
     alert("Save Order!");
   }
 
-  
   function CusInfo(props) {
     return (
       <React.Fragment>

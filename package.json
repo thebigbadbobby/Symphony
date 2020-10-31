@@ -30,7 +30,6 @@
     "express": "^4.16.2",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.9",
-    "react-loading": "^2.0.3",
     "twilio": "^3.49.4"
   }
 }

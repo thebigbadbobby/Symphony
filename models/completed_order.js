@@ -13,7 +13,23 @@ const completedOrderSchema = new Schema({
     ref: 'Driver',
     required: true,
   },
-  deliveries: [{ type: Schema.Types.ObjectId, ref: 'Delivery' }],
+  customer_name: {
+    type: String,
+  },
+  customer_phone: {
+    type: String,
+    validate: {
+      validator(v) {
+        return /\d{3}-\d{3}-\d{4}/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+    required: [true, 'User phone number required'],
+  },
+  address: {
+    type: String,
+    required: true,
+  },
 }, { timestamps: true });
 
 const CompletedOrder = mongoose.model('CompletedOrder', completedOrderSchema);

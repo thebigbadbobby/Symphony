@@ -1,0 +1,31 @@
+POST http://localhost:5000/driver/complete-order
+Content-Type: application/json
+
+{
+  "driver": "5f908e3cb4561c7fb8b9c4b8",
+  "order": "5f979eeffcb7a34058b5415f"
+}
+
+###
+POST http://localhost:5000/driver/deliver-order
+Content-Type: application/json
+
+{
+  "driver": "5f908e3cb4561c7fb8b9c4b8",
+  "order": "5f979eeffcb7a34058b5415f"
+}
+
+###
+GET localhost:5000/driver/5f908e3cb4561c7fb8b9c4b8
+Accept: application/json
+
+###
+GET localhost:5000/driver/all-drivers
+Accept: application/json
+
+###
+POST localhost:5000/driver/add-driver
+Content-Type: application/json
+
+{ "fullName": "John Smith","phone": "408-435-5532","email": "smith@gmail.com" }
+

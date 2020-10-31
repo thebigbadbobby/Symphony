@@ -10,8 +10,8 @@
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "twilio-webhook": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://localhost:5000/twilio/sms\"",
-    "twilio": "concurrently \"npm run twilio-webhook\" \"npm run server\"",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run twilio-webhook\"",
+    "kill": "killall node",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

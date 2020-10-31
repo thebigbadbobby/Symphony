@@ -84,7 +84,7 @@ const TodaysOrders = (props) => {
         <CusInfo />
       </Container>
 
-      <Button variant="contained" color="primary" onClick={() => {SaveOrd}}>
+      <Button variant="contained" color="primary" onClick={SaveOrd}>
         Save Today's Orders
       </Button>
     </React.Fragment>

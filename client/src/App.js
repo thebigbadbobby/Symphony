@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Link from "@material-ui/core/Link";
 import Typography from "@material-ui/core/Typography";
@@ -9,6 +9,7 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import styles from "./App.styles";
 import logo from "./assets/mint-stacked.svg";
 import { Loading } from "./components/Loading/Loading";
+
 
 const Copyright = () => {
   const style = styles();
@@ -33,9 +34,10 @@ const Copyright = () => {
 export default function App() {
   /** Set state variables */
   let [signedIn, setSignIn] = useState(false);
-  let [auth, setAuth] = useState({});
-  let [user, setUser] = useState({});
+  let [auth, setAuth] = useState(undefined);
+  let [user, setUser] = useState(undefined);
   let [loading, setLoading] = useState(true);
+
   const style = styles();
 
   /** Create a theme */
@@ -55,7 +57,7 @@ export default function App() {
   });
 
   /** Initializes sign in for auto log in. */
-  const initSignIn = () => {
+  useEffect(() => {
     window.gapi.load("client:auth2", () => {
       window.gapi.client
         .init({
@@ -64,56 +66,65 @@ export default function App() {
           scope: "email", // and whatever else passed as a string...
         })
         .then(() => {
-          console.log("signIn initialized");
-          auth = window.gapi.auth2.getAuthInstance();
-          handleAuthChange();
-          setLoading(false);
-          auth.isSignedIn.listen(handleAuthChange);
-        });
+          setAuth(window.gapi.auth2.getAuthInstance())
+          window.gapi.auth2.getAuthInstance().isSignedIn.listen(handleAuthChange);
+          setLoading(false)
+        })
     });
-  };
+  }, [])
+
+  /** Calls an auth change whenever auth changes */
+  useEffect(() => {
+    if (auth) {
+      handleAuthChange();
+    }
+  }, [auth])
 
   /** Handles auth changes (in sign in status) */
   const handleAuthChange = () => {
-    const gsignIn = auth.isSignedIn.get();
-    // gsignIn != prev value prevents infinite loop
-    if (gsignIn && gsignIn !== signedIn) {
-      setSignIn(auth.isSignedIn.get());
-      setUser(auth.currentUser.get());
-      setAuth(auth);
+    if (auth) {
+      const gsignIn = auth.isSignedIn.get();
+      // gsignIn != prev value prevents infinite loop
+      if (gsignIn && gsignIn !== signedIn) {
+        setSignIn(auth.isSignedIn.get());
+        setUser(auth.currentUser.get());
+        setAuth(auth);
+        setLoading(false)
+      }
     }
   };
 
   /** Signs the user in and updates state. */
   const handleSignIn = () => {
+    setLoading(true)
     auth.signIn().then(() => {
       setSignIn(true);
       setUser(auth.currentUser.get());
+      setLoading(false)
+    }).catch(() => {
+      console.log("Failed to sign in")
+      setLoading(false)
     });
   };
 
   /** Signs the user out and updates state */
   const handleSignOut = () => {
+    setLoading(true)
     auth.signOut().then(() => {
       setSignIn(false);
-      setUser({});
-      setAuth({});
+      setUser(undefined);
+      setLoading(false)
+    }).catch(() => {
+      console.log("Failed to sign out")
+      setLoading(false)
     });
   };
 
-  /** Initialize Sign In setup on boot */
-  initSignIn();
-
   return (
-    <Container
-      className={style.app}
-      component="div"
-      maxWidth={false}
-      disableGutters={true}
-    >
+    <Container className={style.app} component="div" maxWidth={false} disableGutters={true}>
       <CssBaseline />
       {loading ? (
-        <Loading />
+        <Loading/>
       ) : (
         <ThemeProvider theme={theme}>
           {signedIn ? (

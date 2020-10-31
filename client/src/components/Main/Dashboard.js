@@ -9,12 +9,23 @@ import {
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./Dashboard.styles";
+const axios = require("axios").default;
 
 const TodaysOrders = (props) => {
   const style = styles();
 
-  
+  function SaveOrd() {
+    // alert("Save Order!");
+    axios
+      .post(`http://localhost:5000/business/add-business`, { "businessName": "CodyCody", "businessPhone": "408-435-3532", "pickupAddress": "123 great lane", "ownerFullName": "Sam Smith", "ownerEmail": "smith2@gmail.com", "ownerPhone":"909-999-5890" })
+      .catch(function (error) {
+        alert("error");
+        alert(JSON.stringify(error));
+      });
+    alert("Save Order!");
+  }
 
+  
   function CusInfo(props) {
     return (
       <React.Fragment>
@@ -73,7 +84,7 @@ const TodaysOrders = (props) => {
         <CusInfo />
       </Container>
 
-      <Button variant="contained" color="primary" onClick={() => { alert('clicked') }}>
+      <Button variant="contained" color="primary" onClick={() => {SaveOrd}}>
         Save Today's Orders
       </Button>
     </React.Fragment>

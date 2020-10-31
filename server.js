@@ -10,6 +10,8 @@ const twilio = require('./routes/twilio');
 // const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
+var cors = require('cors');
+app.use(cors());
 
 // connect to mongodb & listen for requests
 

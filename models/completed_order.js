@@ -32,5 +32,5 @@ const completedOrderSchema = new Schema({
   },
 }, { timestamps: true });
 
-const CompletedOrder = mongoose.model('CompletedOrder', completedOrderSchema);
+const CompletedOrder = mongoose.model('Completed Order', completedOrderSchema);
 module.exports = CompletedOrder;

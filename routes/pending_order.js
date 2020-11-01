@@ -35,6 +35,7 @@ router.post('/add-orders', async (req, res) => {
     } catch (e) {
       console.log(e);
       res.status(400).send(`${JSON.stringify(e)}`);
+      return;
     }
   }
   res.send('successfully added orders');

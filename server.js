@@ -19,7 +19,7 @@ dotenv.config();
 const dbURI = process.env.MONGO_URL;
 const port = process.env.SERVER_PORT || 5000;
 
-// app.use(express.json());
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/business', business);
 app.use('/driver', driver);

@@ -14,12 +14,15 @@ export const EditBusiness = (props) => {
     <React.Fragment>
       <div className={style.container}>
         <div className={style.storeName}>
-          Your store name
+          Enter your store's information:
         </div>
         <div className={style.buttonContainer}>
-          <Button className={style.firstButton} variant="contained">Schedule Delivery</Button>
-          <Button className={style.firstButton} variant="contained">Order History</Button>
-          <Button variant="contained">My store</Button>
+          <Button className={style.firstButton} variant="contained">Address</Button>
+          <Button className={style.firstButton} variant="contained">Phone</Button>
+        </div>
+        <div>
+          <Button className={style.saveButton} variant="contained">Save</Button>
+          
         </div>
       </div>
     </React.Fragment>

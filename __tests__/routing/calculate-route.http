@@ -1,0 +1,4 @@
+POST http://localhost:5000/routing/computeRoute
+Content-Type: application/json
+
+{"addresses" : ["address1","address2"]}

@@ -53,8 +53,9 @@ router.post('/delete-order', ((req, res) => {
 // @params
 // ownerEmail: String
 // @payload
-// businessID
-router.get('/my-businessID', (req, res) => {
+// businessID: ID
+// newUser: boolean
+router.get('/sign-in', (req, res) => {
   if (!req.body.hasOwnProperty('ownerEmail')) {
     res.status(400).send('Missing ownerEmail');
   }
@@ -63,18 +64,15 @@ router.get('/my-businessID', (req, res) => {
       console.log(JSON.stringify(owner));
       Business.findOne({ owners: { $in: owner._id } })
         .then((business) => {
-          console.log(JSON.stringify(business));
-          console.log(business._id);
-          res.send(business._id);
+          res.send({ businessID: business._id, newUser: false });
         })
         .catch((err) => {
           console.log(err);
           res.status(404).send(`Owner ${owner._id} does not belong to any business`);
         });
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(404).send(`${req.body.owner_email} not found`);
+    .catch(() => {
+      res.send({ businessID: undefined, newUser: true });
     });
 });
 

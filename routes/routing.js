@@ -28,7 +28,7 @@ router.post('/computeRoute', (req, res) => {
         console.log(`stdout: ${data}`);
     });
     ls.stderr.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        console.log(`stderr: ${data}`);
     });
     res.status(200).send('Okay');
 });

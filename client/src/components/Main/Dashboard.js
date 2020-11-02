@@ -20,22 +20,24 @@ const TodaysOrders = (props) => {
     let name =customer_name.current.value;
     let addr = customer_address.current.value;
     let phone = customer_phone.current.value;
+    let order = {
+      address: addr,
+      customer_name:name,
+      customer_phone:phone
+    }
     axios
       .post(`http://localhost:5000/order/add-orders`, {
         business: "5f94ac5610989b2208a9d7a4",
         orders: [
-          {
-            address: {name},
-            customer_name: {addr},
-            customer_phone: {phone},
-          },
+          
+            order
         ],
       })
       .catch(function (error) {
         alert("error");
         alert(JSON.stringify(error));
       });
-    alert("Save Order!");
+    // alert("Save Order!");
   }
 
   function CusInfo(props) {

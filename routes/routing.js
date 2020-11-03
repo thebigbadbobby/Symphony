@@ -1,4 +1,5 @@
 const express = require('express');
+const twilio = require('twilio');
 const { route } = require('./business');
 const router = express.Router();
 
@@ -13,10 +14,17 @@ router.get('/route', (req, res) => {
 
 });
 
+DB->backend->pythonscript->backend->twilio
+
 // @description compute route for drivers
 // @params
+// startLocation : 'starting address'
 // list of address
 // addresses:['pickup1','dropoff1','pickup2','dropoff2'...]
+// req.body.startLocation
+// req.body.addresses
+// A: Search how to create a file using js
+// B: 
 router.post('/computeRoute', (req, res) => {
     if (!req.body.hasOwnProperty('addresses')) {
         res.status(400).send('Missing addresses');

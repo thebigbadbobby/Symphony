@@ -19,7 +19,6 @@ import { makeStyles } from '@material-ui/core/styles';
 //     },
 //   }
 // }));
-
 const drawerWidth = 240;
 export const styles = makeStyles((theme) => ({
   root: {
@@ -39,26 +38,8 @@ export const styles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
   hide: {
     display: 'none',
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
   },
   content: {
     flexGrow: 1,
@@ -75,6 +56,23 @@ export const styles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
+  },
+  signOutButton: {
+    marginLeft: "auto",
+    marginRight: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      flexGrow: 2,
+    },
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+    [theme.breakpoints.down("xs")]: {
+      visibility: 'hidden',
+      fontSize: ".25rem"
+    },
   },
 }));
 

@@ -14,8 +14,6 @@ router.get('/route', (req, res) => {
 
 });
 
-DB->backend->pythonscript->backend->twilio
-
 // @description compute route for drivers
 // @params
 // startLocation : 'starting address'

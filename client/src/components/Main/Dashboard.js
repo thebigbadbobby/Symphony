@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Container,
   Typography,
@@ -9,11 +9,36 @@ import {
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./Dashboard.styles";
+const axios = require("axios").default;
 
 const TodaysOrders = (props) => {
   const style = styles();
-
-  
+  let customer_name = useRef();
+  let customer_address = useRef();
+  let customer_phone = useRef();
+  function SaveOrd() {
+    let name =customer_name.current.value;
+    let addr = customer_address.current.value;
+    let phone = customer_phone.current.value;
+    let order = {
+      address: addr,
+      customer_name:name,
+      customer_phone:phone
+    }
+    axios
+      .post(`http://localhost:5000/order/add-orders`, {
+        business: "5f94ac5610989b2208a9d7a4",
+        orders: [
+          
+            order
+        ],
+      })
+      .catch(function (error) {
+        alert("error");
+        alert(JSON.stringify(error));
+      });
+    // alert("Save Order!");
+  }
 
   function CusInfo(props) {
     return (
@@ -21,6 +46,7 @@ const TodaysOrders = (props) => {
         <Card className={style.root}>
           <CardContent>
             <TextField
+              inputRef={customer_name}
               id="filled-textarea"
               label="Customer Name"
               // placeholder="Placeholder"
@@ -29,6 +55,7 @@ const TodaysOrders = (props) => {
               variant="filled"
             />
             <TextField
+              inputRef={customer_address}
               id="filled-textarea"
               label="Address"
               // placeholder="Placeholder"
@@ -37,6 +64,7 @@ const TodaysOrders = (props) => {
               variant="filled"
             />
             <TextField
+              inputRef={customer_phone}
               id="filled-textarea"
               label="Phone"
               placeholder="(###)###-####"
@@ -69,11 +97,9 @@ const TodaysOrders = (props) => {
           Please enter your customer’s information:
         </Typography>
         <CusInfo />
-        <CusInfo />
-        <CusInfo />
       </Container>
 
-      <Button variant="contained" color="primary" onClick={() => { alert('clicked') }}>
+      <Button variant="contained" color="primary" onClick={SaveOrd}>
         Save Today's Orders
       </Button>
     </React.Fragment>

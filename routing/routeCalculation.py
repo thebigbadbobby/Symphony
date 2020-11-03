@@ -5,7 +5,7 @@ import json
 import requests
 import time
 
-API_KEY = "5b3ce3597851110001cf62485277a934bcd74a1c90f6d634fddfaec6"
+API_KEY = ""
 
 
 # load destination data for today's deliveries
@@ -27,14 +27,21 @@ def request_distance_data(locations):
         
         #send request
         r = requests.get(template + text)
-        print("test: status code is " + str(r.status_code))
+        # print("test: status code is " + str(r.status_code))
 
         # read results
         respondJson = json.loads(r.text)
 
+        # print(address)
+
         # we are picking the first result when there's mulitple search result
         # need to improve in future
-        return respondJson['features'][0]["geometry"]["coordinates"]
+        # print(json.dumps(respondJson['features']))
+        try:
+            return respondJson['features'][0]["geometry"]["coordinates"]
+        except:
+            print(template+text)
+            exit(1)
     
     def get_travel_time(geocodeList):
         # prepare request
@@ -52,7 +59,9 @@ def request_distance_data(locations):
             return 10000000 
         #read results
         respondJson = json.loads(r.text) #XXX read the matrix
+        
         # print(json.dumps(respondJson))
+        
         if(respondJson): #XXX need to change how we read from the response. we want "durations" to be saved in a matrix? refer to docs
             return respondJson['durations'] #XXX may need fixing!\
         else:
@@ -61,7 +70,13 @@ def request_distance_data(locations):
 
     print("requesting geocodes...")
     geocodeList = []
-    for location in locations: #XXX fixed to now create a string of all locations
+
+    # calculate all driver geocodes
+    for location in locations['startLocation']:
+        geocodeList.append(get_geocode(location))
+
+    # calculate all PoI geocodes
+    for location in locations['addressPairs']: #XXX fixed to now create a string of all locations
         geocodeList.append(get_geocode(location['pick-up-location'])) #XXX calling get_geocode function
         geocodeList.append(get_geocode(location['drop-off-location']))
 
@@ -70,22 +85,18 @@ def request_distance_data(locations):
     # construct pickups-deliveries table
     data['pickups_deliveries'] = []
 
-    for i in range(0,len(geocodeList),2):
+    for i in range(1,len(geocodeList),2):
         data['pickups_deliveries'] .append([i,i+1])
     
     print("requesting distances...")
     # construct adjacency matrix
     data['distance_matrix'] = []
     data['distance_matrix'] = (get_travel_time(geocodeList)) #XXX calling get travel time, needs to input matrix
-    #for geocode1 in geocodeList: #XXX double loop to create matrix of all times traveled. Instead do one single call of a double matrix
-        #XXX data['distance_matrix'].append([])
-        #for geocode2 in geocodeList:
 
-            #time.sleep(1.5) # open route service has a 40 time/min request cap #XXX can be fixed when using matrices
 
     data['num_vehicles'] = 1
     data['depot'] = 0
-
+    # print('cp')
     return data
 
 
@@ -111,6 +122,7 @@ def print_solution(data, manager, routing, solution):
 
 def main():
     with open("cred.json") as file:
+        global API_KEY
         API_KEY = json.load(file)['API_KEY']
     
     destinationlist = get_destination_list()
@@ -119,10 +131,10 @@ def main():
     #with open('temp.json') as file:
     #    data = json.load(file)
 
-    # print(json.dumps(data))
+    print(json.dumps(data))
     # exit()
 
-     # Create the routing index manager.
+    # Create the routing index manager.
     manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
                                            data['num_vehicles'], data['depot'])
 
@@ -135,8 +147,11 @@ def main():
         # Convert from routing variable Index to distance matrix NodeIndex.
         from_node = manager.IndexToNode(from_index)
         to_node = manager.IndexToNode(to_index)
-        # return data['distance_matrix'][from_node][to_node]
-        return data['distance_matrix'][from_index][to_index]
+        try:
+            return data['distance_matrix'][from_node][to_node]
+        except:
+            print(from_node)
+            exit(1)
 
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)

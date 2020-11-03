@@ -8,10 +8,10 @@ import {
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import styles from "./Dashboard.styles";
+import styles from "./TodaysOrders.styles";
 const axios = require("axios").default;
 
-const TodaysOrders = (props) => {
+export const TodaysOrders = (props) => {
   const style = styles();
   let customer_name = useRef();
   let customer_address = useRef();
@@ -102,17 +102,6 @@ const TodaysOrders = (props) => {
       <Button variant="contained" color="primary" onClick={SaveOrd}>
         Save Today's Orders
       </Button>
-    </React.Fragment>
-  );
-};
-
-export const Dashboard = (props) => {
-  return (
-    <React.Fragment>
-      {/* <Container component="div" maxWidth="lg"> */}
-      <TodaysOrders />
-
-      {/* </Container> */}
     </React.Fragment>
   );
 };

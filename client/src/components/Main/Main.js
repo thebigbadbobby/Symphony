@@ -45,7 +45,7 @@ export const Main = (props) => {
   return (
       <React.Fragment>
         <AppBar
-            position="fixed"
+            position="static"
             className={clsx(style.appBar, {
               [style.appBarShift]: open,
             })}
@@ -63,22 +63,21 @@ export const Main = (props) => {
             <Typography variant="h6" noWrap>
               Kahzum Same Day
             </Typography>
-            <LogIn
-                className={style.signOutButton}
-                isSignedIn={props.isSignedIn}
-                handleSignOut={props.signOut}
-            />
+            <div className={style.signOutButton}>
+              <LogIn
+                  isSignedIn={props.isSignedIn}
+                  handleSignOut={props.signOut}
+              />
+            </div>
+ 
           </Toolbar>
         </AppBar>
-        <Drawer handleDrawerClose={handleDrawerClose} changePage = {changePage} open={open}/>
-        <main
-            className={clsx(style.content, {
+        <Drawer handleDrawerClose={handleDrawerClose} changePage={changePage} open={open}/>
+        <div className={clsx(style.content, {
               [style.contentShift]: open,
-            })}
-        >
-          <div className={style.drawerHeader} />
-          {renderSwitch()}
-        </main>
+            })}>
+        {renderSwitch()}
+        </div>
       </React.Fragment>
   );
 }

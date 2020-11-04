@@ -34,14 +34,13 @@ export const Drawer = (props) => {
     ];
     return (<React.Fragment>
         <MUIDrawer
-            className={style.drawer}
-            variant="persistent"
+            variant="temporary"
             anchor="left"
             open={open}
-            style={{
-                paper: style.drawerPaper,
-            }}
+            onClose={props.handleDrawerClose}
         >
+            <div className={style.drawer}>
+
             <div className={style.drawerHeader}>
                 <IconButton onClick={handleDrawerClose}>
                     <ChevronLeftIcon />
@@ -59,6 +58,8 @@ export const Drawer = (props) => {
                     );
                 })}
             </List>
+            </div>
+
         </MUIDrawer>
     </React.Fragment>)
 }

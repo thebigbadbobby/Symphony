@@ -4,16 +4,20 @@
   "description": "Starter kit for creating React and Express apps",
   "main": "server.js",
   "scripts": {
+    "update": "npm install && cd client && npm install",
     "client-install": "cd client && npm install",
     "client-test": "cd client && npm run test",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "twilio-webhook": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://localhost:5000/twilio/sms\"",
+    "twilio-webhook": "twilio phone-numbers:update \"+14085210010\n\" --sms-url=\"http://localhost:5000/twilio/sms\"",
     "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run twilio-webhook\"",
     "kill": "killall node",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "twilio-prod": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://34.215.193.17/twilio/sms\"",
+    "docker": "docker-compose up -d",
+    "prod": "concurrently \"npm run server\" \"npm run twilio-prod\""
   },
   "author": "Kahzum",
   "license": "MIT",

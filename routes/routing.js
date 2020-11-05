@@ -47,7 +47,7 @@ router.post("/computeRoute", (req, res) => {
 
   const spawn = require("child_process").spawn;
   const ls = spawn("python", [
-    "./routing/computeRoute.py",
+    "./routing/routeCalculation.py",
     "./routing/dailyDestinationList/dests.json",
   ]);
 

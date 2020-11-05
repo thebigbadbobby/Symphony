@@ -37,5 +37,11 @@
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.9",
     "twilio": "^3.49.4"
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "ignore": [
+      "/routing/dailyDestinationList/*.json"
+    ]
   }
 }

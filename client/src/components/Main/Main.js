@@ -1,20 +1,21 @@
-import React, { useState } from "react";
-import styles from "./Main.styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import { LogIn } from "../LogIn/LogIn";
-import { Drawer } from "./Drawer";
+import React, {useState} from 'react';
+import clsx from 'clsx';
+import {Drawer} from './Drawer';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 import { TodaysOrders } from "./pages/TodaysOrders"
 import { OrderHistory } from "./pages/OrderHistory"
 import { StoreSettings } from "./pages/StoreSettings"
+import { LogIn } from "../LogIn/LogIn";
+import styles from "./Main.styles";
 
 export const Main = (props) => {
   const style = styles();
+  const [open, setOpen] = React.useState(false);
 
-  let [sidebarState, setSidebarState] = useState(false);
   let [pageState, setPageState] = useState('today\'s-orders');
 
   const changePage = (page) => {
@@ -33,43 +34,50 @@ export const Main = (props) => {
         return <OrderHistory />
     }
   }
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <React.Fragment>
-      <AppBar position="static" color="inherit">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            className={style.menuButton}
-            color="inherit"
-            aria-label="menu"
-            onClick={ () => setSidebarState(!sidebarState) }
-          >
-            {sidebarState
-                ?       <Drawer changePage = {changePage}/>
-                : null
-            }
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" className={style.title}>
-            Kahzum Same Day
-          </Typography>
-          <LogIn
-            className={style.signOutButton}
-            isSignedIn={props.isSignedIn}
-            handleSignOut={props.signOut}
-          />
-        </Toolbar>
-      </AppBar>
-      {/* <Container
-        component="div"
-        maxWidth="lg"
-        className={style.signInContainer}
-      >
-        Main Works!
-        
-      </Container> */}
-      {renderSwitch()}
-    </React.Fragment>
-    
+      <React.Fragment>
+        <AppBar
+            position="static"
+            className={style.appBar}
+        >
+          <Toolbar>
+            <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                className={clsx(style.menuButton, open && style.hide)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              Kahzum Same Day
+            </Typography>
+            <div className={style.signOutButton}>
+              <LogIn
+                  isSignedIn={props.isSignedIn}
+                  handleSignOut={props.signOut}
+              />
+            </div>
+ 
+          </Toolbar>
+        </AppBar>
+        <Drawer handleDrawerClose={handleDrawerClose} changePage={changePage} open={open}/>
+        <div className={clsx(style.content, {
+              [style.contentShift]: open,
+            })}>
+        {renderSwitch()}
+        </div>
+      </React.Fragment>
   );
-};
+}
+
+

@@ -1,68 +1,65 @@
-import React from "react";
-import {
-  Drawer as MUIDrawer,
-  ListItem,
-  List,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import React from 'react';
+import {Drawer as MUIDrawer }from '@material-ui/core';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import IconButton from "@material-ui/core/IconButton";
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import StorefrontIcon from '@material-ui/icons/Storefront';
 import HistoryIcon from '@material-ui/icons/History';
 import SettingsIcon from '@material-ui/icons/Settings';
-
-const useStyles = makeStyles({
-  drawer: {
-    width: "210px",
-  }
-});
-
-
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import styles from "./Drawer.styles";
 
 export const Drawer = (props) => {
-  const { changePage } = props;
-  const classes = useStyles();
-  const itemsList = [
-    {
-      text: "Today's Orders",
-      icon: <StorefrontIcon />,
-      onClick: () => changePage("today's-orders")
-    },
-    {
-      text: "Order History",
-      icon: <HistoryIcon />,
-      onClick: () => changePage("order-history")
-    },
-    {
-      text: "Store Settings",
-      icon: <SettingsIcon />,
-      onClick: () => changePage("store-settings")
-    }
-  ];
+    const {changePage, handleDrawerClose, open} = props
+    const style = styles()
+    const itemsList = [
+        {
+            text: "Today's Orders",
+            icon: <StorefrontIcon />,
+            onClick: () => changePage("today's-orders")
+        },
+        {
+            text: "Order History",
+            icon: <HistoryIcon />,
+            onClick: () => changePage("order-history")
+        },
+        {
+            text: "Store Settings",
+            icon: <SettingsIcon />,
+            onClick: () => changePage("store-settings")
+        }
+    ];
+    return (<React.Fragment>
+        <MUIDrawer
+            variant="temporary"
+            anchor="left"
+            open={open}
+            onClose={props.handleDrawerClose}
+        >
+            <div className={style.drawer}>
 
-  // const toggleDrawer = (open) => (event) => {
-  //   if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-  //     return;
-  //   }
-  //
-  //   setDrawerOpen(open);
-  // };
+            <div className={style.drawerHeader}>
+                <IconButton onClick={handleDrawerClose}>
+                    <ChevronLeftIcon />
+                </IconButton>
+            </div>
+            <Divider />
+            <List>
+                {itemsList.map((item, index) => {
+                    const { text, icon, onClick } = item;
+                    return (
+                        <ListItem button key={text} onClick={onClick}>
+                            {icon && <ListItemIcon>{icon}</ListItemIcon>}
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    );
+                })}
+            </List>
+            </div>
 
-  return (
-      <React.Fragment>
-        <MUIDrawer variant="permanent" className={classes.drawer}>
-          <List>
-            {itemsList.map((item, index) => {
-              const { text, icon, onClick } = item;
-              return (
-                  <ListItem button key={text} onClick={onClick}>
-                    {icon && <ListItemIcon>{icon}</ListItemIcon>}
-                    <ListItemText primary={text} />
-                  </ListItem>
-              );
-            })}
-          </List>
         </MUIDrawer>
-      </React.Fragment>
-  );
-};
+    </React.Fragment>)
+}

@@ -4,25 +4,26 @@ export const styles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
-
+    position: 'relative',
+    top: '35px',
   },
   storeName: {
     fontWeight: 'bold',
     top: '100px'
   },
-  buttonContainer: {
+  fillinContainer: {
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
+    top: '20px',
     
   },
-  firstButton: {
-    borderWidth: '5px',
-    borderStyle: 'solid',
+  entryFields: {
     fontWeight: 'bold',
     width: '400px',
-    top: '20px',
     display: 'block',
     textAlign: 'left',
+    borderColor: 'black',
   },
   saveButton: {
     borderRadius: '22px/20px', // round sides!!!
@@ -35,7 +36,7 @@ export const styles = makeStyles((theme) => ({
     color: 'white', // give text white color
     display: 'flex',
     margin: 'auto', // center button
-    top: '35px',
+    top: '45px',
   }
 }));
 

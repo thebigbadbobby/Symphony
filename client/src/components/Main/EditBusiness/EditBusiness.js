@@ -10,18 +10,29 @@ export const EditBusiness = (props) => {
   }
   temp();
 
+  function saved(){
+    console.log('saved');
+    //window.location.reload();
+    console.log("Address: " + document.getElementById("address").value);
+    console.log("Phone: " + document.getElementById("phone").value);
+    alert("Saved!");
+  }
+
   return (
     <React.Fragment>
       <div className={style.container}>
         <div className={style.storeName}>
           Enter your store's information:
         </div>
-        <div className={style.buttonContainer}>
-          <Button className={style.firstButton} variant="contained">Address</Button>
-          <Button className={style.firstButton} variant="contained">Phone</Button>
+        <div className={style.fillinContainer}>
+          <label for="address" variant="contained">Company Address</label>
+          <input type="text" id="address" name="add" placeholder="Your companies address..." className={style.entryFields}></input>
+
+          <label for="phone"  variant="contained">Company Phone</label>
+          <input type="text" id="phone" name="pho" placeholder="Your companies address..." className={style.entryFields}></input>
         </div>
         <div>
-          <Button className={style.saveButton} variant="contained">Save</Button>
+          <Button onClick={saved} className={style.saveButton} variant="contained">Save</Button>
           
         </div>
       </div>

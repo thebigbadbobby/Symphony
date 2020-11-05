@@ -46,9 +46,7 @@ export const Main = (props) => {
       <React.Fragment>
         <AppBar
             position="static"
-            className={clsx(style.appBar, {
-              [style.appBarShift]: open,
-            })}
+            className={style.appBar}
         >
           <Toolbar>
             <IconButton

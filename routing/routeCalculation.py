@@ -4,14 +4,15 @@ from ortools.constraint_solver import pywrapcp
 import json
 import requests
 import time
+import sys
 
 API_KEY = ""
 
 
 # load destination data for today's deliveries
 # currently load from a text file
-def get_destination_list():
-    with open("destinationlist.json") as file:
+def get_destination_list(filepath):
+    with open(filepath) as file:
         data = json.load(file)
         return data
 
@@ -53,7 +54,7 @@ def request_distance_data(locations):
         # print(template+start+end)
         #send request
         r = requests.post(template, json = body, headers = headers) #XXX change get to post to work with matrix
-        print("test: status code is " + str(r.status_code))
+        # print("test: status code is " + str(r.status_code))
         if(r.status_code!=200):
             # print(r.text)
             return 10000000 
@@ -120,18 +121,18 @@ def print_solution(data, manager, routing, solution):
     print('Total Distance of all routes: {}m'.format(total_distance))
 
 
-def main():
+def main(argv):
     with open("cred.json") as file:
         global API_KEY
         API_KEY = json.load(file)['API_KEY']
     
-    destinationlist = get_destination_list()
+    destinationlist = get_destination_list(argv[1])
     data = request_distance_data(destinationlist)
 
     #with open('temp.json') as file:
     #    data = json.load(file)
 
-    print(json.dumps(data))
+    # print(json.dumps(data))
     # exit()
 
     # Create the routing index manager.
@@ -194,4 +195,4 @@ def main():
         print_solution(data, manager, routing, solution)
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

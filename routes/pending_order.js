@@ -21,6 +21,7 @@ router.post('/add-orders', async (req, res) => {
   if (!req.body.hasOwnProperty('orders')) {
     res.status(400).send('Missing orders');
   }
+  const orders = [];
   for (let i = 0; i < req.body.orders.length; i += 1) {
     const order = req.body.orders[i];
     const pendingOrder = new PendingOrder({
@@ -31,14 +32,15 @@ router.post('/add-orders', async (req, res) => {
     });
     try {
       // eslint-disable-next-line no-await-in-loop
-      await pendingOrder.save();
+      const saved = await pendingOrder.save();
+      orders.push(saved);
     } catch (e) {
       console.log(e);
       res.status(400).send(`${JSON.stringify(e)}`);
       return;
     }
   }
-  res.send('successfully added orders');
+  res.send(orders);
 });
 
 // @description returns the pending orders for a specific business

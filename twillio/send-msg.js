@@ -9,13 +9,18 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
-const reservedPhoneNumber = process.env.RESERVED_PHONE_NUMBER;
-exports.send_msg = (msg, to) => {
-  client.messages
-    .create({
-      body: msg,
-      from: reservedPhoneNumber,
-      to,
-    })
-    .then((message) => console.log(message.sid));
-};
+const reservedPhoneNumber = process.env.DEV_PHONE_NUMBER;
+exports.sendMsg = (msg, to) => client.messages
+  .create({
+    body: msg,
+    from: reservedPhoneNumber,
+    to,
+  });
+
+exports.sendMediaMsg = (msg, media, to) => client.messages
+  .create({
+    body: msg,
+    from: reservedPhoneNumber,
+    to,
+    mediaUrl: media,
+  });

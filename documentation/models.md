@@ -29,6 +29,8 @@ This file represents the small businesses (the physical entity) in the database.
   - When they want the driver to come and pick up their orders every day.
 - `locality`
   - So we know what drivers are allowed to be assigned there.
+- `cutoffTime`
+  - So we can warn the small business owner what that time is and when they are beyond it (so we can't fullfill it that day)
 
 ## Completed Order
 

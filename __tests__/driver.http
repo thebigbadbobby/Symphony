@@ -7,25 +7,25 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:5000/driver/deliver-order
+POST http://localhost:5000/driver/assign-order
 Content-Type: application/json
 
 {
-  "driver": "5f908e3cb4561c7fb8b9c4b8",
+  "driver": "5fa2f7774964eff6d38da6f0",
   "order": "5f979eeffcb7a34058b5415f"
 }
 
 ###
-GET localhost:5000/driver/5f908e3cb4561c7fb8b9c4b8
+GET http://localhost:5000/driver/5f908e3cb4561c7fb8b9c4b8
 Accept: application/json
 
 ###
-GET localhost:5000/driver/all-drivers
+GET http://localhost:5000/driver/all-drivers
 Accept: application/json
 
 ###
-POST localhost:5000/driver/add-driver
+POST http://localhost:5000/driver/add-driver
 Content-Type: application/json
 
-{ "fullName": "John Smith","phone": "408-435-5532","email": "smith@gmail.com" }
+{ "fullName": "Mason Pierce","phone": "530-401-3190","email": "malapier@ucsc.edu" }
 

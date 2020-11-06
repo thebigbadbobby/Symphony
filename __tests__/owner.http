@@ -6,7 +6,7 @@ GET http://localhost:5000/owner/all-owners
 Accept: application/json
 
 ###
-POST localhost:5000/owner/add-owner
+POST http://localhost:5000/owner/add-owner
 Content-Type: application/json
 
 {"business": "5f94ac5610989b2208a9d7a4",

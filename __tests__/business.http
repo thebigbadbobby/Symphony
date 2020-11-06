@@ -23,9 +23,9 @@ Content-Type: application/json
 {"ownerEmail": "smith2@gmail.com"}
 
 ###
-POST localhost:5000/business/add-business
+POST http://localhost:5000/business/add-business
 Content-Type: application/json
 
-{ "businessName": "Sams Cookie", "businessPhone": "408-435-3532", "pickupAddress": "123 great lane", "ownerFullName": "Sam Smith", "ownerEmail": "smith2@gmail.com", "ownerPhone":"909-999-5890" }
+{ "businessName": "Sams Cookie", "businessPhone": "530-401-3190", "pickupAddress": "123 great lane", "ownerFullName": "Sam Smith", "ownerEmail": "smith2@gmail.com", "ownerPhone":"909-999-5890" }
 
 

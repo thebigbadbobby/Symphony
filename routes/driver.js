@@ -10,16 +10,20 @@ const router = express.Router();
 // @params
 // {
 //   driver: id,
-//   order: id
+//   order: id,
+//   imageUrl: string
 // }
 // @payload
 // array of completed order objects
 router.post('/complete-order', async (req, res) => {
-  if (!req.body.hasOwnProperty('driver')) {
+  if (!req.body.driver) {
     res.status(400).send('Missing driver');
   }
   if (!req.body.hasOwnProperty('order')) {
     res.status(400).send('Missing order');
+  }
+  if (!req.body.hasOwnProperty('imageUrl')) {
+    res.status(400).send('Missing image');
   }
   // code is a mess because query and methods are asynchronous
   Driver.findById(req.body.driver, (err, driver) => {
@@ -40,6 +44,7 @@ router.post('/complete-order', async (req, res) => {
             customer_name: pendingOrder.customer_name,
             customer_phone: pendingOrder.customer_phone,
             address: pendingOrder.address,
+            imageUrl: req.body.imageUrl,
           },
         );
         driver.ordersDelivering.splice(index, 1);
@@ -99,8 +104,7 @@ router.post('/complete-order', async (req, res) => {
 //   res.status(404).send('Could not find order inside of driver');
 // }
 
-// @description when driver completes order
-// move a pending order to complete order collection
+// @description Add the order to the driver array
 // @params
 // {
 //   driver: id,
@@ -108,7 +112,7 @@ router.post('/complete-order', async (req, res) => {
 // }
 // @payload
 // array of completed order objects
-router.post('/deliver-order', (req, res) => {
+router.post('/assign-order', (req, res) => {
   if (!req.body.hasOwnProperty('driver')) {
     res.status(400).send('Missing driver');
   }

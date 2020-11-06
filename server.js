@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const driver = require('./routes/driver');
 const business = require('./routes/business');
 const owner = require('./routes/owner');
@@ -10,7 +11,6 @@ const twilio = require('./routes/twilio');
 // const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
-var cors = require('cors');
 app.use(cors());
 
 // connect to mongodb & listen for requests

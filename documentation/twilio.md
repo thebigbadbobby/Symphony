@@ -28,6 +28,16 @@
 
 ## API
 
+`handleDropoff(twilioReq: twilio body, message: twilio message)`
+This function essentially takes in the body of the incoming text request and fetches the driver by their phone number, the business, and the latest order and sends a message and image to the customer, sets the order to completed, then sends a confirmation message to the driver.
+Returns: Boolean representing whether we are in a failure state or a success state.
+
+- Currently handles the following edge cases:
+  - There are no orders
+  - There is no business
+  - There is no driver (prompts them to sign up at kahzum.com)
+  - Generic order failure message for if the complete-order endpoint fails
+
 ## Testing
 
 Currently using `*.http` files to test, may add jest files in the future. These `*.http` files have some "gotchas"

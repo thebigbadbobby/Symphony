@@ -3,11 +3,14 @@
 const express = require('express');
 // const axios = require('axios');
 const axios = require('axios');
-const { sendMediaMsg, sendMsg } = require('../twillio/send-msg');
+const dotenv = require('dotenv');
+const { sendMediaMsg } = require('../twillio/send-msg');
 const Driver = require('../models/driver');
 const Business = require('../models/business');
 const PendingOrder = require('../models/pending_order');
-const app = require('../server');
+
+dotenv.config();
+const port = process.env.SERVER_PORT || 5000;
 
 const router = express.Router();
 
@@ -43,7 +46,7 @@ const formatPhoneNumber = (phoneNumberString) => {
  * @param {Object} twilioReq
  * @returns {boolean}
  */
-const handleDropoff = async (req, res, twilioReq, message, twiml) => {
+const handleDropoff = async (twilioReq, message) => {
   // "Body" is the text, "MediaUrl0" is the image
   const driverPhone = formatPhoneNumber(twilioReq.From);
   const driver = await Driver.findOne({ phone: driverPhone });
@@ -62,36 +65,29 @@ const handleDropoff = async (req, res, twilioReq, message, twiml) => {
     message.body("We couldn't find the business corresponding to that order.");
     return false;
   }
-  console.log(business);
-  console.log(driver);
-  const newReq = { ...req };
   try {
-    newReq.url = '/driver/complete-order';
-    newReq.method = 'POST';
-    newReq.body = {
-      driver: driver._id,
-      order: latestOrder._id,
-      imageUrl,
-    };
-    // console.log(JSON.stringify(req.app));
-    // app._router.handle(newReq, res);
-
-    const completedOrder = await axios.post('http://localhost:5000/driver/complete-order', {
+    await axios.post(`http://localhost:${port}/driver/complete-order`, {
       driver: driver._id,
       order: latestOrder._id,
       imageUrl,
     });
-    console.log('completed order:', completedOrder);
   } catch (error) {
-    console.log('Something went wrong:', error);
+    message.body("We couldn't complete your order for some reason.");
+    return false;
   }
 
   const customerNumber = latestOrder.customer_phone;
   const driverName = driver.fullName;
   const businessName = business.businessName;
   const customerMessage = `Hi, this is ${driverName.split(' ')[0]} from Kahzum! I just dropped off your order from ${businessName}. Thanks for supporting small businesses!`;
+  const deliveredTo = latestOrder.address;
+  const driverMessage = `Confirmed dropoff at ${deliveredTo}`;
 
-  // sendMediaMsg(customerMessage, [twilioReq.MediaUrl0], customerNumber);
+  // send the message to the customer
+  sendMediaMsg(customerMessage, [twilioReq.MediaUrl0], customerNumber);
+
+  // send the message to the driver
+  message.body(driverMessage);
   return true;
 };
 
@@ -107,10 +103,9 @@ router.post('/sms', async (req, res) => {
   }
 
   if (textCompare(body, 'Dropoff')) {
-    console.log('dropoff');
     // if we have an image
     if (req.body.NumMedia !== '0' && req.body.MediaUrl0) {
-      const sent = await handleDropoff(req, res, req.body, message, twiml);
+      const sent = await handleDropoff(req.body, message);
 
       // if the handle dropoff failed, it will return false.
       if (!sent) {

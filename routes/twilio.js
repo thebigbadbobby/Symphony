@@ -1,7 +1,6 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable dot-notation */
 const express = require('express');
-// const axios = require('axios');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const { sendMediaMsg } = require('../twillio/send-msg');

@@ -1,13 +1,11 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable dot-notation */
 const express = require('express');
-// const axios = require('axios');
 const axios = require('axios');
 const { sendMediaMsg, sendMsg } = require('../twillio/send-msg');
 const Driver = require('../models/driver');
 const Business = require('../models/business');
 const PendingOrder = require('../models/pending_order');
-const app = require('../server');
 
 const router = express.Router();
 

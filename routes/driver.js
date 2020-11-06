@@ -44,6 +44,7 @@ router.post('/complete-order', async (req, res) => {
             customer_name: pendingOrder.customer_name,
             customer_phone: pendingOrder.customer_phone,
             address: pendingOrder.address,
+            imageUrl: req.body.imageUrl,
           },
         );
         driver.ordersDelivering.splice(index, 1);

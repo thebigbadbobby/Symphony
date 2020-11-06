@@ -2,6 +2,7 @@
 /* eslint-disable dot-notation */
 const express = require('express');
 // const axios = require('axios');
+const axios = require('axios');
 const { sendMediaMsg, sendMsg } = require('../twillio/send-msg');
 const Driver = require('../models/driver');
 const Business = require('../models/business');
@@ -72,13 +73,15 @@ const handleDropoff = async (req, res, twilioReq, message, twiml) => {
       order: latestOrder._id,
       imageUrl,
     };
-    app._router.handle(newReq, res);
-    // const completedOrder = await axios.post('/driver/complete-order', {
-    //   driver: driver._id,
-    //   order: latestOrder._id,
-    //   imageUrl,
-    // });
-    // console.log('completed order:', completedOrder);
+    // console.log(JSON.stringify(req.app));
+    // app._router.handle(newReq, res);
+
+    const completedOrder = await axios.post('http://localhost:5000/driver/complete-order', {
+      driver: driver._id,
+      order: latestOrder._id,
+      imageUrl,
+    });
+    console.log('completed order:', completedOrder);
   } catch (error) {
     console.log('Something went wrong:', error);
   }

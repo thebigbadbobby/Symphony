@@ -42,4 +42,3 @@ app.listen(port, () => `Server running on port ${port}`);
 // app.get('/api/drivers', (req, res) => {
 //   res.json(customers);
 // });
-module.exports = app;

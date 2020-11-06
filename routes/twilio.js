@@ -3,7 +3,7 @@
 const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
-const { sendMediaMsg } = require('../twillio/send-msg');
+const { sendMediaMsg, formatPhoneNumber, textCompare } = require('../twilio/helpers');
 const Driver = require('../models/driver');
 const Business = require('../models/business');
 const PendingOrder = require('../models/pending_order');
@@ -13,33 +13,6 @@ const port = process.env.SERVER_PORT || 5000;
 
 const router = express.Router();
 
-/**
- * @description Function that takes out anything that isn't a char or number,
- * converts to lowercase, and compares the numbers
- * @param {string} message
- * @param {string} messageToCompareTo
- * @returns {boolean}
- */
-const textCompare = (message, messageToCompareTo) => {
-  const cleanedMessage = message.toLowerCase().replace(/[^a-z0-9]/gi, '');
-  const cleanedCompare = messageToCompareTo.toLowerCase().replace(/[^a-z0-9]/gi, '');
-  return cleanedMessage.includes(cleanedCompare);
-};
-
-/**
- * @description takes in a number in the format +12345567890 and prints it in our desired format
- * @param {string} phoneNumberString
- * @returns {string | null}
- */
-const formatPhoneNumber = (phoneNumberString) => {
-  const cleaned = (`${phoneNumberString}`).replace(/\D/g, '');
-  const match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
-  if (match) {
-    // var intlCode = (match[1] ? '+1 ' : '')
-    return [match[2], '-', match[3], '-', match[4]].join('');
-  }
-  return null;
-};
 /**
  * @description Handles marking the order as completed and texting the customer
  * @param {Object} twilioReq
@@ -90,6 +63,13 @@ const handleDropoff = async (twilioReq, message) => {
   return true;
 };
 
+/**
+ * @description The initial endpoint called by twilio's servers whenever a
+ * text comes in to one of our numbers
+ * @param {Object} req - the request
+ * @param {Object} res - the response object
+ * @returns {HTTPResponse}
+ */
 router.post('/sms', async (req, res) => {
   const { MessagingResponse } = require('twilio').twiml;
   const twiml = new MessagingResponse();

@@ -1,0 +1,4 @@
+POST http://localhost:5000/routing/saveRoutingOutput
+Content-Type: application/json
+
+{"routes": [{"driverId":"5fa4a4a61321c028c5b72ede","stop_ids": [0, 1, 3, 4, 2], "route": ["10101010101010 Fair st, Santa Cruz, CA", "435 Front St, Santa Cruz, CA 95060", "1148 soquel ave, Santa Cruz, CA 95062", "183 chestnut st, Santa Cruz, CA 95060", "710 College Ten Rd, Santa Cruz, CA 95064"], "routeTime": 2054}], "total_time": 2054}

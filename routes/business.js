@@ -55,9 +55,10 @@ router.post('/delete-order', ((req, res) => {
 // @payload
 // businessID: ID
 // newUser: boolean
-router.get('/sign-in', (req, res) => {
+router.post('/sign-in', (req, res) => {
   if (!req.body.hasOwnProperty('ownerEmail')) {
     res.status(400).send('Missing ownerEmail');
+    return;
   }
   Owner.findOne({ email: req.body.ownerEmail })
     .then((owner) => {

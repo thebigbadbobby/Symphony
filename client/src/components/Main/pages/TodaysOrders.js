@@ -13,6 +13,8 @@ const axios = require("axios").default;
 
 export const TodaysOrders = (props) => {
   const style = styles();
+  const business = React.useContext(globalStateContext);
+  console.log('hi', business)
   let customer_name = useRef();
   let customer_address = useRef();
   let customer_phone = useRef();
@@ -27,9 +29,8 @@ export const TodaysOrders = (props) => {
     }
     axios
       .post(`http://localhost:5000/order/add-orders`, {
-        business: "5f94ac5610989b2208a9d7a4",
+        business,
         orders: [
-          
             order
         ],
       })
@@ -80,28 +81,30 @@ export const TodaysOrders = (props) => {
 
   return (
     <React.Fragment>
-      <CssBaseline />
-      <Container component="div" maxWidth="lg">
-        <Typography className={style.header} variant="h4">
-          Today's Orders
-        </Typography>
-        <Typography className={style.header} variant="subtitle2">
-          Your scheduled pickup time is 12am
-          <br />
-          Your customers can expect their order by 1am
-          <br />
-          Enter orders below before 11pm to ensure that we send a driver to pick
-          it up.
-        </Typography>
-        <Typography className={style.header} variant="h6">
-          Please enter your customer’s information:
-        </Typography>
-        <CusInfo />
-      </Container>
+      <businessIDContext.Consumer>
+        <CssBaseline />
+        <Container component="div" maxWidth="lg">
+          <Typography className={style.header} variant="h4">
+            Today's Orders
+          </Typography>
+          <Typography className={style.header} variant="subtitle2">
+            Your scheduled pickup time is 12am
+            <br />
+            Your customers can expect their order by 1am
+            <br />
+            Enter orders below before 11pm to ensure that we send a driver to pick
+            it up.
+          </Typography>
+          <Typography className={style.header} variant="h6">
+            Please enter your customer’s information:
+          </Typography>
+          <CusInfo />
+        </Container>
 
-      <Button variant="contained" color="primary" onClick={SaveOrd}>
-        Save Today's Orders
-      </Button>
+        <Button variant="contained" color="primary" onClick={SaveOrd}>
+          Save Today's Orders
+        </Button>
+      </businessIDContext.Consumer>
     </React.Fragment>
   );
 };

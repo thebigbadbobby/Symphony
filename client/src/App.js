@@ -9,7 +9,7 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import styles from "./App.styles";
 import logo from "./assets/mint-stacked.svg";
 import { Loading } from "./components/Loading/Loading";
-
+import axios from 'axios'
 
 const Copyright = () => {
   const style = styles();
@@ -37,7 +37,9 @@ export default function App() {
   let [auth, setAuth] = useState(undefined);
   let [user, setUser] = useState(undefined);
   let [loading, setLoading] = useState(true);
-
+  let [businessID, setBusinessID] = useState(undefined)
+  // creats a global state for all components
+  const globalBusinessID = React.createContext(businessID);
   const style = styles();
 
   /** Create a theme */
@@ -79,6 +81,24 @@ export default function App() {
       handleAuthChange();
     }
   }, [auth])
+
+  /** Calls sign in when user changes */
+  useEffect(() => {
+    if(user){
+      let email = user.tt.$t
+      axios.post('/business/sign-in',
+          {"ownerEmail": email})
+          .then(res => {
+            console.log(res);
+            console.log(res.data);
+            setBusinessID(res.data.businessID)
+          })
+          .catch(function (error) {
+            alert("error");
+            alert(JSON.stringify(error));
+          });
+    }
+  }, [user])
 
   /** Handles auth changes (in sign in status) */
   const handleAuthChange = () => {
@@ -128,12 +148,14 @@ export default function App() {
       ) : (
         <ThemeProvider theme={theme}>
           {signedIn ? (
-            <Main
-              isSignedIn={signedIn}
-              user={user}
-              auth={auth}
-              signOut={handleSignOut}
-            />
+              <globalStateContext.Provider value={globalBusinessID}>
+                <Main
+                  isSignedIn={signedIn}
+                  user={user}
+                  auth={auth}
+                  signOut={handleSignOut}
+                />
+              </globalStateContext.Provider>
           ) : (
             <Container
               component="div"

@@ -1,0 +1,18 @@
+GET http://localhost:5000/owner/5f952b0ceb639a09f055fa1c
+Accept: application/json
+
+###
+GET http://localhost:5000/owner/all-owners
+Accept: application/json
+
+###
+POST http://localhost:5000/owner/add-owner
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4",
+  "owner": {
+    "email": "bob1234@gmail.com",
+    "fullName": "Bob Goldman",
+    "phone": "435-343-3243"
+  }}
+

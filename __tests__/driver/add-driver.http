@@ -1,5 +1,0 @@
-POST localhost:5000/driver/add-driver
-Content-Type: application/json
-
-{ "fullName": "John Smith","phone": "408-435-5532","email": "smith@gmail.com" }
-

@@ -1,0 +1,31 @@
+GET http://localhost:5000/business/completed-orders
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4"}
+
+###
+
+POST http://localhost:5000/business/delete-order
+Content-Type: application/json
+
+{"business": "5f94ac5610989b2208a9d7a4", "order": "5f9a2247176e8a97179bf978"}
+
+###
+PATCH http://localhost:5000/business/update-business
+Content-Type: application/json
+
+{ "business": "5f94ac5610989b2208a9d7a4", "businessName": "Daniel's Cookies"}
+
+###
+GET http://localhost:5000/business/sign-in
+Content-Type: application/json
+
+{"ownerEmail": "smith2@gmail.com"}
+
+###
+POST http://localhost:5000/business/add-business
+Content-Type: application/json
+
+{ "businessName": "Sams Cookie", "businessPhone": "530-401-3190", "pickupAddress": "123 great lane", "ownerFullName": "Sam Smith", "ownerEmail": "smith2@gmail.com", "ownerPhone":"909-999-5890" }
+
+

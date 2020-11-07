@@ -1,32 +1,78 @@
 const express = require('express');
 const Business = require('../models/business');
 const Owner = require('../models/owner');
+const PendingOrder = require('../models/pending_order');
+const CompletedOrder = require('../models/completed_order');
 
 const router = express.Router();
 
+// @description gets a business's completed order history
+// @params
+// {
+//   business: id,
+// }
+// @payload
+// array of completed order objects
+router.get('/completed-orders', (req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  }
+  CompletedOrder.find({ business: req.body.business }, (err, docs) => {
+    if (err) {
+      console.log(err);
+      res.status(404).send('Could not find business');
+    }
+    res.send(JSON.stringify(docs));
+  });
+});
+
+// @description deletes a business's order
+// @params
+// {
+//   business: id,
+//   order: id
+// }
+// @payload
+// Return success message
+router.post('/delete-order', ((req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  } if (!req.body.hasOwnProperty('order')) {
+    res.status(400).send('Missing order');
+  }
+  PendingOrder.deleteOne({ _id: req.body.order, business: req.body.business }, (err) => {
+    if (err) {
+      res.status(404).send('Could not find order');
+    }
+    // deleted at most one pendingOrder document
+  });
+  res.send('Success deleted order');
+}));
+
 // @description finds owners business
 // @params
-// owner_email: String
+// ownerEmail: String
 // @payload
-// businessID
-router.get('/my-businessID', (req, res) => {
-  if (!req.body.hasOwnProperty('owner_email')) {
-    res.status(400).send('Missing owner_email');
+// businessID: ID
+// newUser: boolean
+router.get('/sign-in', (req, res) => {
+  if (!req.body.hasOwnProperty('ownerEmail')) {
+    res.status(400).send('Missing ownerEmail');
   }
-  Owner.find({ email: req.body.owner_email })
+  Owner.findOne({ email: req.body.ownerEmail })
     .then((owner) => {
-      Business.find({ owners: { $in: owner._id } })
+      console.log(JSON.stringify(owner));
+      Business.findOne({ owners: { $in: owner._id } })
         .then((business) => {
-          res.send(business._id);
+          res.send({ businessID: business._id, newUser: false });
         })
         .catch((err) => {
           console.log(err);
           res.status(404).send(`Owner ${owner._id} does not belong to any business`);
         });
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(404).send(`${req.body.owner_email} not found`);
+    .catch(() => {
+      res.send({ businessID: undefined, newUser: true });
     });
 });
 
@@ -82,6 +128,39 @@ router.post('/add-business', (req, res) => {
   }).catch((err) => {
     console.log(err);
   });
+});
+
+// @description updates information about the business
+// @params
+// {
+//   business: 'businessID',
+//   businessPhone: 'String' (optional property),
+//   pickupAddress: 'String' (optional property),
+//   businessName: 'String' (optional property),
+// }
+// owner_email: String
+// @payload
+// success message
+router.patch('/update-business', async (req, res) => {
+  if (!req.body.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+  }
+  try {
+    const business = await Business.findOne({ _id: req.body.business });
+    if (req.body.businessPhone) {
+      business.businessPhone = req.body.businessPhone;
+    }
+    if (req.body.pickupAddress) {
+      business.pickupAddress = req.body.pickupAddress;
+    }
+    if (req.body.businessName) {
+      business.businessName = req.body.businessName;
+    }
+    business.save();
+    res.send('Updated business');
+  } catch (e) {
+    res.status(404).send(JSON.stringify(e));
+  }
 });
 
 module.exports = router;

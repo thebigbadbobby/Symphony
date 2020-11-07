@@ -27,5 +27,5 @@ const pendingOrderSchema = new Schema({
   },
 }, { timestamps: true });
 
-const PendingOrder = mongoose.model('PendingOrder', pendingOrderSchema);
+const PendingOrder = mongoose.model('Pending Order', pendingOrderSchema);
 module.exports = PendingOrder;

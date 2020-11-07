@@ -111,7 +111,7 @@ def print_solution(data, manager, routing, solution):
     total_distance = 0
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
-        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id)
+        plan_output = 'Route for vehicle {}:\n'.format(vehicle_ids[0])
         route_distance = 0
         while not routing.IsEnd(index):
             plan_output += ' {} -> '.format(manager.IndexToNode(index))
@@ -126,7 +126,7 @@ def print_solution(data, manager, routing, solution):
     print('Total Distance of all routes: {}m'.format(total_distance))
 
 
-def get_solution_obj(data, manager, routing, solution, addresses):
+def get_solution_obj(data, manager, routing, solution, addresses, driverId):
     """Prints solution to stdout in a better way"""
     solutionObj = {"routes": []}
     total_time = 0
@@ -135,7 +135,7 @@ def get_solution_obj(data, manager, routing, solution, addresses):
         index = routing.Start(vehicle_id)
         solutionObj["routes"].append({})
         solutionObj["routes"][vehicle_id] = {}
-
+        solutionObj["routes"][vehicle_id]["driverId"] = driverId
         route_time = 0
         stop_ids = []
         stops = []
@@ -159,9 +159,9 @@ def get_solution_obj(data, manager, routing, solution, addresses):
 
 def saveSolutionToDB(solutionObj):
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
-    r = requests.post(url = URL, params = solutionObj)
-    print(r.status_code)
-    print(json.dumps(r.json()))
+    r = requests.post(url = URL, json = solutionObj)
+    print('server responde', r.status_code)
+    # print(r.text)
 
 def main(argv):
     with open("cred.json") as file:
@@ -169,8 +169,9 @@ def main(argv):
         API_KEY = json.load(file)['API_KEY']
 
     addresses = []
-
     destinationlist = get_destination_list(argv[1])
+
+    driverIds = destinationlist['driverIds']
 
     for location in destinationlist['startLocation']:
         addresses.append(location)
@@ -243,7 +244,7 @@ def main(argv):
     if solution:
         # print("cp")
         # print_solution(data, manager, routing, solution)
-        solutionObj = get_solution_obj(data, manager, routing, solution, addresses)
+        solutionObj = get_solution_obj(data, manager, routing, solution, addresses,driverIds)
         print(json.dumps(solutionObj))
         saveSolutionToDB(solutionObj);
 

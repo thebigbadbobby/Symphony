@@ -39,7 +39,6 @@ export default function App() {
   let [loading, setLoading] = useState(true);
   let [businessID, setBusinessID] = useState(undefined)
   // creats a global state for all components
-  const globalBusinessID = React.createContext(businessID);
   const style = styles();
 
   /** Create a theme */
@@ -89,8 +88,6 @@ export default function App() {
       axios.post('/business/sign-in',
           {"ownerEmail": email})
           .then(res => {
-            console.log(res);
-            console.log(res.data);
             setBusinessID(res.data.businessID)
           })
           .catch(function (error) {
@@ -148,14 +145,13 @@ export default function App() {
       ) : (
         <ThemeProvider theme={theme}>
           {signedIn ? (
-              <globalStateContext.Provider value={globalBusinessID}>
                 <Main
                   isSignedIn={signedIn}
                   user={user}
                   auth={auth}
                   signOut={handleSignOut}
+                  business={businessID}
                 />
-              </globalStateContext.Provider>
           ) : (
             <Container
               component="div"

@@ -10,11 +10,9 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./TodaysOrders.styles";
 const axios = require("axios").default;
-
 export const TodaysOrders = (props) => {
   const style = styles();
-  const business = React.useContext(globalStateContext);
-  console.log('hi', business)
+  const { business } = props
   let customer_name = useRef();
   let customer_address = useRef();
   let customer_phone = useRef();
@@ -81,7 +79,6 @@ export const TodaysOrders = (props) => {
 
   return (
     <React.Fragment>
-      <businessIDContext.Consumer>
         <CssBaseline />
         <Container component="div" maxWidth="lg">
           <Typography className={style.header} variant="h4">
@@ -104,7 +101,6 @@ export const TodaysOrders = (props) => {
         <Button variant="contained" color="primary" onClick={SaveOrd}>
           Save Today's Orders
         </Button>
-      </businessIDContext.Consumer>
     </React.Fragment>
   );
 };

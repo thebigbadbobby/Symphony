@@ -29,7 +29,7 @@ router.post("/computeRoute", (req, res) => {
     res.status(400).send("Missing addressPairs");
   }
 
-  if (!req.body.hasOwnProperty("driverIDs")) {
+  if (!req.body.hasOwnProperty("driverIds")) {
     res.status(400).send("Missing driverIDs");
   }
 
@@ -67,8 +67,6 @@ router.post("/computeRoute", (req, res) => {
   res.status(200).send("Okay");
 });
 
-
-
 // @description this Api call is specifically for the python script when it 
 // sends the result back after computation is done (which could take awhile)
 // @params
@@ -77,6 +75,12 @@ router.post("/computeRoute", (req, res) => {
 // Driver Ids and startLocation need to be 1 to 1 corresponding. (At their own index)
 // req.body.addressPairs -> list of strings, eg. ['pickup1','dropoff1','pickup2','dropoff2'...]
 router.post('/saveRoutingOutput', (req, res) => {
+  
+  if (!req.body.hasOwnProperty('routes')) {
+    res.status(400).send('Missing routes');
+  }
+  // console.log('serverside log');
+  // console.log(req.body);
   const personalRoutes = [];
   req.body.routes.forEach((routingOutput) => {
     if (!routingOutput.hasOwnProperty('driverId')) {
@@ -96,6 +100,7 @@ router.post('/saveRoutingOutput', (req, res) => {
       })
       .catch((err) => {
         console.log(err);
+        console.log(req)
         res.status(500).send(`${JSON.stringify(err)}`);
       });
   });

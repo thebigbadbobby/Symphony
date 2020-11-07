@@ -12,9 +12,13 @@ router.get("/route", (req, res) => {
   res.send(req.body);
 });
 
-// @description compute route for drivers
+// @description Invoke python script to compute route for drivers. 
+// This function does not get nor save the result of rouing, 
+// the python script will invoke another api call to do that. See /saveRoutingOutput
 // @params
+// req.body.driverIds -> list of strings. Represent different drivers
 // req.body.startLocation -> list of strings, eg. ['starting addr1','starting addr2'...]
+// Driver Ids and startLocation need to be 1 to 1 corresponding. (At their own index)
 // req.body.addressPairs -> list of strings, eg. ['pickup1','dropoff1','pickup2','dropoff2'...]
 router.post("/computeRoute", (req, res) => {
   if (!req.body.hasOwnProperty("startLocation")) {
@@ -25,9 +29,12 @@ router.post("/computeRoute", (req, res) => {
     res.status(400).send("Missing addressPairs");
   }
 
-  let dict = { startLocation: req.body.startLocation };
+  if (!req.body.hasOwnProperty("driverIDs")) {
+    res.status(400).send("Missing driverIDs");
+  }
+
+  let dict = { startLocation: req.body.startLocation, driverIds:req.body.driverIds };
   dict["addressPairs"] = [];
-  let pair = {};
   for (let i = 0; i < req.body.addressPairs.length; i += 2) {
     let pair = {};
     pair["pick-up-location"] = req.body.addressPairs[i];
@@ -60,6 +67,15 @@ router.post("/computeRoute", (req, res) => {
   res.status(200).send("Okay");
 });
 
+
+
+// @description this Api call is specifically for the python script when it 
+// sends the result back after computation is done (which could take awhile)
+// @params
+// req.body.driverIds -> list of strings. Represent different drivers
+// req.body.startLocation -> list of strings, eg. ['starting addr1','starting addr2'...]
+// Driver Ids and startLocation need to be 1 to 1 corresponding. (At their own index)
+// req.body.addressPairs -> list of strings, eg. ['pickup1','dropoff1','pickup2','dropoff2'...]
 router.post('/saveRoutingOutput', (req, res) => {
   const personalRoutes = [];
   req.body.routes.forEach((routingOutput) => {

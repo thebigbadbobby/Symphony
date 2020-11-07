@@ -1,6 +1,6 @@
 const express = require("express");
 const twilio = require("twilio");
-const { route } = require("./business");
+const PersonalRoute = require('../models/personal_route');
 const router = express.Router();
 
 // @description get route for one specific driver
@@ -58,6 +58,33 @@ router.post("/computeRoute", (req, res) => {
     console.log(`stderr: ${data}`);
   });
   res.status(200).send("Okay");
+});
+
+router.post('/saveRoutingOutput', (req, res) => {
+  const personalRoutes = [];
+  req.body.routes.forEach((routingOutput) => {
+    if (!routingOutput.hasOwnProperty('driverId')) {
+      res.status(400).send('Missing driverId');
+    }
+    if (!routingOutput.hasOwnProperty('route')) {
+      res.status(400).send('Missing route');
+    }
+    const personalRoute = new PersonalRoute({
+      driverId: routingOutput.driverId,
+      route: routingOutput.route,
+      routeTime: routingOutput.routeTime,
+    });
+    personalRoute.save()
+      .then((result) => {
+        personalRoutes.push(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send(`${JSON.stringify(err)}`);
+      });
+  });
+  // TODO change to success message
+  res.send(`${JSON.stringify(personalRoutes)}`);
 });
 
 module.exports = router;

@@ -10,8 +10,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./TodaysOrders.styles";
 const axios = require("axios").default;
-import styles from "./Dashboard.styles";
-import { EditBusiness } from "./EditBusiness/EditBusiness";
+
 
 export const TodaysOrders = (props) => {
   const style = styles();
@@ -107,3 +106,36 @@ export const TodaysOrders = (props) => {
     </React.Fragment>
   );
 };
+
+// const ChoosePage = (props) => {
+//   switch(props.page) {
+//     case 'edit-business':
+//       return (
+//         <EditBusiness user={props.user}/>
+//       )
+//     case 'todays-orders':
+//       return (
+//         <TodaysOrders />
+//       )
+//     case 'order-history':
+//       return (
+//         "Order History"
+//       )
+//     default:
+//       return (
+//         <TodaysOrders />
+//       )
+//   }
+// }
+
+// export const Dashboard = (props) => {
+//   const style = styles();
+//   const page = 'edit-business'
+//   return (
+//     <React.Fragment>
+//       {/* <Container component="div" maxWidth="lg"> */}
+//       <ChoosePage page={page} user={props.user}/>
+//       {/* </Container> */}
+//     </React.Fragment>
+//   );
+// };

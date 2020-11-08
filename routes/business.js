@@ -127,6 +127,7 @@ router.post('/add-business', (req, res) => {
     res.send(result);
   }).catch((err) => {
     console.log(err);
+    res.status(400).send(err._message);
   });
 });
 

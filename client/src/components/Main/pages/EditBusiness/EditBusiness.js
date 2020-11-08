@@ -45,7 +45,7 @@ export const EditBusiness = (props) => {
     })
     .catch(function (error) {
       console.log(error);
-      alert("Error!")
+      alert("Incorrect format for phone number!\nPlease use the format ###-###-####.")
     });
   }
 

@@ -7,7 +7,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import React from "react";
 import styles from "./EditBusiness.styles";
-import axios from 'axios';
+import { axiosWrap } from '../../../../axios-wrapper';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
@@ -44,7 +44,7 @@ export const EditBusiness = (props) => {
   function saved(){
     console.log('saved');
 
-    axios.post('/business/add-business', {
+    axiosWrap.post('/business/add-business', {
       businessName: document.getElementById("companyName").value,
       businessPhone: document.getElementById("phone").value,
       pickupAddress: document.getElementById("address").value,

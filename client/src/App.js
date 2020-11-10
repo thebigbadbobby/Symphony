@@ -70,7 +70,7 @@ export default function App() {
         .then(() => {
           setAuth(window.gapi.auth2.getAuthInstance())
           window.gapi.auth2.getAuthInstance().isSignedIn.listen(handleAuthChange);
-          // setLoading(false)
+          setLoading(false)
         })
     });
   }, [])
@@ -92,6 +92,9 @@ export default function App() {
             setNewUser(res.data.newUser)
             setBusinessID(res.data.businessID)
             setLoading(false)
+            if(!res.data.newUser){
+              setSignIn(true);
+            }
           })
           .catch(function (error) {
             alert("error");
@@ -106,10 +109,10 @@ export default function App() {
       const gsignIn = auth.isSignedIn.get();
       // gsignIn != prev value prevents infinite loop
       if (gsignIn && gsignIn !== signedIn) {
-        setSignIn(auth.isSignedIn.get());
+        // setSignIn(auth.isSignedIn.get());
         setUser(auth.currentUser.get());
         setAuth(auth);
-        // setLoading(false)
+        setLoading(false)
       }
     }
   };
@@ -118,9 +121,9 @@ export default function App() {
   const handleSignIn = () => {
     setLoading(true)
     auth.signIn().then(() => {
-      setSignIn(true);
+      // setSignIn(true);
       setUser(auth.currentUser.get());
-      // setLoading(false)
+      setLoading(false)
     }).catch(() => {
       console.log("Failed to sign in")
       setLoading(false)
@@ -147,26 +150,29 @@ export default function App() {
         <Loading/>
       ) : (
         <ThemeProvider theme={theme}>
-          {signedIn ? (newUser ? (<div>signUp</div>) : (
+          {signedIn ? (
               <Main
                   isSignedIn={signedIn}
                   user={user}
                   auth={auth}
                   signOut={handleSignOut}
                   business={businessID}
-              />)
+                  // newUser={newUser}
+              />
           ) : (
-            <Container
-              component="div"
-              maxWidth="lg"
-              className={style.signInContainer}
-            >
-              <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
-              <Typography className={style.tagLine} variant="h5">
-                Same-day Delivery for Your Small Business
-              </Typography>
-              <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
-            </Container>
+            newUser === true ? (<div>sign up</div>) : (
+                <Container
+                    component="div"
+                    maxWidth="lg"
+                    className={style.signInContainer}
+                >
+                  <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
+                  <Typography className={style.tagLine} variant="h5">
+                    Same-day Delivery for Your Small Business
+                  </Typography>
+                  <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
+                </Container>
+            )
           )}
           <Copyright />
         </ThemeProvider>

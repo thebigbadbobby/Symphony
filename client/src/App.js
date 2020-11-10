@@ -110,7 +110,7 @@ export default function App() {
       // gsignIn != prev value prevents infinite loop
       if (gsignIn && gsignIn !== signedIn) {
         // setSignIn(auth.isSignedIn.get());
-        setUser(auth.currentUser.get());
+        // setUser(auth.currentUser.get());
         setAuth(auth);
         setLoading(false)
       }

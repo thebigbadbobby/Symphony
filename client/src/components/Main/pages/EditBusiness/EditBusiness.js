@@ -10,29 +10,17 @@ import styles from "./EditBusiness.styles";
 import axios from 'axios';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { makeStyles } from '@material-ui/core/styles';
 
 // Part of alert button
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-// Part of alert button
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    '& > * + *': {
-      marginTop: theme.spacing(2),
-    },
-  },
-}));
-
 // Beginning of main function
 export const EditBusiness = (props) => {
   const style = styles();
   
   // Initialize alert varaiables
-  const classes = useStyles();
   const [success, setOpenSuccess] = React.useState(false);
   const [fail, setOpenFail] = React.useState(false);
   

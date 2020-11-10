@@ -9,7 +9,7 @@ import {
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./TodaysOrders.styles";
-const axios = require("axios").default;
+import { axiosWrap } from '../../../axios-wrapper'
 
 export const TodaysOrders = (props) => {
   const style = styles();
@@ -26,7 +26,7 @@ export const TodaysOrders = (props) => {
       customer_name:name,
       customer_phone:phone
     }
-    axios
+    axiosWrap
       .post('/order/add-orders', {
         business,
         orders: [

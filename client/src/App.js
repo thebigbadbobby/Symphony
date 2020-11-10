@@ -9,7 +9,7 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import styles from "./App.styles";
 import logo from "./assets/mint-stacked.svg";
 import { Loading } from "./components/Loading/Loading";
-import axios from 'axios'
+import { axiosWrap } from './axios-wrapper'
 
 const Copyright = () => {
   const style = styles();
@@ -86,7 +86,7 @@ export default function App() {
   useEffect(() => {
     if(user){
       let email = user.tt.$t
-      axios.post('/business/sign-in',
+      axiosWrap.post('/business/sign-in',
           {"ownerEmail": email})
           .then(res => {
             setNewUser(res.data.newUser)

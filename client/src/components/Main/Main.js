@@ -14,6 +14,7 @@ import { EditBusiness } from './pages/EditBusiness/EditBusiness'
 
 export const Main = (props) => {
   const style = styles();
+  const { business } = props
   const [open, setOpen] = React.useState(false);
 
   let [pageState, setPageState] = useState('today\'s-orders');
@@ -25,11 +26,11 @@ export const Main = (props) => {
   const renderSwitch = () => {
     switch (pageState) {
       case 'order-history':
-        return <OrderHistory />
+        return <OrderHistory business={business}/>
       case 'store-settings':
         return <EditBusiness user={props.user} />
       case 'today\'s-orders':
-        return <TodaysOrders/>
+        return <TodaysOrders business={business}/>
       default:
         return <OrderHistory />
     }

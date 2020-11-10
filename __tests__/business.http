@@ -17,7 +17,7 @@ Content-Type: application/json
 { "business": "5f94ac5610989b2208a9d7a4", "businessName": "Daniel's Cookies"}
 
 ###
-GET http://localhost:5000/business/sign-in
+POST http://localhost:5000/business/sign-in
 Content-Type: application/json
 
 {"ownerEmail": "smith2@gmail.com"}

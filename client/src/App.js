@@ -9,7 +9,7 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import styles from "./App.styles";
 import logo from "./assets/mint-stacked.svg";
 import { Loading } from "./components/Loading/Loading";
-
+import axios from 'axios'
 
 const Copyright = () => {
   const style = styles();
@@ -37,7 +37,9 @@ export default function App() {
   let [auth, setAuth] = useState(undefined);
   let [user, setUser] = useState(undefined);
   let [loading, setLoading] = useState(true);
-
+  let [businessID, setBusinessID] = useState(undefined)
+  let [newUser, setNewUser] = useState(undefined)
+  // creats a global state for all components
   const style = styles();
 
   /** Create a theme */
@@ -80,14 +82,35 @@ export default function App() {
     }
   }, [auth])
 
+  /** Calls sign in when user changes */
+  useEffect(() => {
+    if(user){
+      let email = user.tt.$t
+      axios.post('/business/sign-in',
+          {"ownerEmail": email})
+          .then(res => {
+            setNewUser(res.data.newUser)
+            setBusinessID(res.data.businessID)
+            setLoading(false)
+            if(!res.data.newUser){
+              setSignIn(true);
+            }
+          })
+          .catch(function (error) {
+            alert("error");
+            alert(JSON.stringify(error));
+          });
+    }
+  }, [user])
+
   /** Handles auth changes (in sign in status) */
   const handleAuthChange = () => {
     if (auth) {
       const gsignIn = auth.isSignedIn.get();
       // gsignIn != prev value prevents infinite loop
       if (gsignIn && gsignIn !== signedIn) {
-        setSignIn(auth.isSignedIn.get());
-        setUser(auth.currentUser.get());
+        // setSignIn(auth.isSignedIn.get());
+        // setUser(auth.currentUser.get());
         setAuth(auth);
         setLoading(false)
       }
@@ -98,7 +121,7 @@ export default function App() {
   const handleSignIn = () => {
     setLoading(true)
     auth.signIn().then(() => {
-      setSignIn(true);
+      // setSignIn(true);
       setUser(auth.currentUser.get());
       setLoading(false)
     }).catch(() => {
@@ -128,24 +151,28 @@ export default function App() {
       ) : (
         <ThemeProvider theme={theme}>
           {signedIn ? (
-            <Main
-              isSignedIn={signedIn}
-              user={user}
-              auth={auth}
-              signOut={handleSignOut}
-            />
+              <Main
+                  isSignedIn={signedIn}
+                  user={user}
+                  auth={auth}
+                  signOut={handleSignOut}
+                  business={businessID}
+                  // newUser={newUser}
+              />
           ) : (
-            <Container
-              component="div"
-              maxWidth="lg"
-              className={style.signInContainer}
-            >
-              <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
-              <Typography className={style.tagLine} variant="h5">
-                Same-day Delivery for Your Small Business
-              </Typography>
-              <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
-            </Container>
+            newUser === true ? (<div>sign up</div>) : (
+                <Container
+                    component="div"
+                    maxWidth="lg"
+                    className={style.signInContainer}
+                >
+                  <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
+                  <Typography className={style.tagLine} variant="h5">
+                    Same-day Delivery for Your Small Business
+                  </Typography>
+                  <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
+                </Container>
+            )
           )}
           <Copyright />
         </ThemeProvider>

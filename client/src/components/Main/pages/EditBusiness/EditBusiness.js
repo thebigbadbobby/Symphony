@@ -56,7 +56,7 @@ export const EditBusiness = (props) => {
   function saved(){
     console.log('saved');
 
-    axios.post('http://localhost:5000/business/add-business', {
+    axios.post('/business/add-business', {
       businessName: document.getElementById("companyName").value,
       businessPhone: document.getElementById("phone").value,
       pickupAddress: document.getElementById("address").value,

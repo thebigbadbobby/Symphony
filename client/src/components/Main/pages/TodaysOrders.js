@@ -106,36 +106,3 @@ export const TodaysOrders = (props) => {
     </React.Fragment>
   );
 };
-
-// const ChoosePage = (props) => {
-//   switch(props.page) {
-//     case 'edit-business':
-//       return (
-//         <EditBusiness user={props.user}/>
-//       )
-//     case 'todays-orders':
-//       return (
-//         <TodaysOrders />
-//       )
-//     case 'order-history':
-//       return (
-//         "Order History"
-//       )
-//     default:
-//       return (
-//         <TodaysOrders />
-//       )
-//   }
-// }
-
-// export const Dashboard = (props) => {
-//   const style = styles();
-//   const page = 'edit-business'
-//   return (
-//     <React.Fragment>
-//       {/* <Container component="div" maxWidth="lg"> */}
-//       <ChoosePage page={page} user={props.user}/>
-//       {/* </Container> */}
-//     </React.Fragment>
-//   );
-// };

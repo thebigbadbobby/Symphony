@@ -10,6 +10,7 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import styles from "./TodaysOrders.styles";
 const axios = require("axios").default;
+
 export const TodaysOrders = (props) => {
   const style = styles();
   const { business } = props
@@ -26,7 +27,7 @@ export const TodaysOrders = (props) => {
       customer_phone:phone
     }
     axios
-      .post(`http://localhost:5000/order/add-orders`, {
+      .post('/order/add-orders', {
         business,
         orders: [
             order

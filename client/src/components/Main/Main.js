@@ -8,9 +8,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { TodaysOrders } from "./pages/TodaysOrders"
 import { OrderHistory } from "./pages/OrderHistory"
-import { StoreSettings } from "./pages/StoreSettings"
 import { LogIn } from "../LogIn/LogIn";
 import styles from "./Main.styles";
+import { EditBusiness } from './pages/EditBusiness/EditBusiness'
 
 export const Main = (props) => {
   const style = styles();
@@ -28,7 +28,7 @@ export const Main = (props) => {
       case 'order-history':
         return <OrderHistory business={business}/>
       case 'store-settings':
-        return <StoreSettings business={business}/>
+        return <EditBusiness user={props.user} />
       case 'today\'s-orders':
         return <TodaysOrders business={business}/>
       default:

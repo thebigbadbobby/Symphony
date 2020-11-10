@@ -12,10 +12,12 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { makeStyles } from '@material-ui/core/styles';
 
+// Part of alert button
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
+// Part of alert button
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -25,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export const EditBusiness = (props) => {
   const style = styles();
 
@@ -34,32 +35,30 @@ export const EditBusiness = (props) => {
   }
   temp();
   
-    const classes = useStyles();
-    const [success, setOpenSuccess] = React.useState(false);
-    const [fail, setOpenFail] = React.useState(false);
+  // Initialize alert varaiables
+  const classes = useStyles();
+  const [success, setOpenSuccess] = React.useState(false);
+  const [fail, setOpenFail] = React.useState(false);
   
-  
-    const handleCloseSuccess = (event, reason) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-      setOpenSuccess(false);
-    };
+  // Handles closing of the success alert
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccess(false);
+  };
 
-    const handleCloseFail = (event, reason) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-      setOpenFail(false);
-    };
+  // Handles closing of the failure alert
+  const handleCloseFail = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenFail(false);
+  };
 
   function saved(){
     console.log('saved');
-    //window.location.reload();
-    console.log("Name: " + document.getElementById("companyName").value);
-    console.log("Address: " + document.getElementById("address").value);
-    console.log("Phone: " + document.getElementById("phone").value);
-    console.log(props.user.getBasicProfile().$t); // email
+
     axios.post('http://localhost:5000/business/add-business', {
       businessName: document.getElementById("companyName").value,
       businessPhone: document.getElementById("phone").value,
@@ -68,10 +67,12 @@ export const EditBusiness = (props) => {
       ownerPhone: document.getElementById("phone").value,
       ownerEmail: props.user.getBasicProfile().$t,
     })
+
     .then(function (response) {
       console.log(response);
       setOpenSuccess(true);
     })
+    
     .catch(function (error) {
       console.log(error);
       setOpenFail(true);

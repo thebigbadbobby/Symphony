@@ -11,19 +11,6 @@ export const styles = makeStyles((theme) => ({
     fontWeight: 'bold',
     top: '100px'
   },
-  // fillinContainer: {
-  //   display: 'flex',
-  //   flexDirection: 'column',
-  //   position: 'relative',
-  //   top: '20px',
-  // },
-  // entryFields: {
-  //   fontWeight: 'bold',
-  //   width: '400px',
-  //   display: 'block',
-  //   textAlign: 'left',
-  //   borderColor: 'black',
-  // },
   saveButton: {
     borderRadius: '22px/20px', // round sides!!!
     fontWeight: 'bold',

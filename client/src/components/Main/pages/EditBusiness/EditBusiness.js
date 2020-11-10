@@ -8,8 +8,23 @@ import CardContent from "@material-ui/core/CardContent";
 import React from "react";
 import styles from "./EditBusiness.styles";
 import axios from 'axios';
-//import {MDCSnackbar} from '@material/snackbar';
-//const snackbar = new MDCSnackbar(document.querySelector('mdc-snackbar'));
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles } from '@material-ui/core/styles';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    '& > * + *': {
+      marginTop: theme.spacing(2),
+    },
+  },
+}));
+
 
 export const EditBusiness = (props) => {
   const style = styles();
@@ -18,11 +33,25 @@ export const EditBusiness = (props) => {
     console.log("called temp")
   }
   temp();
-
-  // val contextView = findViewById<View>(R.id.context_view);
   
-  // Snackbar.make(contextView, R.string.text_label, Snackbar.LENGTH_SHORT)
-  //   .show()
+    const classes = useStyles();
+    const [success, setOpenSuccess] = React.useState(false);
+    const [fail, setOpenFail] = React.useState(false);
+  
+  
+    const handleCloseSuccess = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setOpenSuccess(false);
+    };
+
+    const handleCloseFail = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setOpenFail(false);
+    };
 
   function saved(){
     console.log('saved');
@@ -41,11 +70,11 @@ export const EditBusiness = (props) => {
     })
     .then(function (response) {
       console.log(response);
-      alert("Saved!");
+      setOpenSuccess(true);
     })
     .catch(function (error) {
       console.log(error);
-      alert("Incorrect format for phone number!\nPlease use the format ###-###-####.")
+      setOpenFail(true);
     });
   }
 
@@ -58,61 +87,49 @@ export const EditBusiness = (props) => {
         <div className={style.storeName}>
           Enter your store's information:
         </div>
-      <Card className={style.root}>
-        <CardContent>
-          <TextField
-            id="companyName"
-            label="Company Name"
-            // placeholder="Placeholder"
-            multiline
-            fullWidth
-            variant="filled"
-          />
-          <TextField
-            id="address"
-            label="Company Address"
-            // placeholder="Placeholder"
-            multiline
-            fullWidth
-            variant="filled"
-          />
-          <TextField
-            id="phone"
-            label="Company Phone"
-            placeholder="(###)###-####"
-            multiline
-            fullWidth
-            variant="filled"
-          />
-        </CardContent>
-      </Card>
-        {/* <div className={style.fillinContainer}>
-          <label for="companyName"  variant="contained">Company Name</label>
-          <input type="text" id="companyName" placeholder="Your companies name..." className={style.entryFields}></input>
-
-          <label for="address" variant="contained">Company Address</label>
-          <input type="text" id="address" placeholder="Your companies address..." className={style.entryFields}></input>
-
-          <label for="phone"  variant="contained">Company Phone</label>
-          <input type="text" id="phone" placeholder="###-###-####" className={style.entryFields}></input>
-        </div> */}
+        <Card className={style.root}>
+          <CardContent>
+            <TextField
+              id="companyName"
+              label="Company Name"
+              // placeholder="Placeholder"
+              multiline
+              fullWidth
+              variant="filled"
+            />
+            <TextField
+              id="address"
+              label="Company Address"
+              // placeholder="Placeholder"
+              multiline
+              fullWidth
+              variant="filled"
+            />
+            <TextField
+              id="phone"
+              label="Company Phone"
+              placeholder="(###)###-####"
+              multiline
+              fullWidth
+              variant="filled"
+            />
+          </CardContent>
+        </Card>
         <div>
           <Button onClick={saved} className={style.saveButton} variant="contained">Save</Button>
         </div>
-        {/* <div class="mdc-snackbar">
-          <div class="mdc-snackbar__surface" role="status" aria-relevant="additions">
-            <div class="mdc-snackbar__label" aria-atomic="false">
-              Can't send photo. Retry in 5 seconds.
-            </div>
-            <div class="mdc-snackbar__actions" aria-atomic="true">
-              <button type="button" class="mdc-button mdc-snackbar__action">
-                <div class="mdc-button__ripple"></div>
-                <span class="mdc-button__label">Retry</span>
-              </button>
-            </div>
-          </div>
-        </div> */}
       </div>
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSuccess}>
+        <Alert onClose={handleCloseSuccess} severity="success">
+          Saved successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={fail} autoHideDuration={6000} onClose={handleCloseFail}>
+        <Alert onClose={handleCloseFail} severity="error">
+          Incorrect format for phone number!
+          Please use the format ###-###-####.
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 };

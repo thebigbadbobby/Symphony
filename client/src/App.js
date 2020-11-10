@@ -38,6 +38,7 @@ export default function App() {
   let [user, setUser] = useState(undefined);
   let [loading, setLoading] = useState(true);
   let [businessID, setBusinessID] = useState(undefined)
+  let [newUser, setNewUser] = useState(undefined)
   // creats a global state for all components
   const style = styles();
 
@@ -69,7 +70,7 @@ export default function App() {
         .then(() => {
           setAuth(window.gapi.auth2.getAuthInstance())
           window.gapi.auth2.getAuthInstance().isSignedIn.listen(handleAuthChange);
-          setLoading(false)
+          // setLoading(false)
         })
     });
   }, [])
@@ -88,7 +89,9 @@ export default function App() {
       axios.post('/business/sign-in',
           {"ownerEmail": email})
           .then(res => {
+            setNewUser(res.data.newUser)
             setBusinessID(res.data.businessID)
+            setLoading(false)
           })
           .catch(function (error) {
             alert("error");
@@ -106,7 +109,7 @@ export default function App() {
         setSignIn(auth.isSignedIn.get());
         setUser(auth.currentUser.get());
         setAuth(auth);
-        setLoading(false)
+        // setLoading(false)
       }
     }
   };
@@ -117,7 +120,7 @@ export default function App() {
     auth.signIn().then(() => {
       setSignIn(true);
       setUser(auth.currentUser.get());
-      setLoading(false)
+      // setLoading(false)
     }).catch(() => {
       console.log("Failed to sign in")
       setLoading(false)
@@ -144,14 +147,14 @@ export default function App() {
         <Loading/>
       ) : (
         <ThemeProvider theme={theme}>
-          {signedIn ? (
-                <Main
+          {signedIn ? (newUser ? (<div>signUp</div>) : (
+              <Main
                   isSignedIn={signedIn}
                   user={user}
                   auth={auth}
                   signOut={handleSignOut}
                   business={businessID}
-                />
+              />)
           ) : (
             <Container
               component="div"

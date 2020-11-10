@@ -27,13 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// Beginning of main function
 export const EditBusiness = (props) => {
   const style = styles();
-
-  function temp() {
-    console.log("called temp")
-  }
-  temp();
   
   // Initialize alert varaiables
   const classes = useStyles();
@@ -56,6 +52,7 @@ export const EditBusiness = (props) => {
     setOpenFail(false);
   };
 
+  // Save function, sends information to the backend and gives the user a reply.
   function saved(){
     console.log('saved');
 

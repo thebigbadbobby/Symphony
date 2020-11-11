@@ -32,14 +32,22 @@ router.post("/computeRoute", (req, res) => {
   if (!req.body.hasOwnProperty("driverIds")) {
     res.status(400).send("Missing driverIDs");
   }
+  dict = {};
+  dict["driverInfo"] = []
+  for (let i =0;  i < req.body.driverIds.length; i += 1){
+    let info = {};
+    info["driverId"] = req.body.driverIds[i];
+    info["startLocation"] = req.body.startLocation[i];
+    dict["driverInfo"].push(info);
+  }
 
-  let dict = { startLocation: req.body.startLocation, driverIds:req.body.driverIds };
-  dict["addressPairs"] = [];
-  for (let i = 0; i < req.body.addressPairs.length; i += 2) {
-    let pair = {};
-    pair["pick-up-location"] = req.body.addressPairs[i];
-    pair["drop-off-location"] = req.body.addressPairs[i + 1];
-    dict["addressPairs"].push(pair);
+  dict["orderInfo"] = [];
+  for (let i = 0; i < req.body.orderIds.length; i += 1) {
+    let info = {};
+    info["pick-up-location"] = req.body.addressPairs[i*2];
+    info["drop-off-location"] = req.body.addressPairs[i*2 + 1];
+    info["orderId"] = req.body.orderIds[i]
+    dict["orderInfo"].push(info);
   }
 
   let dictstring = JSON.stringify(dict);
@@ -79,8 +87,8 @@ router.post('/saveRoutingOutput', (req, res) => {
   if (!req.body.hasOwnProperty('routes')) {
     res.status(400).send('Missing routes');
   }
-  // console.log('serverside log');
-  // console.log(req.body);
+  console.log('serverside log');
+  console.log(req.body);
   const personalRoutes = [];
   req.body.routes.forEach((routingOutput) => {
     if (!routingOutput.hasOwnProperty('driverId')) {
@@ -92,7 +100,7 @@ router.post('/saveRoutingOutput', (req, res) => {
     const personalRoute = new PersonalRoute({
       driverId: routingOutput.driverId,
       route: routingOutput.route,
-      routeTime: routingOutput.routeTime,
+      routeTime: routingOutput.routeTime
     });
     personalRoute.save()
       .then((result) => {

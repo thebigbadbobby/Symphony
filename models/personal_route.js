@@ -8,14 +8,20 @@ const personalRouteSchema = new Schema({
     ref: 'Driver',
     required: true,
   },
-  route: {
-    type: [String],
+  route: [{
+    type: Map,
     required: true,
-  },
+  }],
   routeTime: {
     type: String,
     required: true,
   },
+  currentIndex : {
+    type: Number ,
+    default: 0,
+    required: true,
+  },
+
 }, { timestamps: true });
 
 const PersonalRoute = mongoose.model('PersonalRoute', personalRouteSchema);

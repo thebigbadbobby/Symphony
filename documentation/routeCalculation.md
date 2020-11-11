@@ -34,7 +34,7 @@
             {"address": "1148 soquel ave, Santa Cruz, CA 95062", orderId: ""},
             {"address": "183 chestnut st, Santa Cruz, CA 95060", orderId: ""},
             {"address": "710 College Ten Rd, Santa Cruz, CA 95064", orderId: ""}
-            ]
+        ]
     }], 
     "total_time": 2054
 }

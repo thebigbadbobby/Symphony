@@ -7,7 +7,7 @@
 ```
 {
     "DriverInfo": [{
-        "startingLocation": "",
+        "startLocation": "",
         "driverId": ""
     }],
     OrderInfo: [{

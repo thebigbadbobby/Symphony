@@ -11,7 +11,7 @@ API_KEY = ""
 
 # load destination data for today's deliveries
 # currently load from a text file
-def get_destination_list(filepath):
+def get_input_info(filepath):
     with open(filepath) as file:
         data = json.load(file)
         return data
@@ -30,7 +30,10 @@ def request_distance_data(locations):
 
         # send request
         r = requests.get(template + text)
-        # print("test: status code is " + str(r.status_code))
+        if(r.status_code != 200):
+            print("test: status code is " + str(r.status_code))
+            print(r.text)
+            exit(1)
 
         # read results
         respondJson = json.loads(r.text)
@@ -43,6 +46,7 @@ def request_distance_data(locations):
         try:
             return respondJson['features'][0]["geometry"]["coordinates"]
         except:
+            print('error parsing server response')
             print(template+text)
             exit(1)
 
@@ -72,19 +76,19 @@ def request_distance_data(locations):
             print(json.dumps(respondJson))
             return 10000000  # XXX error
 
-    print("requesting geocodes...")
+    # print("requesting geocodes...")
     geocodeList = []
 
     # calculate all driver geocodes
-    for location in locations['startLocation']:
+    for location in locations:
         geocodeList.append(get_geocode(location))
 
     # calculate all PoI geocodes
     # XXX fixed to now create a string of all locations
-    for location in locations['addressPairs']:
-        # XXX calling get_geocode function
-        geocodeList.append(get_geocode(location['pick-up-location']))
-        geocodeList.append(get_geocode(location['drop-off-location']))
+    # for location in locations['addressPairs']:
+    #     # XXX calling get_geocode function
+    #     geocodeList.append(get_geocode(location['pick-up-location']))
+    #     geocodeList.append(get_geocode(location['drop-off-location']))
 
     data = {}  # XXX initialization of object for googleOR
 
@@ -94,7 +98,7 @@ def request_distance_data(locations):
     for i in range(1, len(geocodeList), 2):
         data['pickups_deliveries'] .append([i, i+1])
 
-    print("requesting distances...")
+    # print("requesting distances...")
     # construct adjacency matrix
     data['distance_matrix'] = []
     # XXX calling get travel time, needs to input matrix
@@ -126,16 +130,16 @@ def print_solution(data, manager, routing, solution):
     print('Total Distance of all routes: {}m'.format(total_distance))
 
 
-def get_solution_obj(data, manager, routing, solution, addresses, driverId):
+def get_solution_obj(data, manager, routing, solution, addresses, driverIds, orderIds):
     """Prints solution to stdout in a better way"""
     solutionObj = {"routes": []}
     total_time = 0
-    # print(addresses);
+    # print(orderIds);
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
         solutionObj["routes"].append({})
         solutionObj["routes"][vehicle_id] = {}
-        solutionObj["routes"][vehicle_id]["driverId"] = driverId
+        solutionObj["routes"][vehicle_id]["driverId"] = driverIds[0]
         route_time = 0
         stop_ids = []
         stops = []
@@ -144,8 +148,10 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverId):
             # print(stop_ids)
             stop_ids.append(manager.IndexToNode(index))
             # print('index:', index, 'node: ', manager.IndexToNode(index));
-            stops.append(addresses[manager.IndexToNode(index)])
-
+            stop = {}
+            stop['address'] = addresses[manager.IndexToNode(index)]
+            stop['orderId'] = orderIds[manager.IndexToNode(index)]
+            stops.append(stop)
             previous_index = index
             index = solution.Value(routing.NextVar(index))
             route_time += routing.GetArcCostForVehicle(
@@ -168,18 +174,24 @@ def main(argv):
         global API_KEY
         API_KEY = json.load(file)['API_KEY']
 
+ 
+    input_info = get_input_info(argv[1])
+
+    driverInfos = input_info['driverInfo']
     addresses = []
-    destinationlist = get_destination_list(argv[1])
+    orderIds = []
+    driverIds = []
+    for info in driverInfos:
+        addresses.append(info['startLocation'])
+        driverIds.append(info['driverId'])
+        orderIds.append('placeholder_for_driver_address')
+    for Orderinfo in input_info['orderInfo']:
+        addresses.append(Orderinfo['pick-up-location'])
+        addresses.append(Orderinfo['drop-off-location'])
+        orderIds.append(Orderinfo['orderId']);
+        orderIds.append(Orderinfo['orderId']);
 
-    driverIds = destinationlist['driverIds']
-
-    for location in destinationlist['startLocation']:
-        addresses.append(location)
-    for addressPair in destinationlist['addressPairs']:
-        addresses.append(addressPair['pick-up-location'])
-        addresses.append(addressPair['drop-off-location'])
-
-    data = request_distance_data(destinationlist)
+    data = request_distance_data(addresses)
 
     # with open('temp.json') as file:
     #    data = json.load(file)
@@ -244,8 +256,8 @@ def main(argv):
     if solution:
         # print("cp")
         # print_solution(data, manager, routing, solution)
-        solutionObj = get_solution_obj(data, manager, routing, solution, addresses,driverIds)
-        print(json.dumps(solutionObj))
+        solutionObj = get_solution_obj(data, manager, routing, solution, addresses, driverIds, orderIds)
+        # print(json.dumps(solutionObj))
         saveSolutionToDB(solutionObj);
 
 if __name__ == '__main__':

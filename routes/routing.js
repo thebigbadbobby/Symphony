@@ -1,6 +1,7 @@
 const express = require("express");
 const twilio = require("twilio");
 const PersonalRoute = require('../models/personal_route');
+const Driver = require('../models/driver');
 const router = express.Router();
 
 // @description get route for one specific driver
@@ -20,6 +21,7 @@ router.get("/route", (req, res) => {
 // req.body.startLocation -> list of strings, eg. ['starting addr1','starting addr2'...]
 // Driver Ids and startLocation need to be 1 to 1 corresponding. (At their own index)
 // req.body.addressPairs -> list of strings, eg. ['pickup1','dropoff1','pickup2','dropoff2'...]
+// req.body.orderIds -> list of strings, eg. ['orderId1', 'orderId2', 'orderId3']
 router.post("/computeRoute", (req, res) => {
   if (!req.body.hasOwnProperty("startLocation")) {
     res.status(400).send("Missing startLocation");
@@ -94,6 +96,9 @@ router.post('/saveRoutingOutput', (req, res) => {
     if (!routingOutput.hasOwnProperty('driverId')) {
       res.status(400).send('Missing driverId');
     }
+    if (!routingOutput.hasOwnProperty('stop_ids')) {
+      res.status(400).send('Missing stop_ids');
+    }
     if (!routingOutput.hasOwnProperty('route')) {
       res.status(400).send('Missing route');
     }
@@ -111,9 +116,23 @@ router.post('/saveRoutingOutput', (req, res) => {
         console.log(req)
         res.status(500).send(`${JSON.stringify(err)}`);
       });
+
+    Driver.findOne({ _id: routingOutput.driverId }, (err, driver) => {
+      if (err) {
+        res.status(404).send(`can't find driver`);
+      }
+      driver.todaysRoute = personalRoute._id;
+      driver.save()
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send(`${JSON.stringify(err)}`);
+        });
+    });
+
+
   });
   // TODO change to success message
-  res.send(`${JSON.stringify(personalRoutes)}`);
+  res.status(200).send(`success`);
 });
 
 module.exports = router;

@@ -18,7 +18,12 @@ app.use(cors());
 dotenv.config();
 // Replace the following with your Atlas connection string
 
-const dbURI = process.env.MONGO_URL;
+let dbURI;
+if (process.env.DEV_MODE === 'TRUE') {
+  dbURI = process.env.MONGO_URL_DEV;
+} else {
+  dbURI = process.env.MONGO_URL_PROD;
+}
 const port = process.env.SERVER_PORT || 5000;
 
 app.use(express.json());

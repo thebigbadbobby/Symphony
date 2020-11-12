@@ -161,7 +161,6 @@ export default function App() {
 
   /** Used to decide which screen should be shown to the user */
   const SelectScreen = (props) => {
-    console.log(props);
     if (props.newUser) {
       // show the sign up screen
       return <SignUp user={user} businessCreated={businessCreated} />;

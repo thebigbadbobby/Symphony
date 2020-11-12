@@ -11,7 +11,9 @@ const twilio = require('./routes/twilio');
 // const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://my.kahzum.com', 'http://localhost:3000'],
+}));
 
 // connect to mongodb & listen for requests
 

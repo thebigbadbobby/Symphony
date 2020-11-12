@@ -6,9 +6,6 @@ signUpContainer: {
   flexDirection: "column",
   marginTop: theme.spacing(5)
 },
-welcome: {
-  
-}, 
 explanation: {
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(5),

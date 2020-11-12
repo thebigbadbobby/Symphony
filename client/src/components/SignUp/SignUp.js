@@ -14,29 +14,41 @@ import {
 } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import MaskedInput from "react-text-mask";
-import { axiosWrap } from "../../axios-wrapper"
+import { axiosWrap } from "../../axios-wrapper";
 
-
+/** A helper function for validating inputs from the user and erroring if necessary. */
 const validateInput = (formState, errors) => {
   const returnedErrors = { ...errors };
-  returnedErrors.phoneNumber = !(/[0-9]{3}-[0-9]{3}-[0-9]{4}/.test(formState.phoneNumber))
+  returnedErrors.phoneNumber = !/[0-9]{3}-[0-9]{3}-[0-9]{4}/.test(
+    formState.phoneNumber
+  );
   // check if any of them are empty, if they are, set to error state to true
-  if (!formState.businessName || !formState.storeAddress || !formState.phoneNumber) {
+  if (
+    !formState.businessName ||
+    !formState.storeAddress ||
+    !formState.phoneNumber
+  ) {
     returnedErrors.businessName = !formState.businessName;
     returnedErrors.storeAddress = !formState.storeAddress;
-
   } else {
     returnedErrors.businessName = formState.businessName.length <= 0;
-    returnedErrors.storeAddress = formState.storeAddress.length <= 0
+    returnedErrors.storeAddress = formState.storeAddress.length <= 0;
   }
 
   return returnedErrors;
 };
 
+/** Helper function to get the user's first name */
+const getFirstName = (fullName) => {
+  return fullName.split(" ")[0];
+};
+
+/** The main sign up component, handles taking the users information in a form */
 export const SignUp = (props) => {
   const style = styles();
-  const user = props.user.getBasicProfile();
 
+  // State variables
+  const user = props.user.getBasicProfile();
   const [formState, setFormState] = useState({
     businessName: "",
     storeAddress: "",
@@ -44,6 +56,7 @@ export const SignUp = (props) => {
     pickupTime: "2pm",
     // deliveryDays: "MWF",
   });
+
   const [formErrors, setFormErrors] = useState({
     businessName: false,
     storeAddress: false,
@@ -51,10 +64,6 @@ export const SignUp = (props) => {
     pickupTime: false,
     // deliveryDays: false,
   });
-
-  const getFirstName = (fullName) => {
-    return fullName.split(" ")[0];
-  };
 
   /** Courtesy of the material UI library */
   const TextMaskCustom = (props) => {
@@ -86,6 +95,7 @@ export const SignUp = (props) => {
     );
   };
 
+  /** Called whenever there is an input change... updates the object holding the form state */
   const onChange = (e) => {
     e.preventDefault();
     const newState = formState;
@@ -93,6 +103,7 @@ export const SignUp = (props) => {
     setFormState(newState);
   };
 
+  /** Handles when one of the dropdowns changes (since annoyingly this has a different process than the inputs) */
   const handleDropdownChange = (e, id) => {
     e.preventDefault();
     const newState = formState;
@@ -100,25 +111,34 @@ export const SignUp = (props) => {
     setFormState(newState);
   };
 
+  /** Handles the submit button on the form. */
   const handleSubmit = (payload) => {
     payload.preventDefault();
     const errorState = validateInput(formState, formErrors);
     let hasErrors = false;
-    Object.keys(errorState).map(key => hasErrors = hasErrors || errorState[key])
+    // this simply checks if there are any errors that are true (in which case we don't want to submit)
+    Object.keys(errorState).map(
+      (key) => (hasErrors = hasErrors || errorState[key])
+    );
+
     if (!hasErrors) {
-      axiosWrap.post('/business/add-business', {
-        businessName: formState.businessName,
-        businessPhone: formState.phoneNumber,
-        ownerFullName: user.Ad, 
-        ownerPhone: formState.phoneNumber,
-        pickupAddress: formState.storeAddress,
-        ownerEmail: user.$t,
-      }).then(res => {
-        props.businessCreated(res.data._id);
-      }).catch(err => {
-        console.log("Couldn't reach server!", err)
-      })
+      axiosWrap
+        .post("/business/add-business", {
+          businessName: formState.businessName,
+          businessPhone: formState.phoneNumber,
+          ownerFullName: user.Ad,
+          ownerPhone: formState.phoneNumber,
+          pickupAddress: formState.storeAddress,
+          ownerEmail: user.$t,
+        })
+        .then((res) => {
+          props.businessCreated(res.data._id);
+        })
+        .catch((err) => {
+          console.log("Couldn't reach server!", err);
+        });
     }
+    // if there are errors, set them now.
     setFormErrors(errorState);
   };
 
@@ -167,7 +187,6 @@ export const SignUp = (props) => {
                 placeholder="e.g. 1234 Sesame St. New York, New York, 12345"
                 onChange={onChange}
                 error={formErrors.storeAddress}
-
               />
               <Input
                 className={style.field}
@@ -176,7 +195,6 @@ export const SignUp = (props) => {
                 inputComponent={TextMaskCustom}
                 onChange={onChange}
                 error={formErrors.phoneNumber}
-
               />
               <Select
                 labelId="demo-simple-select-label"
@@ -206,14 +224,14 @@ export const SignUp = (props) => {
               <FormHelperText className={style.field}>
                 Which days would you prefer deliveries?
               </FormHelperText> */}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  startIcon={<SaveIcon />}
-                >
-                  Save
-                </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                startIcon={<SaveIcon />}
+              >
+                Save
+              </Button>
             </form>
           </CardContent>
         </Card>

@@ -19,10 +19,9 @@ import { axiosWrap } from "../../axios-wrapper"
 
 const validateInput = (formState, errors) => {
   const returnedErrors = { ...errors };
-  returnedErrors.phoneNumber = /\([0-9]{3}\) [0-9]{3}-[0-9]{4}/.test(formState.businessPhone);
-  console.log("returned errors?", returnedErrors)
+  returnedErrors.phoneNumber = !(/[0-9]{3}-[0-9]{3}-[0-9]{4}/.test(formState.phoneNumber))
   // check if any of them are empty, if they are, set to error state to true
-  if (!formState.businessName || !formState.storeAddress || !formState.businessPhone) {
+  if (!formState.businessName || !formState.storeAddress || !formState.phoneNumber) {
     returnedErrors.businessName = !formState.businessName;
     returnedErrors.storeAddress = !formState.storeAddress;
 
@@ -30,13 +29,13 @@ const validateInput = (formState, errors) => {
     returnedErrors.businessName = formState.businessName.length <= 0;
     returnedErrors.storeAddress = formState.storeAddress.length <= 0
   }
+
   return returnedErrors;
 };
 
 export const SignUp = (props) => {
   const style = styles();
   const user = props.user.getBasicProfile();
-  console.log(user)
 
   const [formState, setFormState] = useState({
     businessName: "",
@@ -68,12 +67,10 @@ export const SignUp = (props) => {
           inputRef(ref ? ref.inputElement : null);
         }}
         mask={[
-          "(",
-          /[1-9]/,
           /\d/,
           /\d/,
-          ")",
-          " ",
+          /\d/,
+          "-",
           /\d/,
           /\d/,
           /\d/,
@@ -83,7 +80,7 @@ export const SignUp = (props) => {
           /\d/,
           /\d/,
         ]}
-        placeholderChar={"\u2000"}
+        placeholderChar={"#"}
         showMask
       />
     );
@@ -109,18 +106,15 @@ export const SignUp = (props) => {
     let hasErrors = false;
     Object.keys(errorState).map(key => hasErrors = hasErrors || errorState[key])
     if (!hasErrors) {
-      let formattedPhone = formState.phoneNumber.replace(/\(|[ ]/g, "")
-      formattedPhone = formattedPhone.replace(/\)/, "-")
-      console.log("formattedPhone", formattedPhone)
       axiosWrap.post('/business/add-business', {
         businessName: formState.businessName,
-        businessPhone: formattedPhone,
+        businessPhone: formState.phoneNumber,
         ownerFullName: user.Ad, 
-        ownerPhone: formattedPhone,
+        ownerPhone: formState.phoneNumber,
         pickupAddress: formState.storeAddress,
         ownerEmail: user.$t,
       }).then(res => {
-        console.log("made the business!", res)
+        props.businessCreated(res.data._id);
       }).catch(err => {
         console.log("Couldn't reach server!", err)
       })

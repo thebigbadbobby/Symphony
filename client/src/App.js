@@ -163,7 +163,7 @@ export default function App() {
   const SelectScreen = (props) => {
     if (props.newUser) {
       // show the sign up screen
-      return <SignUp user={user} businessCreated={businessCreated} />;
+      return <SignUp user={user} businessCreated={businessCreated} />
     } else if (props.isSignedIn) {
       // direct them to the app
       return (
@@ -202,7 +202,7 @@ export default function App() {
       disableGutters={true}
     >
       <CssBaseline />
-      {loading || newUser === undefined ? (
+      {loading ? (
         <Loading />
       ) : (
         <ThemeProvider theme={theme}>

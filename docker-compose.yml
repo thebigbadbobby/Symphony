@@ -1,14 +1,17 @@
-version: '3'
+version: "3"
 services:
   app:
     container_name: kahzum-backend
     restart: always
     build: .
     ports:
-    - 80:${SERVER_PORT}
+      - 80:${SERVER_PORT}
     environment:
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
       RESERVED_PHONE_NUMBER: ${RESERVED_PHONE_NUMBER}
-      MONGO_URL: ${MONGO_URL}
+      DEV_PHONE_NUMBER: ${DEV_PHONE_NUMBER}
+      MONGO_URL_PROD: ${MONGO_URL_PROD}
+      MONGO_URL_DEV: ${MONGO_URL_DEV}
+      DEV_MODE: ${DEV_MODE}
       SERVER_PORT: ${SERVER_PORT}

@@ -15,7 +15,7 @@
     "kill": "killall node",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "twilio-prod": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"http://34.215.193.17/twilio/sms\"",
+    "twilio-prod": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"https://api.kahzum.com/twilio/sms\"",
     "docker": "docker-compose up -d",
     "prod": "concurrently \"npm run server\" \"npm run twilio-prod\""
   },

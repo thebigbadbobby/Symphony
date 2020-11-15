@@ -94,7 +94,7 @@ const useStyles2 = makeStyles({
 });
 
 // eslint-disable-next-line require-jsdoc
-export default function OrdersTable(props) {
+export const OrdersTable = (props) => {
   // eslint-disable-next-line react/prop-types
   const {business}= props;
   console.log(business)

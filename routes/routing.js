@@ -38,6 +38,7 @@ router.get("/routeUrl", (req, res) => {
         if(stopNum == 10){
           links.push(link);
           stopNum = 0;
+          i-=1;
           link = "https://www.google.com/maps/dir/my+location";
         }else{
           link += `/${addresses[i]}`;
@@ -45,7 +46,7 @@ router.get("/routeUrl", (req, res) => {
         }
       }
       links.push(link);
-      res.status(200).send(`${links}`);
+      res.status(200).send(JSON.stringify(links));
     });
   });
 });

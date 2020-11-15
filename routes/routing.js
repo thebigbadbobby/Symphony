@@ -1,17 +1,55 @@
 const express = require("express");
 const twilio = require("twilio");
+const mongoose = require('mongoose');
 const PersonalRoute = require('../models/personal_route');
 const Driver = require('../models/driver');
 const router = express.Router();
 
 // @description get route for one specific driver
 // @params
-// driverID
+// driverId
 // @payload
 // The routing info for that driver, detail TBD
-router.get("/route", (req, res) => {
-  res.send(req.body);
+router.get("/routeUrl", (req, res) => {
+  let routeId;
+  let route = [];
+  let addresses = [];
+  let links = [];
+  let prefix = "https://www.google.com/maps/dir/my+location/";  
+  let ObjectId = require('mongodb').ObjectId;
+  Driver.findOne({ _id: req.body.driverId }, (err, driver) => {
+    if (err) {
+      res.status(404).send(`can't find driver`);
+    }
+    routeId = `${driver.todaysRoute}`;
+  }).then(()=>{
+    PersonalRoute.findOne({ _id: routeId }, (err, personalRoute) => {
+      if (err) {
+        res.status(404).send(`can't find route`);
+      }
+      route = personalRoute.route.slice(1);
+    }).then(()=>{
+      route.forEach((routeObj) => {
+        addresses.push(encodeURIComponent(routeObj.get("address")));
+      });
+      let stopNum = 0;
+      let link = "https://www.google.com/maps/dir/my+location";
+      for(let i =0;i<addresses.length;i++){
+        if(stopNum == 10){
+          links.push(link);
+          stopNum = 0;
+          link = "https://www.google.com/maps/dir/my+location";
+        }else{
+          link += `/${addresses[i]}`;
+          stopNum+=1;
+        }
+      }
+      links.push(link);
+      res.status(200).send(`${links}`);
+    });
+  });
 });
+  
 
 // @description Invoke python script to compute route for drivers. 
 // This function does not get nor save the result of rouing, 
@@ -121,7 +159,7 @@ router.post('/saveRoutingOutput', (req, res) => {
       if (err) {
         res.status(404).send(`can't find driver`);
       }
-      driver.todaysRoute = personalRoute._id;
+      driver.todaysRoute = {"_id": personalRoute._id};
       driver.save()
         .catch((err) => {
           console.log(err);

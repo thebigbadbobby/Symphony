@@ -6,25 +6,27 @@ const CompletedOrder = require('../models/completed_order');
 
 const router = express.Router();
 
-// @description gets a business's completed order history
-// @params
-// {
-//   business: id,
-// }
-// @payload
-// array of completed order objects
-router.get('/completed-orders', (req, res) => {
-  if (!req.body.hasOwnProperty('business')) {
-    res.status(400).send('Missing business');
-  }
-  CompletedOrder.find({ business: req.body.business }, (err, docs) => {
-    if (err) {
-      console.log(err);
-      res.status(404).send('Could not find business');
-    }
-    res.send(JSON.stringify(docs));
-  });
-});
+// // @description gets a business's completed order history
+// // @params
+// // {
+// //   business: id,
+// // }
+// // @payload
+// // array of completed order objects
+// router.get('/completed-orders', (req, res) => {
+//   if (!req.body.hasOwnProperty('business')) {
+//     res.status(400).send('Missing business');
+//     return;
+//   }
+//   CompletedOrder.find({ business: req.body.business }, (err, docs) => {
+//     if (err) {
+//       console.log(err);
+//       res.status(404).send('Could not find business');
+//       return;
+//     }
+//     res.send(JSON.stringify(docs));
+//   });
+// });
 
 // @description deletes a business's order
 // @params
@@ -37,8 +39,10 @@ router.get('/completed-orders', (req, res) => {
 router.post('/delete-order', ((req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
+    return;
   } if (!req.body.hasOwnProperty('order')) {
     res.status(400).send('Missing order');
+    return;
   }
   PendingOrder.deleteOne({ _id: req.body.order, business: req.body.business }, (err) => {
     if (err) {
@@ -94,21 +98,27 @@ router.post('/sign-in', (req, res) => {
 router.post('/add-business', (req, res) => {
   if (!req.body.hasOwnProperty('businessName')) {
     res.status(400).send('Missing businessName');
+    return;
   }
   if (!req.body.hasOwnProperty('ownerFullName')) {
     res.status(400).send('Missing OwnerName');
+    return;
   }
   if (!req.body.hasOwnProperty('ownerPhone')) {
     res.status(400).send('Missing ownerPhone');
+    return;
   }
   if (!req.body.hasOwnProperty('ownerEmail')) {
     res.status(400).send('Missing ownerEmail');
+    return;
   }
   if (!req.body.hasOwnProperty('pickupAddress')) {
     res.status(400).send('Missing pickupAddress');
+    return;
   }
   if (!req.body.hasOwnProperty('businessPhone')) {
     res.status(400).send('Missing Phone');
+    return;
   }
   const owner = new Owner({
     fullName: req.body.ownerFullName,
@@ -146,6 +156,7 @@ router.post('/add-business', (req, res) => {
 router.patch('/update-business', async (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
+    return;
   }
   try {
     const business = await Business.findOne({ _id: req.body.business });
@@ -162,6 +173,36 @@ router.patch('/update-business', async (req, res) => {
     res.send('Updated business');
   } catch (e) {
     res.status(404).send(JSON.stringify(e));
+  }
+});
+
+// @description returns businesses completed orders
+// @params
+// {
+//   business: 'businessID',
+//   N: integer (number of orders to return)
+// }
+// @payload
+// Returns N orders that business completed ordered by most recent
+router.get('/completed-orders', async (req, res) => {
+  if (!req.query.hasOwnProperty('business')) {
+    res.status(400).send('Missing businessss');
+    return;
+  }
+  if (!req.query.hasOwnProperty('N')) {
+    res.status(400).send('Missing N');
+    return;
+  }
+  if (isNaN(req.query.N) || parseInt(req.query.N) <= 0) {
+    res.status(400).send('N has to be a positive integer');
+    return;
+  }
+  try {
+    const orders = await CompletedOrder.find({ business: req.query.business })
+      .sort({ createdAt: -1 }).populate('driver');
+    res.send(orders.splice(0, parseInt(req.query.N)));
+  } catch (e) {
+    res.status(500).send(JSON.stringify(e));
   }
 });
 

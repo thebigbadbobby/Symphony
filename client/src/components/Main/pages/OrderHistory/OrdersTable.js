@@ -96,9 +96,9 @@ const useStyles2 = makeStyles({
 // eslint-disable-next-line require-jsdoc
 export const OrdersTable = (props) => {
   // eslint-disable-next-line react/prop-types
-  const {business}= props;
+  let {business}= props;
   console.log(business)
-    //"5fa4a33634b8df278531dfd5"
+    business = "5fa4a33634b8df278531dfd5"
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -108,7 +108,7 @@ export const OrdersTable = (props) => {
 
   useEffect(() => {
     axiosWrap.get('/business/completed-orders',
-        {params: {business}},
+        {params: {business, N: 10}},
     )
         .then(function(response) {
           // const rows = orders.sort((a, b) => {
@@ -116,6 +116,7 @@ export const OrdersTable = (props) => {
           // });
           rows = response.data;
           emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+          console.log(response)
           setLoading(false)
         })
         .catch(function(error) {
@@ -155,7 +156,7 @@ export const OrdersTable = (props) => {
   };
 
   return (
-      <React.fragment>
+      <React.Fragment>
         {loading ? (
             <Loading />
         ) : (
@@ -207,6 +208,6 @@ export const OrdersTable = (props) => {
               </Table>
             </TableContainer>
         )}
-      </React.fragment>
+      </React.Fragment>
   );
 }

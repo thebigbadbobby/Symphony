@@ -203,9 +203,9 @@ export const SignUp = (props) => {
                 defaultValue={formState.pickupTime}
                 onChange={(e) => handleDropdownChange(e, "pickupTime")}
               >
-                <MenuItem value="2pm">2:00pm</MenuItem>
-                <MenuItem value="3pm">3:00pm</MenuItem>
-                <MenuItem value="4pm">4:00pm</MenuItem>
+                <MenuItem value="2pm">2:00pm-5:00pm</MenuItem>
+                {/* <MenuItem value="3pm">3:00pm</MenuItem>
+                <MenuItem value="4pm">4:00pm</MenuItem> */}
               </Select>
               <FormHelperText className={style.field}>
                 When should we allow drivers to pick up?

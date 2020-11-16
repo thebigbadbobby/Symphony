@@ -133,25 +133,37 @@ export const OrdersTable = (props) => {
     setPage(0);
   };
 
+  const militaryToStandard = (standard) =>{
+      if(standard.split(':')[1].length === 1){
+          standard = `${standard.split(':')[0]}:${standard.split(':')[1]}0`
+      }
+      if(parseInt(standard.split(':')[0]) >= 12 && parseInt(standard.split(':')[0]) !== 24){
+          if(standard.split(':')[0] !== 12){
+              return `${parseInt(standard.split(':')[0]) - 12}:${standard.split(':')[1]} PM`
+          }
+          else {
+              return `12:${standard.split(':')[1]} PM`
+          }
+      }
+      else{
+          if(parseInt(standard.split(':')[0]) === 24 || parseInt(standard.split(':')[0]) === 0){
+              return `12:${standard.split(':')[1]} AM`
+          }
+          else {
+              return `${standard} AM`
+          }
+      }
+  }
   const makeDateNice = (dateString) => {
     const date = new Date(dateString);
-    const today = new Date();
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
-    const todays = {day: today.getDate(), month: today.getMonth() + 1,
-      year: today.getFullYear()};
     const dates = {day: date.getDate(), month: date.getMonth() + 1,
       year: date.getFullYear(),
       time: `${date.getHours()}:${date.getMinutes()}`};
-    if (todays.day === dates.day && todays.month === dates.month &&
-        todays.year === dates.year) {
-      return `${dates.time}`;
-    }
-    if (todays.year === dates.year) {
-      return `${monthNames[dates.month - 1]} ${dates.day}`;
-    }
-    return `${dates.year}`;
+    return `${monthNames[dates.month -1]} ${dates.day}, 
+    ${dates.year} @ ${militaryToStandard(dates.time)}`;
   };
 
   return (
@@ -174,6 +186,12 @@ export const OrdersTable = (props) => {
                           {order.customer_name}</TableCell>
                         <TableCell style={{width: 160}} align="right">
                           {order.address}</TableCell>
+                          <TableCell style={{width: 160}} align="right">
+                              {order.phone}</TableCell>
+                          <TableCell style={{width: 160}} align="right">
+                              {order.driver.fullName}</TableCell>
+                          <TableCell style={{width: 160}} align="right">
+                              {order.imageUrl}</TableCell>
                         <TableCell style={{width: 160}} align="right">
                           {makeDateNice(order.createdAt)}
                         </TableCell>

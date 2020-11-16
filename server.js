@@ -20,10 +20,10 @@ dotenv.config();
 // Replace the following with your Atlas connection string
 
 let dbURI;
-if (process.env.DEV_MODE === 'TRUE') {
-  dbURI = process.env.MONGO_URL_DEV;
-} else {
+if (process.env.DEV_MODE === 'FALSE') {
   dbURI = process.env.MONGO_URL_PROD;
+} else {
+  dbURI = process.env.MONGO_URL_DEV;
 }
 const port = process.env.SERVER_PORT || 5000;
 

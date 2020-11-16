@@ -103,8 +103,8 @@ export const OrdersTable = (props) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [loading, setLoading] = useState(true);
-  let rows;
-  let emptyRows;
+  const [rows,setRows] = useState(undefined);
+  const [emptyRows, setEmptyRows] = useState(undefined);
 
   useEffect(() => {
     axiosWrap.get('/business/completed-orders',
@@ -114,9 +114,8 @@ export const OrdersTable = (props) => {
           // const rows = orders.sort((a, b) => {
           //   return new Date(b.createdAt) - new Date(a.createdAt);
           // });
-          rows = response.data;
-          emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-          console.log(response)
+          setRows(response.data);
+          setEmptyRows(rowsPerPage - Math.min(rowsPerPage, response.data.length - page * rowsPerPage));
           setLoading(false)
         })
         .catch(function(error) {
@@ -157,7 +156,7 @@ export const OrdersTable = (props) => {
 
   return (
       <React.Fragment>
-        {loading ? (
+        {(loading)? (
             <Loading />
         ) : (
             <TableContainer component={Paper}>

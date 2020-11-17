@@ -190,8 +190,8 @@ export const OrdersTable = (props) => {
                               {order.phone}</TableCell>
                           <TableCell style={{width: 160}} align="right">
                               {order.driver.fullName}</TableCell>
-                          {/*<TableCell style={{width: 160}} align="right">*/}
-                          {/*    {order.imageUrl}</TableCell>*/}
+                          <TableCell style={{width: 160}} align="right">
+                              <a href={order.imageUrl} target='_blank'>Image url</a></TableCell>
                         <TableCell style={{width: 160}} align="right">
                           {makeDateNice(order.createdAt)}
                         </TableCell>

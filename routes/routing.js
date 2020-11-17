@@ -3,6 +3,8 @@ const twilio = require("twilio");
 const mongoose = require('mongoose');
 const PersonalRoute = require('../models/personal_route');
 const Driver = require('../models/driver');
+const PendingOrder = require('../models/pending_order');
+const Business = require('../models/business');
 const router = express.Router();
 
 // @description get route for one specific driver
@@ -50,70 +52,82 @@ router.get("/routeUrl", (req, res) => {
     });
   });
 });
-  
+ 
+
+function getAllOrder() {
+  let orderInfo  = [];
+  PendingOrder.find().then(function(docs){
+    // console.log(docs);
+    for (let i = 0; i < docs.length; i += 1) {
+      let info = {};
+      info["drop-off-location"] = docs[i].address;
+      info["orderId"] = docs[i]._id
+      Business.findById(docs[i].business).then(function(doc){
+        info["pick-up-location"] = doc.pickupAddress;
+        orderInfo.push(info);
+      });
+    }
+  });
+  return new Promise(resolve => {
+    setTimeout(()=>{
+      resolve(orderInfo);
+    },2000);
+  });
+}
 
 // @description Invoke python script to compute route for drivers. 
 // This function does not get nor save the result of rouing, 
 // the python script will invoke another api call to do that. See /saveRoutingOutput
-// @params
-// req.body.driverIds -> list of strings. Represent different drivers
-// req.body.startLocation -> list of strings, eg. ['starting addr1','starting addr2'...]
-// Driver Ids and startLocation need to be 1 to 1 corresponding. (At their own index)
-// req.body.addressPairs -> list of strings, eg. ['pickup1','dropoff1','pickup2','dropoff2'...]
-// req.body.orderIds -> list of strings, eg. ['orderId1', 'orderId2', 'orderId3']
 router.post("/computeRoute", (req, res) => {
-  if (!req.body.hasOwnProperty("startLocation")) {
-    res.status(400).send("Missing startLocation");
-  }
 
-  if (!req.body.hasOwnProperty("addressPairs")) {
-    res.status(400).send("Missing addressPairs");
-  }
-
-  if (!req.body.hasOwnProperty("driverIds")) {
-    res.status(400).send("Missing driverIDs");
-  }
-  dict = {};
-  dict["driverInfo"] = []
-  for (let i =0;  i < req.body.driverIds.length; i += 1){
-    let info = {};
-    info["driverId"] = req.body.driverIds[i];
-    info["startLocation"] = req.body.startLocation[i];
-    dict["driverInfo"].push(info);
-  }
-
-  dict["orderInfo"] = [];
-  for (let i = 0; i < req.body.orderIds.length; i += 1) {
-    let info = {};
-    info["pick-up-location"] = req.body.addressPairs[i*2];
-    info["drop-off-location"] = req.body.addressPairs[i*2 + 1];
-    info["orderId"] = req.body.orderIds[i]
-    dict["orderInfo"].push(info);
-  }
-
-  let dictstring = JSON.stringify(dict);
-  const fs = require("fs");
-  fs.writeFile(
-    "./routing/dailyDestinationList/dests.json",
-    dictstring,
-    function (err, result) {
-      if (err) console.log("error", err);
+  // fetch info from db.
+  
+  let driverDocs;
+  let dict = {};
+  // fetch all(one, for now) driver id
+  Driver.find({}, function (err, docs){
+    if(err){
+      console.log(err);
+      return;
     }
-  );
+    driverDocs = docs;
+  }).then(async function() {
+    
+    dict["driverInfo"] = []
+    for (let i =0;  i < driverDocs.length; i += 1){
+      let info = {};
+      info["driverId"] = driverDocs[i]._id;
+      info["startLocation"] = driverDocs[i].startLocation;
+      dict["driverInfo"].push(info);
+    }
 
-  const spawn = require("child_process").spawn;
-  const ls = spawn("python", [
-    "./routing/routeCalculation.py",
-    "./routing/dailyDestinationList/dests.json",
-  ]);
+    // fetch all pending orders
+    dict["orderInfo"] = await getAllOrder();
+    
+    let dictstring = JSON.stringify(dict);
+    const fs = require("fs");
+    fs.writeFile(
+      "./routing/dailyDestinationList/dests.json",
+      dictstring,
+      function (err, result) {
+        if (err) console.log("error", err);
+      }
+    );
 
-  ls.stdout.on("data", (data) => {
-    console.log(`stdout: ${data}`);
-  });
-  ls.stderr.on("data", (data) => {
-    console.log(`stderr: ${data}`);
-  });
-  res.status(200).send("Okay");
+    const spawn = require("child_process").spawn;
+    const ls = spawn("python", [
+      "./routing/routeCalculation.py",
+      "./routing/dailyDestinationList/dests.json",
+    ]);
+
+    ls.stdout.on("data", (data) => {
+      console.log(`stdout: ${data}`);
+    });
+    ls.stderr.on("data", (data) => {
+      console.log(`stderr: ${data}`);
+    });
+    res.status(200).send("Okay");
+  })  
 });
 
 // @description this Api call is specifically for the python script when it 
@@ -160,8 +174,9 @@ router.post('/saveRoutingOutput', (req, res) => {
       if (err) {
         res.status(404).send(`can't find driver`);
       }
-      driver.todaysRoute = {"_id": personalRoute._id};
-      driver.save()
+      console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
+      driver.todaysRoute = '5fb341644448d425d0b0be96';
+      driver.save({"_id":routingOutput.driverId, "todaysRoute":'5fb341644448d425d0b0be96'})
         .catch((err) => {
           console.log(err);
           res.status(500).send(`${JSON.stringify(err)}`);

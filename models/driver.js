@@ -21,11 +21,19 @@ const driverSchema = new Schema({
     type: String,
     required: true,
   },
-  todaysRoute: {
+  ordersDelivering: [{
     type: Schema.Types.ObjectId,
-    ref: 'PersonalRoute',
+    ref: 'PendingOrder',
+    required: true,
+  }],
+  todayRoute: {
+    type: Schema.Types.ObjectId,
+    ref: 'personal_route',
   },
-  
+  startLocation: {
+    type: String
+  }
+
 }, { timestamps: true });
 
 const Driver = mongoose.model('Driver', driverSchema);

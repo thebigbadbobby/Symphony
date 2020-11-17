@@ -180,7 +180,7 @@ router.patch('/update-business', async (req, res) => {
 // @params
 // {
 //   business: 'businessID',
-//   N: integer (number of orders to return)
+//   N: integer (number of orders to return, optional)
 // }
 // @payload
 // Returns N orders that business completed ordered by most recent

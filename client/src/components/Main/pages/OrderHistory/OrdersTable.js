@@ -8,6 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import TableHead from '@material-ui/core/TableHead';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
@@ -97,14 +98,13 @@ const useStyles2 = makeStyles({
 export const OrdersTable = (props) => {
   // eslint-disable-next-line react/prop-types
   let {business}= props;
-  console.log(business)
-    business = "5fa4a33634b8df278531dfd5"
   const classes = useStyles2();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [loading, setLoading] = useState(true);
   const [rows,setRows] = useState(undefined);
   const [emptyRows, setEmptyRows] = useState(undefined);
+  const [emptyTable,setEmptyTable] = useState(true);
 
   useEffect(() => {
     axiosWrap.get('/business/completed-orders',
@@ -116,6 +116,9 @@ export const OrdersTable = (props) => {
           // });
           setRows(response.data);
           setEmptyRows(rowsPerPage - Math.min(rowsPerPage, response.data.length - page * rowsPerPage));
+          if(response.data.length !== 0){
+              setEmptyTable(false)
+          }
           setLoading(false)
         })
         .catch(function(error) {
@@ -171,59 +174,70 @@ export const OrdersTable = (props) => {
         {(loading)? (
             <Loading />
         ) : (
-            <TableContainer component={Paper}>
-              <Table className={classes.table} aria-label="custom pagination table">
-                <TableBody>
-                  {(rowsPerPage > 0 ?
-                          // eslint-disable-next-line max-len
-                          rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) :
-                          rows
-                  ).map((order) => (
-                      <TableRow hover onClick={() => {
-                        // setOrder(order);
-                      }} key={order._id}>
-                        <TableCell style={{width: 160}} align="right">
-                          {order.customer_name}</TableCell>
-                        <TableCell style={{width: 160}} align="right">
-                          {order.address}</TableCell>
-                          <TableCell style={{width: 160}} align="right">
-                              {order.phone}</TableCell>
-                          <TableCell style={{width: 160}} align="right">
-                              {order.driver.fullName}</TableCell>
-                          <TableCell style={{width: 160}} align="right">
-                              <a href={order.imageUrl} target='_blank'>Image url</a></TableCell>
-                        <TableCell style={{width: 160}} align="right">
-                          {makeDateNice(order.createdAt)}
-                        </TableCell>
-                      </TableRow>
-                  ))}
+            emptyTable ? (<div>No Completed Orders Yet!</div>)
+                : (<TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="custom pagination table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Customer Name</TableCell>
+                                <TableCell align="right">Address</TableCell>
+                                <TableCell align="right">Phone</TableCell>
+                                <TableCell align="right">Driver's Name</TableCell>
+                                <TableCell align="right">Drop Off Image</TableCell>
+                                <TableCell align="right">Date</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {(rowsPerPage > 0 ?
+                                    // eslint-disable-next-line max-len
+                                    rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) :
+                                    rows
+                            ).map((order) => (
+                                <TableRow hover onClick={() => {
+                                    // setOrder(order);
+                                }} key={order._id}>
+                                    <TableCell style={{width: 160}} align="right">
+                                        {order.customer_name}</TableCell>
+                                    <TableCell style={{width: 160}} align="right">
+                                        {order.address}</TableCell>
+                                    <TableCell style={{width: 160}} align="right">
+                                        {order.customer_phone}</TableCell>
+                                    <TableCell style={{width: 160}} align="right">
+                                        {order.driver.fullName}</TableCell>
+                                    <TableCell style={{width: 160}} align="right">
+                                        <a href={order.imageUrl} target='_blank'>Image url</a></TableCell>
+                                    <TableCell style={{width: 160}} align="right">
+                                        {makeDateNice(order.createdAt)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
 
-                  {emptyRows > 0 && (
-                      <TableRow style={{height: 53 * emptyRows}}>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                  )}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25, {label: 'All', value: -1}]}
-                        colSpan={3}
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        SelectProps={{
-                          inputProps: {'aria-label': 'rows per page'},
-                          native: true,
-                        }}
-                        onChangePage={handleChangePage}
-                        onChangeRowsPerPage={handleChangeRowsPerPage}
-                        ActionsComponent={TablePaginationActions}
-                    />
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
+                            {emptyRows > 0 && (
+                                <TableRow style={{height: 53 * emptyRows}}>
+                                    <TableCell colSpan={6} />
+                                </TableRow>
+                            )}
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, {label: 'All', value: -1}]}
+                                    colSpan={3}
+                                    count={rows.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    SelectProps={{
+                                        inputProps: {'aria-label': 'rows per page'},
+                                        native: true,
+                                    }}
+                                    onChangePage={handleChangePage}
+                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </TableContainer>)
         )}
       </React.Fragment>
   );

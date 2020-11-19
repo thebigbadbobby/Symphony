@@ -140,16 +140,16 @@ export const OrdersTable = (props) => {
       if(standard.split(':')[1].length === 1){
           standard = `${standard.split(':')[0]}:${standard.split(':')[1]}0`
       }
-      if(parseInt(standard.split(':')[0]) >= 12 && parseInt(standard.split(':')[0]) !== 24){
+      if(parseInt(standard.split(':')[0], 10) >= 12 && parseInt(standard.split(':')[0], 10) !== 24){
           if(standard.split(':')[0] !== 12){
-              return `${parseInt(standard.split(':')[0]) - 12}:${standard.split(':')[1]} PM`
+              return `${parseInt(standard.split(':')[0], 10) - 12}:${standard.split(':')[1]} PM`
           }
           else {
               return `12:${standard.split(':')[1]} PM`
           }
       }
       else{
-          if(parseInt(standard.split(':')[0]) === 24 || parseInt(standard.split(':')[0]) === 0){
+          if(parseInt(standard.split(':')[0], 10) === 24 || parseInt(standard.split(':')[0], 10) === 0){
               return `12:${standard.split(':')[1]} AM`
           }
           else {

@@ -48,9 +48,9 @@ export const EditBusiness = (props) => {
       businessName: document.getElementById("companyName").value,
       businessPhone: document.getElementById("phone").value,
       pickupAddress: document.getElementById("address").value,
-      ownerFullName: props.user.getBasicProfile().Ad,
+      ownerFullName: props.user.fullName,
       ownerPhone: document.getElementById("phone").value,
-      ownerEmail: props.user.getBasicProfile().$t,
+      ownerEmail: props.user.email,
     })
 
     .then(function (response) {

@@ -59,6 +59,22 @@ export default function App() {
     },
   });
 
+  /** Sets the user from the google object so that it is standardized
+   * for this application.
+   */
+  const setUserFromGoogle = (auth) => {
+    const profile = auth.currentUser.get().getBasicProfile()
+    // This is important because the fields from google change!! This makes it static, appwide
+    let usr = {
+      id: profile.getId(),
+      fullName: profile.getName(),
+      familyName: profile.getGivenName(),
+      imageUrl: profile.getImageUrl(),
+      email: profile.getEmail(),
+    }
+    setUser(usr);
+  }
+
   /** Initializes sign in for auto log in. */
   useEffect(() => {
     window.gapi.load("client:auth2", () => {
@@ -88,7 +104,7 @@ export default function App() {
   /** Calls sign in when user changes */
   useEffect(() => {
     if (user) {
-      let email = user.tt.$t;
+      let email = user.email
       axiosWrap
         .post("/business/sign-in", { ownerEmail: email })
         .then((res) => {
@@ -113,7 +129,7 @@ export default function App() {
       // gsignIn != prev value prevents infinite loop
       if (gsignIn && gsignIn !== signedIn) {
         setSignIn(auth.isSignedIn.get());
-        setUser(auth.currentUser.get());
+        setUserFromGoogle(auth);
         setAuth(auth);
         setLoading(false);
       }
@@ -126,8 +142,7 @@ export default function App() {
     auth
       .signIn()
       .then(() => {
-        // setSignIn(true);
-        setUser(auth.currentUser.get());
+        setUserFromGoogle(auth);
         setLoading(false);
       })
       .catch(() => {

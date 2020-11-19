@@ -95,10 +95,10 @@ const useStyles2 = makeStyles({
   table: {
     minWidth: 500,
   },
-    box: {
-      display: flex,
-      justifyContent: center
-    }
+    // box: {
+    //   display: flex,
+    //   justifyContent: center
+    // }
 });
 
 // eslint-disable-next-line require-jsdoc

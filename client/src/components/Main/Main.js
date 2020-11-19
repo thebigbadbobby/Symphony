@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { TodaysOrders } from "./pages/TodaysOrders"
-import { OrderHistory } from "./pages/OrderHistory"
+import { OrderHistory } from "./pages/OrderHistory/OrderHistory"
 import { LogIn } from "../LogIn/LogIn";
 import styles from "./Main.styles";
 import { EditBusiness } from './pages/EditBusiness/EditBusiness'
@@ -32,7 +32,7 @@ export const Main = (props) => {
       case 'today\'s-orders':
         return <TodaysOrders business={business}/>
       default:
-        return <OrderHistory />
+        return <TodaysOrders business={business}/>
     }
   }
   const handleDrawerOpen = () => {

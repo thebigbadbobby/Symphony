@@ -10,6 +10,9 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableHead from '@material-ui/core/TableHead';
 import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
@@ -92,6 +95,10 @@ const useStyles2 = makeStyles({
   table: {
     minWidth: 500,
   },
+    box: {
+      display: flex,
+      justifyContent: center
+    }
 });
 
 // eslint-disable-next-line require-jsdoc
@@ -174,7 +181,12 @@ export const OrdersTable = (props) => {
         {(loading)? (
             <Loading />
         ) : (
-            emptyTable ? (<div>No Completed Orders Yet!</div>)
+            emptyTable ? (<Box className ={classes.box}>
+                    <Typography variant="h5">
+                        No Completed Orders Yet!
+                    </Typography>
+                    <InsertEmoticonIcon/>
+            </Box>)
                 : (<TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="custom pagination table">
                         <TableHead>

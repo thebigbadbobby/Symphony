@@ -102,8 +102,8 @@ export const OrderHistory = (props) => {
   // eslint-disable-next-line react/prop-types
   let { business } = props;
   const style = styles();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState(undefined);
   const [emptyRows, setEmptyRows] = useState(undefined);

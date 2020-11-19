@@ -48,7 +48,7 @@ export const SignUp = (props) => {
   const style = styles();
 
   // State variables
-  const user = props.user.getBasicProfile();
+  const user = props.user
   const [formState, setFormState] = useState({
     businessName: "",
     storeAddress: "",
@@ -126,10 +126,10 @@ export const SignUp = (props) => {
         .post("/business/add-business", {
           businessName: formState.businessName,
           businessPhone: formState.phoneNumber,
-          ownerFullName: user.Ad,
+          ownerFullName: user.fullName,
           ownerPhone: formState.phoneNumber,
           pickupAddress: formState.storeAddress,
-          ownerEmail: user.$t,
+          ownerEmail: user.email,
         })
         .then((res) => {
           props.businessCreated(res.data._id);
@@ -152,7 +152,7 @@ export const SignUp = (props) => {
           color="textPrimary"
           align="center"
         >
-          Hi {getFirstName(user.Ad)}!
+          Hi {getFirstName(user.fullName)}!
         </Typography>
         <Typography
           className={style.explanation}

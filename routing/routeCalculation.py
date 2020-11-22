@@ -132,7 +132,7 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
     """Prints solution to stdout in a better way"""
     solutionObj = {"routes": []}
     total_time = 0
-    # print(orderIds);
+    
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
         solutionObj["routes"].append({})
@@ -157,7 +157,7 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
         solutionObj["routes"][vehicle_id]['routeTime'] = route_time
         total_time = route_time
     solutionObj["totalTime"] = total_time
-    return solutionObj;
+    return solutionObj
 
 def saveSolutionToDB(solutionObj):
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
@@ -182,8 +182,8 @@ def main(argv):
     for Orderinfo in input_info['orderInfo']:
         addresses.append(Orderinfo['pick-up-location'])
         addresses.append(Orderinfo['drop-off-location'])
-        orderIds.append(Orderinfo['orderId']);
-        orderIds.append(Orderinfo['orderId']);
+        orderIds.append(Orderinfo['orderId'])
+        orderIds.append(Orderinfo['orderId'])
 
     data = request_distance_data(addresses)
 

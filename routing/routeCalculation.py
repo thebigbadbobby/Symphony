@@ -176,7 +176,7 @@ def main(argv):
 
  
     input_info = get_input_info(argv[1])
-
+    # print(json.dumps(input_info))
     driverInfos = input_info['driverInfo']
     addresses = []
     orderIds = []
@@ -258,7 +258,7 @@ def main(argv):
         # print_solution(data, manager, routing, solution)
         solutionObj = get_solution_obj(data, manager, routing, solution, addresses, driverIds, orderIds)
         # print(json.dumps(solutionObj))
-        saveSolutionToDB(solutionObj);
+        saveSolutionToDB(solutionObj)
 
 if __name__ == '__main__':
     main(sys.argv)

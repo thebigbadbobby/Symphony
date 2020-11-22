@@ -26,6 +26,14 @@ const driverSchema = new Schema({
     ref: 'PendingOrder',
     required: true,
   }],
+  todaysRoute: {
+    type: Schema.Types.ObjectId,
+    ref: 'personal_route',
+    required: true,
+  },
+  startLocation: {
+    type: String
+  }
 }, { timestamps: true });
 
 const Driver = mongoose.model('Driver', driverSchema);

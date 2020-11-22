@@ -129,3 +129,25 @@ This file represents the orders that have been placed by a small business (but n
 
 - `locality`
   - So that the routing algorithm can run for each locality (and we aren't assigning a driver to a super far away business simply because they are the only one available)
+
+## Personal Route
+
+### What does this represent:
+
+This file stores the optimized route for each driver every day.
+
+### The schema:
+
+#### Current Fields:
+
+- `driverId`
+  - The driver's ID number of which the route is for
+- `route`
+  - In-order places/addresses that the driver is going to follow for the day
+- `routeTime`
+  - Total time of going through the whole route
+
+#### Desired fields:
+
+- `currentStop`
+  - So that Kahzum can keep track of the driver's working progress of the day.

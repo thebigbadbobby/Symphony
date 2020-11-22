@@ -7,13 +7,14 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { TodaysOrders } from "./pages/TodaysOrders"
-import { OrderHistory } from "./pages/OrderHistory"
-import { StoreSettings } from "./pages/StoreSettings"
+import { OrderHistory } from "./pages/OrderHistory/OrderHistory"
 import { LogIn } from "../LogIn/LogIn";
 import styles from "./Main.styles";
+import { EditBusiness } from './pages/EditBusiness/EditBusiness'
 
 export const Main = (props) => {
   const style = styles();
+  const { business } = props
   const [open, setOpen] = React.useState(false);
 
   let [pageState, setPageState] = useState('today\'s-orders');
@@ -25,13 +26,13 @@ export const Main = (props) => {
   const renderSwitch = () => {
     switch (pageState) {
       case 'order-history':
-        return <OrderHistory />
+        return <OrderHistory business={business}/>
       case 'store-settings':
-        return <StoreSettings/>
+        return <EditBusiness user={props.user} />
       case 'today\'s-orders':
-        return <TodaysOrders/>
+        return <TodaysOrders business={business}/>
       default:
-        return <OrderHistory />
+        return <TodaysOrders business={business}/>
     }
   }
   const handleDrawerOpen = () => {

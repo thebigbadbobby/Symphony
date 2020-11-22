@@ -34,7 +34,6 @@ const driverSchema = new Schema({
   startLocation: {
     type: String
   }
-
 }, { timestamps: true });
 
 const Driver = mongoose.model('Driver', driverSchema);

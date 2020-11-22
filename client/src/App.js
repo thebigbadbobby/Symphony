@@ -9,7 +9,8 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import styles from "./App.styles";
 import logo from "./assets/mint-stacked.svg";
 import { Loading } from "./components/Loading/Loading";
-
+import { axiosWrap } from "./axios-wrapper";
+import { SignUp } from "./components/SignUp/SignUp";
 
 const Copyright = () => {
   const style = styles();
@@ -37,7 +38,9 @@ export default function App() {
   let [auth, setAuth] = useState(undefined);
   let [user, setUser] = useState(undefined);
   let [loading, setLoading] = useState(true);
-
+  let [businessID, setBusinessID] = useState(undefined);
+  let [newUser, setNewUser] = useState(undefined);
+  // creats a global state for all components
   const style = styles();
 
   /** Create a theme */
@@ -56,6 +59,22 @@ export default function App() {
     },
   });
 
+  /** Sets the user from the google object so that it is standardized
+   * for this application.
+   */
+  const setUserFromGoogle = (auth) => {
+    const profile = auth.currentUser.get().getBasicProfile()
+    // This is important because the fields from google change!! This makes it static, appwide
+    let usr = {
+      id: profile.getId(),
+      fullName: profile.getName(),
+      familyName: profile.getGivenName(),
+      imageUrl: profile.getImageUrl(),
+      email: profile.getEmail(),
+    }
+    setUser(usr);
+  }
+
   /** Initializes sign in for auto log in. */
   useEffect(() => {
     window.gapi.load("client:auth2", () => {
@@ -66,19 +85,42 @@ export default function App() {
           scope: "email", // and whatever else passed as a string...
         })
         .then(() => {
-          setAuth(window.gapi.auth2.getAuthInstance())
-          window.gapi.auth2.getAuthInstance().isSignedIn.listen(handleAuthChange);
-          setLoading(false)
-        })
+          setAuth(window.gapi.auth2.getAuthInstance());
+          window.gapi.auth2
+            .getAuthInstance()
+            .isSignedIn.listen(handleAuthChange);
+          setLoading(false);
+        });
     });
-  }, [])
+  }, []);
 
   /** Calls an auth change whenever auth changes */
   useEffect(() => {
     if (auth) {
       handleAuthChange();
     }
-  }, [auth])
+  }, [auth]);
+
+  /** Calls sign in when user changes */
+  useEffect(() => {
+    if (user) {
+      let email = user.email
+      axiosWrap
+        .post("/business/sign-in", { ownerEmail: email })
+        .then((res) => {
+          setNewUser(res.data.newUser);
+          setBusinessID(res.data.businessID);
+          setLoading(false);
+          if (!res.data.newUser) {
+            setSignIn(true);
+          }
+        })
+        .catch(function (error) {
+          alert("error");
+          alert(JSON.stringify(error));
+        });
+    }
+  }, [user]);
 
   /** Handles auth changes (in sign in status) */
   const handleAuthChange = () => {
@@ -87,66 +129,99 @@ export default function App() {
       // gsignIn != prev value prevents infinite loop
       if (gsignIn && gsignIn !== signedIn) {
         setSignIn(auth.isSignedIn.get());
-        setUser(auth.currentUser.get());
+        setUserFromGoogle(auth);
         setAuth(auth);
-        setLoading(false)
+        setLoading(false);
       }
     }
   };
 
   /** Signs the user in and updates state. */
   const handleSignIn = () => {
-    setLoading(true)
-    auth.signIn().then(() => {
-      setSignIn(true);
-      setUser(auth.currentUser.get());
-      setLoading(false)
-    }).catch(() => {
-      console.log("Failed to sign in")
-      setLoading(false)
-    });
+    setLoading(true);
+    auth
+      .signIn()
+      .then(() => {
+        setUserFromGoogle(auth);
+        setLoading(false);
+      })
+      .catch(() => {
+        console.log("Failed to sign in");
+        setLoading(false);
+      });
   };
 
   /** Signs the user out and updates state */
   const handleSignOut = () => {
-    setLoading(true)
-    auth.signOut().then(() => {
-      setSignIn(false);
-      setUser(undefined);
-      setLoading(false)
-    }).catch(() => {
-      console.log("Failed to sign out")
-      setLoading(false)
-    });
+    setLoading(true);
+    auth
+      .signOut()
+      .then(() => {
+        setSignIn(false);
+        setUser(undefined);
+        setLoading(false);
+      })
+      .catch(() => {
+        console.log("Failed to sign out");
+        setLoading(false);
+      });
+  };
+
+  /** When the user creates a business from the sign up screen, this is called. */
+  const businessCreated = (businessId) => {
+    setNewUser(false);
+    setSignIn(true);
+    setBusinessID(businessId)
+  }
+
+  /** Used to decide which screen should be shown to the user */
+  const SelectScreen = (props) => {
+    if (props.newUser) {
+      // show the sign up screen
+      return <SignUp user={user} businessCreated={businessCreated} />
+    } else if (props.isSignedIn) {
+      // direct them to the app
+      return (
+        <Main
+          isSignedIn={signedIn}
+          user={user}
+          auth={auth}
+          signOut={handleSignOut}
+          business={businessID}
+          // newUser={newUser}
+        />
+      );
+    } else {
+      // direct them to the splash screen
+      return (
+        <Container
+          component="div"
+          maxWidth="lg"
+          className={style.signInContainer}
+        >
+          <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
+          <Typography className={style.tagLine} variant="h5">
+            Same-day Delivery for Your Small Business
+          </Typography>
+          <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
+        </Container>
+      );
+    }
   };
 
   return (
-    <Container className={style.app} component="div" maxWidth={false} disableGutters={true}>
+    <Container
+      className={style.app}
+      component="div"
+      maxWidth={false}
+      disableGutters={true}
+    >
       <CssBaseline />
       {loading ? (
-        <Loading/>
+        <Loading />
       ) : (
         <ThemeProvider theme={theme}>
-          {signedIn ? (
-            <Main
-              isSignedIn={signedIn}
-              user={user}
-              auth={auth}
-              signOut={handleSignOut}
-            />
-          ) : (
-            <Container
-              component="div"
-              maxWidth="lg"
-              className={style.signInContainer}
-            >
-              <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
-              <Typography className={style.tagLine} variant="h5">
-                Same-day Delivery for Your Small Business
-              </Typography>
-              <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
-            </Container>
-          )}
+          <SelectScreen isSignedIn={signedIn} newUser={newUser} />
           <Copyright />
         </ThemeProvider>
       )}

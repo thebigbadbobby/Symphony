@@ -13,6 +13,7 @@ const routing = require('./routes/routing');
 // const pendingPickup = require('./routes/pending_pickup');
 
 const app = express();
+
 app.use(cors());
 
 // connect to mongodb & listen for requests
@@ -20,7 +21,12 @@ app.use(cors());
 dotenv.config();
 // Replace the following with your Atlas connection string
 
-const dbURI = process.env.MONGO_URL;
+let dbURI;
+if (process.env.DEV_MODE === 'FALSE') {
+  dbURI = process.env.MONGO_URL_PROD;
+} else {
+  dbURI = process.env.MONGO_URL_DEV;
+}
 const port = process.env.SERVER_PORT || 5000;
 
 app.use(express.json());

@@ -5,11 +5,13 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
     "axios": "^0.21.0",
-    "react-loading": "^2.0.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.0.17"
+    "react-loading": "^2.0.3",
+    "react-scripts": "1.0.17",
+    "react-text-mask": "^5.4.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -18,7 +20,6 @@
     "format": "prettier --write \"**/*.+(js|jsx|json|css|md)\"",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:5000",
   "devDependencies": {
     "prettier": "^2.1.2"
   }

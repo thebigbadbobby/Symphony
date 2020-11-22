@@ -26,9 +26,10 @@ const driverSchema = new Schema({
     ref: 'PendingOrder',
     required: true,
   }],
-  todayRoute: {
+  todaysRoute: {
     type: Schema.Types.ObjectId,
     ref: 'personal_route',
+    required: true,
   },
   startLocation: {
     type: String

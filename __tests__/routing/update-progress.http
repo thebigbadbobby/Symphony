@@ -1,4 +1,4 @@
-POST http://localhost:5000/routing/saveRoutingOutput
+POST http://localhost:5000/routing/update-progress
 Content-Type: application/json
 
 {

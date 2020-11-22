@@ -200,7 +200,7 @@ router.post('/update-progress', (req, res) => {
     }
     // console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
     // console.log('driver: ' , driver);
-    let routeId = personalRoute._id;
+    let routeId = driver.todaysRoute._id;
     PersonalRoute.findOne({_id: routeId}, (err, route) => {
       if (err) {
         res.status(404).send(`can't find route`);

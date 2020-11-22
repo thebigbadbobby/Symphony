@@ -31,7 +31,6 @@ def request_distance_data(locations):
         # send request
         r = requests.get(template + text)
         if(r.status_code != 200):
-            print("test: status code is " + str(r.status_code))
             print(r.text)
             exit(1)
 
@@ -63,7 +62,7 @@ def request_distance_data(locations):
         r = requests.post(template, json=body, headers=headers)
         # print("test: status code is " + str(r.status_code))
         if(r.status_code != 200):
-            # print(r.text)
+            print(r.text)
             return 10000000
         # read results
         respondJson = json.loads(r.text)  # XXX read the matrix
@@ -106,7 +105,6 @@ def request_distance_data(locations):
 
     data['num_vehicles'] = 1
     data['depot'] = 0
-    # print('cp')
     return data
 
 
@@ -144,8 +142,6 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
         stop_ids = []
         stops = []
         while not routing.IsEnd(index):
-            # print(stops)
-            # print(stop_ids)
             stop_ids.append(manager.IndexToNode(index))
             # print('index:', index, 'node: ', manager.IndexToNode(index));
             stop = {}
@@ -167,7 +163,6 @@ def saveSolutionToDB(solutionObj):
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
     r = requests.post(url = URL, json = solutionObj)
     print('server responde', r.status_code)
-    # print(r.text)
 
 def main(argv):
     with open("cred.json") as file:
@@ -176,7 +171,6 @@ def main(argv):
 
  
     input_info = get_input_info(argv[1])
-    # print(json.dumps(input_info))
     driverInfos = input_info['driverInfo']
     addresses = []
     orderIds = []
@@ -193,11 +187,7 @@ def main(argv):
 
     data = request_distance_data(addresses)
 
-    # with open('temp.json') as file:
-    #    data = json.load(file)
-
     # print(json.dumps(data))
-    # exit()
 
     # Create the routing index manager.
     manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
@@ -254,7 +244,6 @@ def main(argv):
 
     # Print solution on console.
     if solution:
-        # print("cp")
         # print_solution(data, manager, routing, solution)
         solutionObj = get_solution_obj(data, manager, routing, solution, addresses, driverIds, orderIds)
         # print(json.dumps(solutionObj))

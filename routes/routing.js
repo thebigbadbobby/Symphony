@@ -191,4 +191,28 @@ router.post('/saveRoutingOutput', (req, res) => {
   res.status(200).send(`success`);
 });
 
+// @params
+// Driver Id
+router.post('/update-progress', (req, res) => {
+  Driver.findOne({ _id: req.body.id }, (err, driver) => {
+    if (err) {
+      res.status(404).send(`can't find driver`);
+    }
+    // console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
+    // console.log('driver: ' , driver);
+    let routeId = personalRoute._id;
+    PersonalRoute.findOne({_id: routeId}, (err, route) => {
+      if (err) {
+        res.status(404).send(`can't find route`);
+      }
+      route.currentIndex += 1;
+      route.save()
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send(`${JSON.stringify(err)}`);
+        });
+    });
+  });
+});
+
 module.exports = router;

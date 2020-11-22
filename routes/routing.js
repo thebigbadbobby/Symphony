@@ -212,6 +212,7 @@ router.post('/update-progress', (req, res) => {
           res.status(500).send(`${JSON.stringify(err)}`);
         });
     });
+    res.status(200).send();
   });
 });
 

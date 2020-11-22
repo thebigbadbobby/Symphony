@@ -174,9 +174,11 @@ router.post('/saveRoutingOutput', (req, res) => {
       if (err) {
         res.status(404).send(`can't find driver`);
       }
-      console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
-      driver.todaysRoute = '5fb341644448d425d0b0be96';
-      driver.save({"_id":routingOutput.driverId, "todaysRoute":'5fb341644448d425d0b0be96'})
+      // console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
+      // console.log('driver: ' , driver);
+      driver.todaysRoute = personalRoute._id;
+      // console.log('new driver: ' , driver);
+      driver.save()
         .catch((err) => {
           console.log(err);
           res.status(500).send(`${JSON.stringify(err)}`);

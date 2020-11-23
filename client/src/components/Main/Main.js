@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import {Drawer} from './Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -6,8 +6,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import { TodaysOrders } from "./pages/TodaysOrders"
 import { OrderHistory } from "./pages/OrderHistory/OrderHistory"
+import { TodaysOrders } from "./pages/TodaysOrders/TodaysOrders"
 import { LogIn } from "../LogIn/LogIn";
 import styles from "./Main.styles";
 import { EditBusiness } from './pages/EditBusiness/EditBusiness'
@@ -15,12 +15,13 @@ import { EditBusiness } from './pages/EditBusiness/EditBusiness'
 export const Main = (props) => {
   const style = styles();
   const { business } = props
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   let [pageState, setPageState] = useState('today\'s-orders');
 
   const changePage = (page) => {
     setPageState(page)
+    setOpen(false)
   }
 
   const renderSwitch = () => {
@@ -59,7 +60,7 @@ export const Main = (props) => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap>
+            <Typography variant="h6" className={style.appTitle}>
               Kahzum Same Day
             </Typography>
             <div className={style.signOutButton}>
@@ -72,9 +73,7 @@ export const Main = (props) => {
           </Toolbar>
         </AppBar>
         <Drawer handleDrawerClose={handleDrawerClose} changePage={changePage} open={open}/>
-        <div className={clsx(style.content, {
-              [style.contentShift]: open,
-            })}>
+        <div className={style.mainContainer}>
         {renderSwitch()}
         </div>
       </React.Fragment>

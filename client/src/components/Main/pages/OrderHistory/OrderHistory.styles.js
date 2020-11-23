@@ -5,6 +5,22 @@ const styles = makeStyles((theme) => ({
     flexShrink: 0,
     marginLeft: theme.spacing(2.5),
   },
+  historyContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3)
+  },
+  header: {
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "1.2rem",
+    },
+  },
   table: {
     minWidth: 500,
   },
@@ -14,6 +30,10 @@ const styles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     textAlign: "center"
+  },
+  skeleton: {
+    minHeight: 300,
+    width: "100%",
   },
   icon: {
     marginTop: theme.spacing(3),

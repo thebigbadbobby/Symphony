@@ -66,13 +66,16 @@ router.post('/sign-in', (req, res) => {
   }
   Owner.findOne({ email: req.body.ownerEmail })
     .then((owner) => {
-      console.log(JSON.stringify(owner));
       Business.findOne({ owners: { $in: owner._id } })
         .then((business) => {
-          res.send({ businessID: business._id, newUser: false });
+          if (business) {
+            res.send({ businessID: business._id, newUser: false });
+          } else {
+            res.status(400).send(`Owner ${owner._id} does not belong to any business`);
+          }
         })
         .catch((err) => {
-          console.log(err);
+          console.log('error: ', err);
           res.status(404).send(`Owner ${owner._id} does not belong to any business`);
         });
     })

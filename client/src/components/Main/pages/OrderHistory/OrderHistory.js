@@ -22,8 +22,10 @@ import CardContent from "@material-ui/core/CardContent"
 import Button from "@material-ui/core/Button"
 import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import { axiosWrap } from "../../../../axios-wrapper";
-import { Loading } from "../../../Loading/Loading";
 import styles from "./OrderHistory.styles";
+import Container from "@material-ui/core/Container"
+import { Skeleton } from '@material-ui/lab';
+
 
 // eslint-disable-next-line require-jsdoc
 const TablePaginationActions = (props) => {
@@ -114,6 +116,7 @@ export const OrderHistory = (props) => {
   }, []);
 
   const getOrders = () => {
+    setLoading(true)
     axiosWrap
     .get("/business/completed-orders", { params: { business, N: 10 } })
     .then(function (response) {
@@ -132,6 +135,7 @@ export const OrderHistory = (props) => {
     })
     .catch(function (error) {
       console.log(error);
+      setLoading(false)
     });
   }
 
@@ -198,8 +202,16 @@ export const OrderHistory = (props) => {
 
   return (
     <React.Fragment>
+      <Container
+        component="div"
+        maxWidth={false}
+        className={style.historyContainer}
+      >
+        <Typography className={style.header} variant="h4">
+          Order History
+        </Typography>
       {loading ? (
-        <Loading />
+        <Skeleton variant="rect" className={style.skeleton}/>
       ) : emptyTable ? (
           <Card>
             <CardContent className={style.placeHolder}>
@@ -296,6 +308,7 @@ export const OrderHistory = (props) => {
           </Table>
         </TableContainer>
       )}
+      </Container>
     </React.Fragment>
   );
 };

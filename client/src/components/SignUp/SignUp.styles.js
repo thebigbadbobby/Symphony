@@ -18,6 +18,17 @@ form: {
 },
 field: {
   marginBottom: theme.spacing(2)
+},
+fieldHeader: {
+  fontSize: "0.9rem"
+},
+hint: {
+  fontSize: "0.7rem",
+  marginTop: theme.spacing(-1.3),
+  marginBottom: theme.spacing(1)
+},
+save: {
+  marginTop: theme.spacing(2)
 }
 }));
 

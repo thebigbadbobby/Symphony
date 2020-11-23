@@ -3,7 +3,6 @@ import styles from "./SignUp.styles";
 import {
   Container,
   Typography,
-  TextField,
   Input,
   FormHelperText,
   Select,
@@ -13,8 +12,8 @@ import {
   Button,
 } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
-import MaskedInput from "react-text-mask";
 import { axiosWrap } from "../../axios-wrapper";
+import { PhoneNumberMask } from "../Shared/PhoneNumberMask"
 
 /** A helper function for validating inputs from the user and erroring if necessary. */
 const validateInput = (formState, errors) => {
@@ -64,36 +63,6 @@ export const SignUp = (props) => {
     pickupTime: false,
     // deliveryDays: false,
   });
-
-  /** Courtesy of the material UI library */
-  const TextMaskCustom = (props) => {
-    const { inputRef, ...other } = props;
-
-    return (
-      <MaskedInput
-        {...other}
-        ref={(ref) => {
-          inputRef(ref ? ref.inputElement : null);
-        }}
-        mask={[
-          /\d/,
-          /\d/,
-          /\d/,
-          "-",
-          /\d/,
-          /\d/,
-          /\d/,
-          "-",
-          /\d/,
-          /\d/,
-          /\d/,
-          /\d/,
-        ]}
-        placeholderChar={"#"}
-        showMask
-      />
-    );
-  };
 
   /** Called whenever there is an input change... updates the object holding the form state */
   const onChange = (e) => {
@@ -172,7 +141,10 @@ export const SignUp = (props) => {
               autoComplete="off"
               onSubmit={handleSubmit}
             >
-              <TextField
+              <FormHelperText className={style.fieldHeader}>
+              Business Name
+              </FormHelperText>
+              <Input
                 className={style.field}
                 id="businessName"
                 label="Business Name"
@@ -180,7 +152,10 @@ export const SignUp = (props) => {
                 onChange={onChange}
                 error={formErrors.businessName}
               />
-              <TextField
+              <FormHelperText className={style.fieldHeader}>
+              Store Address
+              </FormHelperText>
+              <Input
                 className={style.field}
                 id="storeAddress"
                 label="Store Address"
@@ -188,14 +163,23 @@ export const SignUp = (props) => {
                 onChange={onChange}
                 error={formErrors.storeAddress}
               />
+              <FormHelperText className={style.hint}>
+              e.g. 1234 Sesame St. New York, New York, 12345
+              </FormHelperText>
+              <FormHelperText className={style.fieldHeader}>
+              Phone Number
+              </FormHelperText>
               <Input
                 className={style.field}
                 name="textmask"
                 id="phoneNumber"
-                inputComponent={TextMaskCustom}
+                inputComponent={PhoneNumberMask}
                 onChange={onChange}
                 error={formErrors.phoneNumber}
               />
+              <FormHelperText className={style.fieldHeader}>
+              Pickup Time
+              </FormHelperText>
               <Select
                 labelId="demo-simple-select-label"
                 id="pickupTime"
@@ -207,7 +191,7 @@ export const SignUp = (props) => {
                 {/* <MenuItem value="3pm">3:00pm</MenuItem>
                 <MenuItem value="4pm">4:00pm</MenuItem> */}
               </Select>
-              <FormHelperText className={style.field}>
+              <FormHelperText>
                 When should we allow drivers to pick up?
               </FormHelperText>
               {/* We can add this in if we ever decide to do two day */}
@@ -225,6 +209,7 @@ export const SignUp = (props) => {
                 Which days would you prefer deliveries?
               </FormHelperText> */}
               <Button
+              className={style.save}
                 variant="contained"
                 color="primary"
                 type="submit"

@@ -89,7 +89,6 @@ export default function App() {
           window.gapi.auth2
             .getAuthInstance()
             .isSignedIn.listen(handleAuthChange);
-          setLoading(false);
         });
     });
   }, []);
@@ -131,7 +130,8 @@ export default function App() {
         setSignIn(auth.isSignedIn.get());
         setUserFromGoogle(auth);
         setAuth(auth);
-        setLoading(false);
+      } else {
+        setLoading(false)
       }
     }
   };
@@ -143,7 +143,6 @@ export default function App() {
       .signIn()
       .then(() => {
         setUserFromGoogle(auth);
-        setLoading(false);
       })
       .catch(() => {
         console.log("Failed to sign in");

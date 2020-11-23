@@ -1,28 +1,14 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-// export const styles = makeStyles((theme) => ({
-//   menuButton: {
-//     marginRight: theme.spacing(2),
-//   },
-//   title: {
-//     flexGrow: 1,
-//     [theme.breakpoints.down("xs")]: {
-//       visibility: 'hidden',
-//       fontSize: ".25rem"
-//     },
-//   },
-//   signOutButton: {
-//     marginLeft: "auto",
-//     marginRight: theme.spacing(2),
-//     [theme.breakpoints.down("xs")]: {
-//       flexGrow: 2,
-//     },
-//   }
-// }));
 const drawerWidth = 240;
 export const styles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+  },
+  appTitle: {
+    [theme.breakpoints.down("xs")]: {
+      fontSize: "0.9rem"
+    },
   },
   appBar: {
     transition: theme.transitions.create(['margin', 'width'], {
@@ -30,14 +16,6 @@ export const styles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
-  // appBarShift: {
-  //   width: `calc(100% - ${drawerWidth}px)`,
-  //   marginLeft: drawerWidth,
-  //   transition: theme.transitions.create(['margin', 'width'], {
-  //     easing: theme.transitions.easing.easeOut,
-  //     duration: theme.transitions.duration.enteringScreen,
-  //   }),
-  // },
   hide: {
     display: 'none',
   },
@@ -60,9 +38,6 @@ export const styles = makeStyles((theme) => ({
   signOutButton: {
     marginLeft: "auto",
     marginRight: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
-      flexGrow: 2,
-    },
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -74,6 +49,10 @@ export const styles = makeStyles((theme) => ({
       fontSize: ".25rem"
     },
   },
+  mainContainer: {
+    display: "flex",
+    flexDirection: "column"
+  }
 }));
 
 export default styles

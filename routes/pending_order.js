@@ -10,37 +10,86 @@ const router = express.Router();
 //   orders: [{
 //     addresses: 'string',
 //     customer_name: 'string',
-//     customer_phone: 'string'
+//     customer_phone: 'string',
+//     id: string
 //   }],
 // }
 // @payload returns a success message
 router.post('/add-orders', async (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
+    return;
   }
   if (!req.body.hasOwnProperty('orders')) {
     res.status(400).send('Missing orders');
+    return;
   }
-  const orders = [];
+  const promises = [];
   for (let i = 0; i < req.body.orders.length; i += 1) {
     const order = req.body.orders[i];
-    const pendingOrder = new PendingOrder({
-      business: req.body.business,
-      customer_name: order.customer_name,
-      customer_phone: order.customer_phone,
-      address: order.address,
-    });
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const saved = await pendingOrder.save();
-      orders.push(saved);
-    } catch (e) {
-      console.log(e);
-      res.status(400).send(`${JSON.stringify(e)}`);
-      return;
-    }
+    promises.push(new Promise((resolve, reject) => {
+      if (order.id) {
+        PendingOrder.findByIdAndUpdate(order.id,
+          {
+            $set: {
+              address: order.address,
+              customer_phone: order.customer_phone,
+              customer_name: order.customer_name,
+            },
+          }).then((result) => {
+          resolve(result);
+        }).catch((err) => {
+          reject(err);
+        });
+      } else {
+        const newOrder = new PendingOrder({
+          business: req.body.business,
+          customer_name: order.customer_name,
+          customer_phone: order.customer_phone,
+          address: order.address,
+        });
+        newOrder.save().then((result) => {
+          resolve(result);
+        }).catch((err) => {
+          reject(err);
+        });
+      }
+    }));
   }
-  res.send(orders);
+
+  Promise.all(promises).then((result) => {
+    res.send(result);
+  }).catch((err) => {
+    res.status(500).send(JSON.stringify(err));
+  });
+});
+
+// @description deletes an order
+// @params
+// {
+//   orderId: string // the order id to be deleted
+// }
+//
+//
+router.delete('/delete-order', (req, res) => {
+  const requestBody = req.body;
+  console.log(requestBody);
+  if (!requestBody.hasOwnProperty('orderId')) {
+    res.status(400).send('Missing order id');
+    return;
+  }
+  PendingOrder.findByIdAndDelete(requestBody.orderId)
+    .then((result) => {
+      if (result) {
+        res.send(result);
+      } else {
+        res.status(400).send('Couldn\'t find id to delete');
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
+    });
 });
 
 // @description returns the pending orders for a specific business
@@ -60,10 +109,12 @@ router.post('/add-orders', async (req, res) => {
 //     __v: 0
 // }],
 router.get('/my-orders', (req, res) => {
-  if (!req.body.hasOwnProperty('business')) {
+  const requestBody = req.query;
+  if (!requestBody.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
+    return;
   }
-  PendingOrder.find({ business: req.body.business })
+  PendingOrder.find({ business: requestBody.business })
     .then((result) => {
       res.send(result);
     })

@@ -32,6 +32,7 @@ const styles = makeStyles((theme) => ({
   },
   copyright: {
     marginTop: "auto",
+    paddingTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
   },
 }));

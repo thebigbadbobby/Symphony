@@ -14,7 +14,7 @@ const router = express.Router();
 //     id: string
 //   }],
 // }
-// @payload returns a success message
+// @payload returns a success message and the orders pre-changed
 router.post('/add-orders', async (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
     res.status(400).send('Missing business');
@@ -58,6 +58,7 @@ router.post('/add-orders', async (req, res) => {
   }
 
   Promise.all(promises).then((result) => {
+    // Note, this sends what it previously was! Don't use this value
     res.send(result);
   }).catch((err) => {
     res.status(500).send(JSON.stringify(err));

@@ -161,7 +161,7 @@ export const TodaysOrders = (props) => {
   /** Runs every time the input changes and updates the value in orders. */
   const updateInputValue = (evt, index, field) => {
     evt.preventDefault();
-    const orderTemp = orders;
+    const orderTemp = [...orders];
     orderTemp[index][field] = evt.target.value;
     // also have to remember to let the user know their changes aren't saved
     orderTemp[index].orderSaved = false
@@ -203,11 +203,13 @@ export const TodaysOrders = (props) => {
         id: order.id
       }
     })
+    console.log("orderToSubmit", submitOrderFormat)
     axiosWrap
       .post("/order/add-orders", {
         business: props.business,
         orders: submitOrderFormat
       }).then(res => {
+        // ignore the result because it is what it was previously
         const tempOrders = [...orders]
         res.data.forEach(toAssign => {
           let orderTemp = tempOrders.find(order => order.id === toAssign._id)
@@ -217,9 +219,9 @@ export const TodaysOrders = (props) => {
             orderTemp = tempOrders.find(order => order.id === null)
             indexChanged = tempOrders.findIndex(order => order.id === null)
           }
-          orderTemp.customer_name = toAssign.customer_name
-          orderTemp.customer_phone = toAssign.customer_phone
-          orderTemp.address = toAssign.address
+          // orderTemp.customer_name = toAssign.customer_name
+          // orderTemp.customer_phone = toAssign.customer_phone
+          // orderTemp.address = toAssign.address
           orderTemp.orderSaved = true;
           orderTemp.id = toAssign._id
           tempOrders[indexChanged] = orderTemp;
@@ -298,6 +300,7 @@ export const TodaysOrders = (props) => {
             disabled={checkEmpty(props.order) && orders.length === 1}
             startIcon={<DeleteIcon />}
             onClick={() => deleteOrder(props.order.id, props.order.key)}
+            onMouseOver={() => {document.activeElement.blur()}}
             key={props.order.key}
           >
             Delete this order
@@ -336,6 +339,7 @@ export const TodaysOrders = (props) => {
         variant="contained"
         color="primary"
         onClick={addBlankOrder}
+        onMouseOver={() => {document.activeElement.blur()}}
         startIcon={<AddIcon />}
       >
         Add another order
@@ -345,6 +349,7 @@ export const TodaysOrders = (props) => {
         variant="contained"
         color="primary"
         onClick={saveOrders}
+        onMouseOver={() => {document.activeElement.blur()}}
         startIcon={<SaveIcon />}
       >
         Save Today's Orders

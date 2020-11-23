@@ -38,7 +38,11 @@ app.use('/order', order);
 app.use('/twilio', twilio);
 app.use('/routing', routing);
 
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(dbURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+})
   .then(() => {
     // app.listen(port, () => `Server running on port ${port}`);
   })

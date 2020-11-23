@@ -14,15 +14,14 @@ const router = express.Router();
 // // @payload
 // // array of completed order objects
 // router.get('/completed-orders', (req, res) => {
-//   if (!req.body.hasOwnProperty('business')) {
+//   if (!req.query.hasOwnProperty('business')) {
 //     res.status(400).send('Missing business');
 //     return;
 //   }
-//   CompletedOrder.find({ business: req.body.business }, (err, docs) => {
+//   CompletedOrder.find({ business: req.query.business }, (err, docs) => {
 //     if (err) {
 //       console.log(err);
 //       res.status(404).send('Could not find business');
-//       return;
 //     }
 //     res.send(JSON.stringify(docs));
 //   });
@@ -207,6 +206,31 @@ router.get('/completed-orders', async (req, res) => {
   } catch (e) {
     res.status(500).send(JSON.stringify(e));
   }
+});
+
+// @description returns business info
+// @params
+// {
+//   business: 'businessID',
+// }
+// @payload
+// {
+// businessName: String
+// businessPhone: String
+// businessAddress: String
+// }
+router.get('/business-info', (req, res) => {
+  if (!req.query.hasOwnProperty('business')) {
+    res.status(400).send('Missing business');
+    return;
+  }
+  Business.findOne({ _id: req.query.business }, (err, doc) => {
+    if (err) {
+      console.log(err);
+      res.status(404).send('Could not find business');
+    }
+    res.send(JSON.stringify(doc));
+  });
 });
 
 module.exports = router;

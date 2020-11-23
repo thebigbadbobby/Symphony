@@ -1,15 +1,25 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 export const styles = makeStyles((theme) => ({
+  pageTitle: {
+    position: 'relative',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  storeName: {
+    position: 'relative',
+    fontWeight: 'bold',
+    top: '35px',
+    textAlign: 'center',
+    fontSize: '20px',
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
-    top: '35px',
-  },
-  storeName: {
-    fontWeight: 'bold',
-    top: '100px'
+    top: '60px',
+    width: '500px',
+    textAlign: 'center',
   },
   saveButton: {
     borderRadius: '22px/20px', // round sides!!!

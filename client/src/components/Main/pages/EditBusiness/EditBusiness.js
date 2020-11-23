@@ -1,11 +1,12 @@
 import {
-  TextField,
   Typography,
   Button,
+  Input,
+  FormHelperText,
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import React from "react";
+import React, {useEffect} from "react";
 import styles from "./EditBusiness.styles";
 import { axiosWrap } from '../../../../axios-wrapper';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -19,7 +20,35 @@ function Alert(props) {
 // Beginning of main function
 export const EditBusiness = (props) => {
   const style = styles();
-  
+
+  // Initialize string variables for pulling
+  var businessName = "";
+  var businessAddress = "";
+  var businessPhone = "";
+
+  // Calls the pullInfo function on page loading
+
+  useEffect(() => {
+    axiosWrap.get('/business/business-info',
+        { params: { business: props.business } }
+    )
+        // On success, we auto-fill the page.
+        .then(function (response) {
+          businessName = response.data.businessName;
+          businessAddress = response.data.pickupAddress;
+          businessPhone = response.data.businessPhone;
+          updateFillins();
+        })
+        // It should never fail since they should have a business already.
+  }, []);
+
+  // Updates the fill-in values if the user already has a business.
+  function updateFillins(){
+    document.getElementById("companyName").value = businessName;
+    document.getElementById("address").value = businessAddress;
+    document.getElementById("phone").value = businessPhone;
+  }
+
   // Initialize alert varaiables
   const [success, setOpenSuccess] = React.useState(false);
   const [fail, setOpenFail] = React.useState(false);
@@ -42,59 +71,72 @@ export const EditBusiness = (props) => {
 
   // Save function, sends information to the backend and gives the user a reply.
   function saved(){
-    console.log('saved');
-
-    axiosWrap.post('/business/add-business', {
-      businessName: document.getElementById("companyName").value,
-      businessPhone: document.getElementById("phone").value,
-      pickupAddress: document.getElementById("address").value,
-      ownerFullName: props.user.fullName,
-      ownerPhone: document.getElementById("phone").value,
-      ownerEmail: props.user.email,
-    })
-
-    .then(function (response) {
-      console.log(response);
-      setOpenSuccess(true);
-    })
-    
-    .catch(function (error) {
-      console.log(error);
+    // If any of the fill-ins are blank then fail.
+    if(document.getElementById("companyName").value === ""){
       setOpenFail(true);
-    });
+    } else if(document.getElementById("phone").value === ""){
+      setOpenFail(true);
+    } else if(document.getElementById("address").value ===  ""){
+      setOpenFail(true);
+    } else {
+      // If all fill-ins have values, then patch!
+      axiosWrap.patch('/business/update-business', {
+        business: props.business,
+        businessName: document.getElementById("companyName").value,
+        businessPhone: document.getElementById("phone").value,
+        pickupAddress: document.getElementById("address").value,
+      })
+      // Opens success pop-up.
+      .then(function (response) {
+        setOpenSuccess(true);
+      })
+      // Opens failure pop-up.
+      .catch(function (error) {
+        setOpenFail(true);
+      });
+    }
   }
 
   return (
     <React.Fragment>
-      <Typography className={style.storeName} variant="h4">
+      <Typography className={style.pageTitle} variant="h4">
         Store Settings
       </Typography>
-     <div className={style.container}>
-        <div className={style.storeName}>
-          Enter your store's information:
-        </div>
+      <div className={style.storeName}>
+        Please enter your store's information:
+      </div>
+      <div className={style.container}>
         <Card className={style.root}>
           <CardContent>
-            <TextField
+            <FormHelperText className={style.inputSpacing}>
+              Company Name
+            </FormHelperText> 
+            <Input
               id="companyName"
               label="Company Name"
-              // placeholder="Placeholder"
+              placeholder="e.g. Kahzum"
               multiline
               fullWidth
               variant="filled"
             />
-            <TextField
+            <FormHelperText className={style.inputSpacing}>
+              Company Address
+            </FormHelperText> 
+            <Input
               id="address"
               label="Company Address"
-              // placeholder="Placeholder"
+              placeholder="e.g. 1156 High St, Santa Cruz, CA 95064"
               multiline
               fullWidth
               variant="filled"
             />
-            <TextField
+            <FormHelperText className={style.inputSpacing}>
+              Company Phone
+            </FormHelperText> 
+            <Input
               id="phone"
               label="Company Phone"
-              placeholder="(###)###-####"
+              placeholder="e.g. 012-345-6789"
               multiline
               fullWidth
               variant="filled"
@@ -112,8 +154,8 @@ export const EditBusiness = (props) => {
       </Snackbar>
       <Snackbar open={fail} autoHideDuration={6000} onClose={handleCloseFail}>
         <Alert onClose={handleCloseFail} severity="error">
-          Incorrect format for phone number!
-          Please use the format ###-###-####.
+          Fill-in left blank or incorrect format for phone number!
+          Please use the format ###-###-#### for the phone number.
         </Alert>
       </Snackbar>
     </React.Fragment>

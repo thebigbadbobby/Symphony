@@ -29,7 +29,7 @@ export const Main = (props) => {
       case 'order-history':
         return <OrderHistory business={business}/>
       case 'store-settings':
-        return <EditBusiness user={props.user} />
+        return <EditBusiness user={props.user} business={business}/>
       case 'today\'s-orders':
         return <TodaysOrders business={business}/>
       default:

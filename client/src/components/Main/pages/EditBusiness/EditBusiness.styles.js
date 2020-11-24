@@ -5,6 +5,7 @@ export const styles = makeStyles((theme) => ({
     position: 'relative',
     fontWeight: 'bold',
     textAlign: 'center',
+    marginTop: theme.spacing(3)
   },
   storeName: {
     position: 'relative',
@@ -19,6 +20,10 @@ export const styles = makeStyles((theme) => ({
     position: 'relative',
     top: '60px',
     width: '500px',
+    alignSelf: 'center',
+    [theme.breakpoints.down("xs")]: {
+      width: '90%',
+    },
     textAlign: 'center',
   },
   saveButton: {

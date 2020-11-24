@@ -170,7 +170,7 @@ export const TodaysOrders = (props) => {
     });
 
     const enterDeadline = {
-      hour: convertTime(timeRange[0].miliaryTime - 2) + timeRange[0].postfix,
+      hour: convertTime(timeRange[0].miliaryTime - 1) + timeRange[0].postfix,
     }
 
     const dropoffTime = {

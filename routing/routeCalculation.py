@@ -47,6 +47,7 @@ def request_distance_data(locations):
         except:
             print('error parsing server response')
             print(template+text)
+            print('response:' + json.dumps(respondJson))
             exit(1)
 
     def get_travel_time(geocodeList):
@@ -167,7 +168,9 @@ def saveSolutionToDB(solutionObj):
 def main(argv):
     with open("cred.json") as file:
         global API_KEY
-        API_KEY = json.load(file)['API_KEY']
+        API_KEY = argv[2]
+        # print(API_KEY)
+        # exit()
 
  
     input_info = get_input_info(argv[1])

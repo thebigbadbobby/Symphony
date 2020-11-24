@@ -7,6 +7,14 @@ const PendingOrder = require('../models/pending_order');
 const Business = require('../models/business');
 const router = express.Router();
 
+let OPEN_ROUTE_API_KEY;
+if (process.env.DEV_MODE === 'FALSE') {
+  OPEN_ROUTE_API_KEY = process.env.OPEN_ROUTE_API_KEY_PROD;
+} else {
+  // console.log(process.env.OPEN_ROUTE_API_KEY_DEV);
+  OPEN_ROUTE_API_KEY = process.env.OPEN_ROUTE_API_KEY_DEV;
+}
+
 // @description get route for one specific driver
 // @params
 // driverId
@@ -79,7 +87,6 @@ function getAllOrder() {
 // This function does not get nor save the result of rouing, 
 // the python script will invoke another api call to do that. See /saveRoutingOutput
 router.post("/computeRoute", (req, res) => {
-
   // fetch info from db.
   
   let driverDocs;
@@ -118,6 +125,7 @@ router.post("/computeRoute", (req, res) => {
     const ls = spawn("python", [
       "./routing/routeCalculation.py",
       "./routing/dailyDestinationList/dests.json",
+      OPEN_ROUTE_API_KEY+''
     ]);
 
     ls.stdout.on("data", (data) => {

@@ -22,6 +22,8 @@ This file represents the small businesses (the physical entity) in the database.
   - The address of the business most likely, but this allows us to pick up from wherever we need.
 - `owners`
   - This is an array of all the owners of the small business. We do this to allow for multiple people to log in with their google account and still be editing the same stuff.
+- `pickupTimes24hr`
+  - This is an array representing a range of times (in military time). `pickupTimes24hr[0]` is the start time, `pickupTimes24hr[0]` is the end time.
 
 #### Desired fields:
 

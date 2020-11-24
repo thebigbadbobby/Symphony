@@ -122,6 +122,10 @@ router.post('/add-business', (req, res) => {
     res.status(400).send('Missing Phone');
     return;
   }
+  if (!req.body.hasOwnProperty('pickupTimes24hr')) {
+    res.status(400).send('Missing pickup times');
+    return;
+  }
   const owner = new Owner({
     fullName: req.body.ownerFullName,
     phone: req.body.ownerPhone,
@@ -131,6 +135,7 @@ router.post('/add-business', (req, res) => {
     businessName: req.body.businessName,
     pickupAddress: req.body.pickupAddress,
     businessPhone: req.body.businessPhone,
+    pickupTimes24hr: req.body.pickupTimes24hr,
     owners: [owner._id],
   });
   owner.save().catch((err) => {

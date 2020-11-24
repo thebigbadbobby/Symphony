@@ -27,6 +27,9 @@ export const TodaysOrders = (props) => {
       customer_phone: "",
     },
   ]);
+  // we have the business if we need it, just add the variable back here
+  let [, setBusinessInfo] = useState(undefined)
+  let [pickupInfo, setPickupInfo] = useState(undefined)
 
   // Error/success states
   let [showSkeleton, setSkeleton] = useState(true);
@@ -135,6 +138,53 @@ export const TodaysOrders = (props) => {
     setSkeleton(false)
   }
 
+  /** takes in an array with 2 numbers (representing military hours) and converts it to a readable time. */
+  const getTimesFrom24hrTimes = (arrayMilitaryTime) => {
+    const getPostfix = (time) => {
+      if (time >= 24) {
+        return (time % 24) / 12 >= 1 ? 'pm' : 'am'
+      } else if (time < 0) {
+        return 
+      } else if (time === 0) {
+        return 'pm'
+      } else {
+        return (time / 12) >= 1 ? 'pm' : 'am';
+      }
+    }
+
+    const convertTime = (timeMilitary) => {
+      if (timeMilitary === 12) {
+        return 12;
+      }
+      return timeMilitary % 12;
+    }
+
+    const timeRange = arrayMilitaryTime.map(time => {
+      const normalizedHour = convertTime(time)
+      const postfix = getPostfix(time);
+      return {
+        hour: normalizedHour,
+        postfix,
+        miliaryTime: time
+      }
+    });
+
+    const enterDeadline = {
+      hour: convertTime(timeRange[0].miliaryTime - 2) + timeRange[0].postfix,
+    }
+
+    const dropoffTime = {
+      start: convertTime(timeRange[0].miliaryTime + 2) + timeRange[0].postfix,
+      end: convertTime(timeRange[1].miliaryTime + 2) + timeRange[1].postfix,
+    }
+    const result = {
+      pickupTime: timeRange,
+      enterDeadline,
+      dropoffTime,
+    }
+    return result;
+  }
+
   /** Deletes an order from the list (and should also from the DB, if it isn't there, it just deletes locally) */
   const deleteOrder = (id, key) => {
       axiosWrap
@@ -203,7 +253,6 @@ export const TodaysOrders = (props) => {
         id: order.id
       }
     })
-    console.log("orderToSubmit", submitOrderFormat)
     axiosWrap
       .post("/order/add-orders", {
         business: props.business,
@@ -236,8 +285,21 @@ export const TodaysOrders = (props) => {
       });
   }
 
+  const fetchBusiness = () => {
+    axiosWrap.get('business/business-info', 
+      { params: { business: props.business }}
+    ).then(res => {
+      setBusinessInfo(res.data)
+      setPickupInfo(getTimesFrom24hrTimes(res.data.pickupTimes24hr))
+    }).catch(err => {
+      const message = "We couldn't get your business' information. Please check your internet connection"
+      setSnackbarError({error: true, message})
+    })
+  }
+
   /** Once everything is set up, fetch the orders */
   useEffect(() => {
+    fetchBusiness();
     fetchOrders();
   }, [props.business]);
 
@@ -320,14 +382,15 @@ export const TodaysOrders = (props) => {
         <Typography className={style.header} variant="h4">
           Today's Orders
         </Typography>
+        {pickupInfo ?
         <Typography className={style.subHeader} variant="subtitle2">
-          Your scheduled pickup time is 12am
+          Your scheduled pickup time is between <u>{ pickupInfo.pickupTime[0].hour +  pickupInfo.pickupTime[0].postfix }</u> and <u>{ pickupInfo.pickupTime[1].hour +  pickupInfo.pickupTime[1].postfix }</u>
           <br />
-          Your customers can expect their order by 1am
+          Your customers can expect their order between <u>{ pickupInfo.dropoffTime.start }</u> and <u>{ pickupInfo.dropoffTime.end }</u>
           <br />
-          Enter orders below before 11pm to ensure that we send a driver to pick
-          it up.
+          Enter orders below before <u>{ pickupInfo.enterDeadline.hour }</u> to ensure that we send a driver to pick it up.
         </Typography>
+        : null}
         <div className={style.orderList}>
           {showSkeleton ? (<Skeleton variant="rect" className={style.skeleton}/>) : (orders.map((order, index) => (
             <CusInfo order={order} key={order.key} idx={index} />

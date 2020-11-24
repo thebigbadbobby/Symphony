@@ -52,9 +52,12 @@ export const SignUp = (props) => {
     businessName: "",
     storeAddress: "",
     phoneNumber: "",
-    pickupTime: "2pm",
+    pickupTime: "2-5",
     // deliveryDays: "MWF",
   });
+  const [timeDict] = useState({
+    '2-5': [14,17]
+  })
 
   const [formErrors, setFormErrors] = useState({
     businessName: false,
@@ -98,6 +101,7 @@ export const SignUp = (props) => {
           ownerFullName: user.fullName,
           ownerPhone: formState.phoneNumber,
           pickupAddress: formState.storeAddress,
+          pickupTimes24hr: timeDict[formState.pickupTime],
           ownerEmail: user.email,
         })
         .then((res) => {
@@ -187,7 +191,7 @@ export const SignUp = (props) => {
                 defaultValue={formState.pickupTime}
                 onChange={(e) => handleDropdownChange(e, "pickupTime")}
               >
-                <MenuItem value="2pm">2:00pm-5:00pm</MenuItem>
+                <MenuItem value="2-5">2:00pm-5:00pm</MenuItem>
                 {/* <MenuItem value="3pm">3:00pm</MenuItem>
                 <MenuItem value="4pm">4:00pm</MenuItem> */}
               </Select>

@@ -21,6 +21,10 @@ const businessSchema = new Schema({
     type: String,
     required: true,
   },
+  pickupTimes24hr: {
+    type: [Number],
+    required: true,
+  },
   owners: [{
     type: Schema.Types.ObjectId,
     ref: 'Owner',

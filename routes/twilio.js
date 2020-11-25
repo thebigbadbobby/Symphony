@@ -3,7 +3,9 @@
 const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
-const { sendMediaMsg, formatPhoneNumber, textCompare } = require('../twilio/helpers');
+const {
+  sendMediaMsg, formatPhoneNumber, textCompare, sendMsg,
+} = require('../twilio/helpers');
 const Driver = require('../models/driver');
 const Business = require('../models/business');
 const PendingOrder = require('../models/pending_order');
@@ -109,6 +111,15 @@ router.post('/sms', async (req, res) => {
   // }
   res.writeHead(200, { 'Content-Type': 'text/xml' });
   res.end(twiml.toString());
+});
+
+/**
+ * This function sends everything that is listed in the payload (depending on how it works)
+ */
+router.post('/send-order-info', (req, res) => {
+  console.log('the request data', req.body);
+  sendMsg(JSON.stringify(req.body), '530-401-3190');
+  res.send('completed');
 });
 
 module.exports = router;

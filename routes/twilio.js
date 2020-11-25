@@ -116,9 +116,24 @@ router.post('/sms', async (req, res) => {
 /**
  * This function sends everything that is listed in the payload (depending on how it works)
  */
-router.post('/send-order-info', (req, res) => {
-  console.log('the request data', req.body);
-  sendMsg(JSON.stringify(req.body), '530-401-3190');
+router.post('/send-order-info', async (req, res) => {
+  const event = req.body.event;
+  // console.log('the request data', event);
+  const state = event.operationType;
+  let msg = '';
+  if (state === 'delete') {
+    msg = `One of the businesses ${state}-ed an order. It had the id: ${event.documentKey._id.$oid}`;
+  } else {
+    const businessId = event.fullDocument.business.$oid;
+    const business = await Business.findById(businessId);
+    const businessName = business ? business.businessName : "couldn't find business";
+    const document = event.fullDocument;
+    msg = `order ${state}-ed for ${businessName}. This is their new order: ${JSON.stringify(document)}`;
+  }
+
+  // console.log(msg);
+  sendMsg(msg, '530-401-3190');
+  sendMsg(msg, '650-235-5166');
   res.send('completed');
 });
 

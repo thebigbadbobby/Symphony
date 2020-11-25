@@ -58,13 +58,156 @@ Content-Type: application/json
 
 ###
 
-# Testing temporary endpoint
+# Testing temporary endpoint: ADD order
 # Post a method that tests the endpoint called by the db to notify us of an order change
 POST http://localhost:5000/twilio/send-order-info HTTP/1.1
 Content-Type: application/json
 
 {
-  "event": { "msg": "this has an arbitrary payload" }
+   "event":{
+      "_id":{
+         "_data":"825FBE927E000000012B022C0100296E5A100416602F87A9764D0AB12FF5934D0020F146645F696400645FBE927E312AAB00569302DA0004"
+      },
+      "operationType":"insert",
+      "clusterTime":{
+         "$timestamp":{
+            "t":1606324862,
+            "i":1
+         }
+      },
+      "fullDocument":{
+         "_id":{
+            "$oid":"5fbe927e312aab00569302da"
+         },
+         "business":{
+            "$oid":"5fbc86677a200121dae404a1"
+         },
+         "customer_name":"This is a test order to see if this works",
+         "customer_phone":"123-456-7890",
+         "address":"Testing address",
+         "createdAt":{
+            "$date":{
+               "$numberLong":"1606324862136"
+            }
+         },
+         "updatedAt":{
+            "$date":{
+               "$numberLong":"1606324862136"
+            }
+         },
+         "__v":{
+            "$numberInt":"0"
+         }
+      },
+      "ns":{
+         "db":"kahzumProd",
+         "coll":"pending orders"
+      },
+      "documentKey":{
+         "_id":{
+            "$oid":"5fbe927e312aab00569302da"
+         }
+      }
+   }
+}
+
+###
+
+# Testing temporary endpoint: UPDATE order
+# Post a method that tests the endpoint called by the db to notify us of an order change
+POST http://localhost:5000/twilio/send-order-info HTTP/1.1
+Content-Type: application/json
+
+{
+   "event":{
+      "_id":{
+         "_data":"825FBE92A40000000E2B022C0100296E5A100416602F87A9764D0AB12FF5934D0020F146645F696400645FBE927E312AAB00569302DA0004"
+      },
+      "operationType":"update",
+      "clusterTime":{
+         "$timestamp":{
+            "t":1606324900,
+            "i":14
+         }
+      },
+      "fullDocument":{
+         "_id":{
+            "$oid":"5fbe927e312aab00569302da"
+         },
+         "business":{
+            "$oid":"5fbc86677a200121dae404a1"
+         },
+         "customer_name":"This is a test order to see if this",
+         "customer_phone":"123-456-7890",
+         "address":"Testing address",
+         "createdAt":{
+            "$date":{
+               "$numberLong":"1606324862136"
+            }
+         },
+         "updatedAt":{
+            "$date":{
+               "$numberLong":"1606324900389"
+            }
+         },
+         "__v":{
+            "$numberInt":"0"
+         }
+      },
+      "ns":{
+         "db":"kahzumProd",
+         "coll":"pending orders"
+      },
+      "documentKey":{
+         "_id":{
+            "$oid":"5fbe927e312aab00569302da"
+         }
+      },
+      "updateDescription":{
+         "updatedFields":{
+            "customer_name":"This is a test order to see if this",
+            "updatedAt":{
+               "$date":{
+                  "$numberLong":"1606324900389"
+               }
+            }
+         },
+         "removedFields":[
+            
+         ]
+      }
+   }
+}
+
+###
+
+# Testing temporary endpoint: DELETE order
+# Post a method that tests the endpoint called by the db to notify us of an order change
+POST http://localhost:5000/twilio/send-order-info HTTP/1.1
+Content-Type: application/json
+
+{
+   "event":{
+      "_id":{
+         "_data":"825FBE9321000000072B022C0100296E5A100416602F87A9764D0AB12FF5934D0020F146645F696400645FBE927E312AAB00569302DA0004"
+      },
+      "operationType":"delete",
+      "clusterTime":{
+         "$timestamp":{
+            "t":1606325025,
+            "i":7
+         }
+      },
+      "ns":{
+         "db":"kahzumProd",
+         "coll":"pending orders"
+      },
+      "documentKey":{
+         "_id":{
+            "$oid":"5fbe927e312aab00569302da"
+         }
+      }
+   }
 }
 
 ###

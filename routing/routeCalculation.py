@@ -166,9 +166,9 @@ def saveSolutionToDB(solutionObj):
     print('server responde', r.status_code)
 
 def main(argv):
-
-    global API_KEY
-    API_KEY = argv[2]
+    with open("cred.json") as file:
+        global API_KEY
+        API_KEY = argv[2]
         # print(API_KEY)
         # exit()
 

@@ -27,5 +27,5 @@ Accept: application/json
 POST http://localhost:5000/driver/add-driver
 Content-Type: application/json
 
-{ "fullName": "Mason Pierce","phone": "530-401-3190","email": "malapier@ucsc.edu" }
+{ "fullName": "Mason Pierce","phone": "530-401-3190","email": "malapier@ucsc.edu","startLocation": "300 Main Street, Santa Cruz, CA" }
 

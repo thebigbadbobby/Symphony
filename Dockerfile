@@ -7,10 +7,18 @@ WORKDIR /usr/src/app
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 COPY package*.json ./
+COPY requirements.txt ./
 
-RUN npm install
+RUN apt-get update -y \
+    && apt-get install python3 -y \
+    && apt-get install python3-pip -y
+
+# RUN npm install
 # If you are building your code for production
-# RUN npm ci --only=production
+RUN npm ci --only=production
+
+# install the python dependencies
+RUN pip3 install -r requirements.txt
 
 # Bundle app source
 COPY . .

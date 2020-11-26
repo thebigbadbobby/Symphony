@@ -29,11 +29,11 @@ const driverSchema = new Schema({
   todaysRoute: {
     type: Schema.Types.ObjectId,
     ref: 'personal_route',
-    required: true,
   },
   startLocation: {
-    type: String
-  }
+    type: String,
+    required: true,
+  },
 }, { timestamps: true });
 
 const Driver = mongoose.model('Driver', driverSchema);

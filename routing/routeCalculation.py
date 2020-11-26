@@ -114,7 +114,7 @@ def print_solution(data, manager, routing, solution):
     total_distance = 0
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
-        plan_output = 'Route for vehicle {}:\n'.format(vehicle_ids[0])
+        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id[0])
         route_distance = 0
         while not routing.IsEnd(index):
             plan_output += ' {} -> '.format(manager.IndexToNode(index))
@@ -133,7 +133,7 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
     """Prints solution to stdout in a better way"""
     solutionObj = {"routes": []}
     total_time = 0
-    
+
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
         solutionObj["routes"].append({})
@@ -160,19 +160,21 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
     solutionObj["totalTime"] = total_time
     return solutionObj
 
+
 def saveSolutionToDB(solutionObj):
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
-    r = requests.post(url = URL, json = solutionObj)
-    print('server responde', r.status_code)
+    r = requests.post(url=URL, json=solutionObj)
+    # print(solutionObj)
+    print('server responded', r.status_code)
+
 
 def main(argv):
 
     global API_KEY
     API_KEY = argv[2]
-        # print(API_KEY)
-        # exit()
+    # print(API_KEY)
+    # exit()
 
- 
     input_info = get_input_info(argv[1])
     driverInfos = input_info['driverInfo']
     addresses = []
@@ -211,7 +213,8 @@ def main(argv):
             print(from_node)
             exit(1)
 
-    transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+    transit_callback_index = routing.RegisterTransitCallback(
+        distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
     # Add Distance constraint.
@@ -248,9 +251,11 @@ def main(argv):
     # Print solution on console.
     if solution:
         # print_solution(data, manager, routing, solution)
-        solutionObj = get_solution_obj(data, manager, routing, solution, addresses, driverIds, orderIds)
+        solutionObj = get_solution_obj(
+            data, manager, routing, solution, addresses, driverIds, orderIds)
         # print(json.dumps(solutionObj))
         saveSolutionToDB(solutionObj)
+
 
 if __name__ == '__main__':
     main(sys.argv)

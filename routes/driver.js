@@ -150,10 +150,14 @@ router.post('/add-driver', (req, res) => {
   if (!req.body.hasOwnProperty('email')) {
     res.status(400).send('Missing email');
   }
+  if (!req.body.hasOwnProperty('startLocation')) {
+    res.status(400).send('Missing startLocation');
+  }
   const driver = new Driver({
     fullName: req.body.fullName,
     phone: req.body.phone,
     email: req.body.email,
+    startLocation: req.body.startLocation,
   });
   driver.save()
     .then((result) => {

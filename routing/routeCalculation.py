@@ -93,19 +93,14 @@ def request_distance_data(locations):
     data = {}  # XXX initialization of object for googleOR
 
     # construct pickups-deliveries table
-    data['pickups_deliveries'] = []
-
-    for i in range(1, len(geocodeList), 2):
-        data['pickups_deliveries'] .append([i, i+1])
-
     # print("requesting distances...")
     # construct adjacency matrix
     data['distance_matrix'] = []
     # XXX calling get travel time, needs to input matrix
     data['distance_matrix'] = (get_travel_time(geocodeList))
 
-    data['num_vehicles'] = 1
-    data['depot'] = 0
+    # data['num_vehicles'] = 1
+    # data['depot'] = 0
     return data
 
 
@@ -114,7 +109,7 @@ def print_solution(data, manager, routing, solution):
     total_distance = 0
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
-        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id[0])
+        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id)
         route_distance = 0
         while not routing.IsEnd(index):
             plan_output += ' {} -> '.format(manager.IndexToNode(index))
@@ -138,7 +133,7 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
         index = routing.Start(vehicle_id)
         solutionObj["routes"].append({})
         solutionObj["routes"][vehicle_id] = {}
-        solutionObj["routes"][vehicle_id]["driverId"] = driverIds[0]
+        solutionObj["routes"][vehicle_id]["driverId"] = driverIds[vehicle_id]
         route_time = 0
         stop_ids = []
         stops = []
@@ -162,6 +157,8 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
 
 
 def saveSolutionToDB(solutionObj):
+    # print(json.dumps(solutionObj))
+    # exit(0)
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
     r = requests.post(url=URL, json=solutionObj)
     # print(solutionObj)
@@ -172,18 +169,17 @@ def main(argv):
 
     global API_KEY
     API_KEY = argv[2]
-    # print(API_KEY)
-    # exit()
-
     input_info = get_input_info(argv[1])
+    print(input_info)
     driverInfos = input_info['driverInfo']
     addresses = []
     orderIds = []
     driverIds = []
+
     for info in driverInfos:
         addresses.append(info['startLocation'])
         driverIds.append(info['driverId'])
-        orderIds.append('placeholder_for_driver_address')
+        orderIds.append('')
     for Orderinfo in input_info['orderInfo']:
         addresses.append(Orderinfo['pick-up-location'])
         addresses.append(Orderinfo['drop-off-location'])
@@ -191,12 +187,26 @@ def main(argv):
         orderIds.append(Orderinfo['orderId'])
 
     data = request_distance_data(addresses)
+    
+    data['starts'] = []
+    data['ends'] = []
+    data['num_vehicles'] = len(driverInfos)
 
+    # assume the driver will want to come back home
+    for i in range(0,len(driverInfos)):
+        data['starts'].append(i)
+        data['ends'].append(i)
+   
+
+    data['pickups_deliveries'] = []
+    for i in range(len(driverInfos), len(addresses), 2):
+        data['pickups_deliveries'] .append([i, i+1])
     # print(json.dumps(data))
+    # exit(0)
 
     # Create the routing index manager.
     manager = pywrapcp.RoutingIndexManager(len(data['distance_matrix']),
-                                           data['num_vehicles'], data['depot'])
+                                           data['num_vehicles'], data['starts'], data['ends'])
 
     # Create Routing Model.
     routing = pywrapcp.RoutingModel(manager)

@@ -71,8 +71,13 @@ function getAllOrder() {
       info['drop-off-location'] = docs[i].address;
       info.orderId = docs[i]._id;
       Business.findById(docs[i].business).then((doc) => {
-        info['pick-up-location'] = doc.pickupAddress;
-        orderInfo.push(info);
+        if(doc == undefined){
+          console.log('unable to find business with id', docs[i].business);
+          console.log('skipping order', docs[i]._id);
+        } else {
+          info['pick-up-location'] = doc.pickupAddress;
+          orderInfo.push(info);
+        }
       });
     }
   });

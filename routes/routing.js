@@ -26,13 +26,16 @@ router.get('/routeUrl', (req, res) => {
   let route = [];
   const addresses = [];
   const links = [];
-  const prefix = 'https://www.google.com/maps/dir/my+location/';
-  const { ObjectId } = require('mongodb');
-  Driver.findOne({ _id: req.body.driverId }, (err, driver) => {
+  if (!req.query.driverId) {
+    res.status(404).send('driverId required');
+    return;
+  }
+  const body = JSON.parse(req.query.driverId);
+  Driver.findById(body, (err, driver) => {
     if (err) {
       res.status(404).send('can\'t find driver');
     }
-    routeId = `${driver.todaysRoute}`;
+    routeId = driver.todaysRoute;
   }).then(() => {
     PersonalRoute.findOne({ _id: routeId }, (err, personalRoute) => {
       if (err) {
@@ -71,7 +74,7 @@ function getAllOrder() {
       info['drop-off-location'] = docs[i].address;
       info.orderId = docs[i]._id;
       Business.findById(docs[i].business).then((doc) => {
-        if(doc == undefined){
+        if (doc == undefined) {
           console.log('unable to find business with id', docs[i].business);
           console.log('skipping order', docs[i]._id);
         } else {
@@ -216,14 +219,23 @@ router.post('/update-progress', (req, res) => {
       if (err) {
         res.status(404).send('can\'t find route');
       }
-      route.currentIndex += 1;
-      route.save()
-        .catch((err) => {
-          console.log(err);
-          res.status(500).send(`${JSON.stringify(err)}`);
-        });
+      const routeLength = route.route.length;
+      if (route.currentIndex + 1 === routeLength) {
+        // TODO: I think we should handle this in dropoff, not here.
+        // console.warn('driver is done witht heir route, we need to do somethign here!');
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        route.currentIndex += 1;
+        route.save()
+          .then((saved) => {
+            res.status(200).send(saved);
+          })
+          .catch((error) => {
+            console.log(error);
+            res.status(500).send(`${JSON.stringify(error)}`);
+          });
+      }
     });
-    res.status(200).send();
   });
 });
 

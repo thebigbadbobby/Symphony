@@ -28,10 +28,21 @@ const driverSchema = new Schema({
   }],
   todaysRoute: {
     type: Schema.Types.ObjectId,
-    ref: 'personal_route',
+    ref: 'PersonalRoute',
   },
   startLocation: {
     type: String,
+    required: true,
+  },
+  state: {
+    type: String,
+    enum: ['idle', 'checkin', 'ready', 'onWay'],
+    default: 'idle',
+    required: true,
+  },
+  locality: {
+    type: String,
+    enum: ['auburn', 'santa cruz'],
     required: true,
   },
 }, { timestamps: true });

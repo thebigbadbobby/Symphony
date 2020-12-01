@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const Driver = require('../models/driver');
 const PendingOrder = require('../models/pending_order');
 const CompletedOrder = require('../models/completed_order');
@@ -10,7 +11,6 @@ const router = express.Router();
 // @params
 // {
 //   driver: id,
-//   order: id,
 //   imageUrl: string
 // }
 // @payload
@@ -19,54 +19,70 @@ router.post('/complete-order', async (req, res) => {
   if (!req.body.driver) {
     res.status(400).send('Missing driver');
   }
-  if (!req.body.hasOwnProperty('order')) {
-    res.status(400).send('Missing order');
-  }
-  if (!req.body.hasOwnProperty('imageUrl')) {
+  if (!req.body.imageUrl) {
     res.status(400).send('Missing image');
   }
-  // code is a mess because query and methods are asynchronous
-  Driver.findById(req.body.driver, (err, driver) => {
-    if (err) {
-      res.status(404).send('Could not find driver');
-    }
-    const index = driver.ordersDelivering.indexOf(req.body.order);
-    if (index > -1) {
-      const pendingOrderID = driver.ordersDelivering[index];
-      PendingOrder.findById(pendingOrderID, (errP, pendingOrder) => {
-        if (errP) {
-          res.status(404).send('Could not find order inside of pending order');
-        }
-        const completedOrder = new CompletedOrder(
-          {
-            business: pendingOrder.business,
-            driver: req.body.driver,
-            customer_name: pendingOrder.customer_name,
-            customer_phone: pendingOrder.customer_phone,
-            address: pendingOrder.address,
-            imageUrl: req.body.imageUrl,
-          },
-        );
-        driver.ordersDelivering.splice(index, 1);
-        driver.save()
-          .then(() => {
-            completedOrder.save()
-              .then(() => {
-                res.send('success completed order');
-              })
-              .catch((errSave) => {
-                console.log(err);
-                res.status(500).send(`${JSON.stringify(errSave)}`);
-              });
-          })
-          .catch((errSave) => {
-            console.log(err);
-            res.status(500).send(`${JSON.stringify(errSave)}`);
-          });
+  const { body } = req;
+
+  const driver = await Driver.findById(body.driver).populate('todaysRoute');
+
+  if (driver.state !== 'onWay') {
+    res.status(400).send('Driver\'s can only complete orders when they are on the way');
+    return;
+  }
+
+  if (driver.todaysRoute.route.length === driver.todaysRoute.currentIndex + 1) {
+    res.status(400).send('The driver is done for the day!');
+    return;
+  }
+
+  let completedOrder;
+  let orderIdToBeCompleted;
+  try {
+    orderIdToBeCompleted = driver.todaysRoute.route[
+      driver.todaysRoute.currentIndex === 0 ? 1 : driver.todaysRoute.currentIndex
+    ].get('orderId');
+    const orderToBeCompleted = await PendingOrder.findById(orderIdToBeCompleted);
+    completedOrder = new CompletedOrder(
+      {
+        driver: driver._id,
+        imageUrl: body.imageUrl,
+        business: orderToBeCompleted.business,
+        customer_name: orderToBeCompleted.customer_name,
+        customer_phone: orderToBeCompleted.customer_phone,
+        address: orderToBeCompleted.address,
+      },
+    );
+  } catch (err) {
+    console.log('Something went wrong with the orderId', err);
+    res.status(400).send('Something went wrong when trying to make a completed order.');
+    return;
+  }
+
+  // Save completed order
+  completedOrder.save().then((orderSaved) => {
+    // Delete the completed order from pending orders
+    PendingOrder.findByIdAndDelete(orderIdToBeCompleted).then(() => {
+      // Update the driver's progress along their route.
+      axios.post(`http://localhost:${port}/routing/update-progress`, {
+        id: driver._id,
+      }).then(() => {
+        // Everything has successfully updated
+        res.status(200).send(orderSaved);
+      }).catch((err) => {
+        console.log("Couldn't update progress", err);
+        // couldn't update driver progress
+        res.status(400).send('Driver\'s progress was not updated!!');
       });
-    } else {
-      res.status(404).send('Could not find order');
-    }
+    }).catch((err) => {
+      // couldn't delete
+      console.log("Couldn't delete pending order", err);
+      res.status(400).send('Couldn\'t delete the pending order');
+    });
+  }).catch((err) => {
+    // couldn't save
+    console.log("Couldn't save completed order", err);
+    res.status(400).send('Couldn\'t archive the order');
   });
 });
 

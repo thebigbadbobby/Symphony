@@ -1,4 +1,2 @@
-GET http://localhost:5000/routing/routeUrl
+GET http://localhost:5000/routing/routeUrl?driverId=5fa4a4a61321c028c5b72ede
 Content-Type: application/json
-
-{"driverId": "5fa4a4a61321c028c5b72ede"}

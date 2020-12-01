@@ -1,0 +1,63 @@
+# Status: Fail
+# Description: Driver tries to drop off without image
+# State Before: Driver has an order that is next on their route to drop off.
+# State After: Nothing changes because no picture was sent.
+POST http://localhost:5000/twilio/sms HTTP/1.1
+Content-Type: application/json
+
+{
+  "ToCountry": "US",
+  "ToState": "TX",
+  "SmsMessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "NumMedia": "0",
+  "ToCity": "",
+  "FromZip": "95602",
+  "SmsSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "FromState": "CA",
+  "SmsStatus": "received",
+  "FromCity": "AUBURN",
+  "Body": "dropoff",
+  "FromCountry": "US",
+  "To": "+14085210010",
+  "ToZip": "",
+  "NumSegments": "1",
+  "MessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "AccountSid": "AC6685ca9e7a76c443fab749516bdda464",
+  "From": "+15304013190",
+  "ApiVersion": "2010-04-01"
+}
+
+###
+
+# Status: Success
+# Description: Driver texts "dropoff" with image attached
+# State Before: Driver has an order that is next on their route to drop off.
+# State After: Driver's order is marked as complete, the customer recieves a text with the order state, the driver recieves a text with the confirmation.
+POST http://localhost:5000/twilio/sms HTTP/1.1
+Content-Type: application/json
+
+{
+  "AccountSid": "AC6685ca9e7a76c443fab749516bdda464",
+  "ApiVersion": "2010-04-01",
+  "Body": "Dropoff",
+  "From": "+15304013190",
+  "FromCity": "AUBURN",
+  "FromCountry": "US",
+  "FromState": "CA",
+  "FromZip": "95602",
+  "MediaContentType0": "image/jpeg",
+  "MediaUrl0": "https://api.twilio.com/2010-04-01/Accounts/AC6685ca9e7a76c443fab749516bdda464/Messages/MM4c832e31b5220294c1a6be1a1301afca/Media/ME73ae89192b99dbaf2dd5e4ff87c925e1",
+  "MessageSid": "MM4c832e31b5220294c1a6be1a1301afca",
+  "NumMedia": 1,
+  "NumSegments": 1,
+  "SmsMessageSid": "MM4c832e31b5220294c1a6be1a1301afca",
+  "SmsSid": "MM4c832e31b5220294c1a6be1a1301afca",
+  "SmsStatus": "received",
+  "To": "+14085210010",
+  "ToCity": "no value",
+  "ToCountry": "US",
+  "ToState": "TX",
+  "ToZip": "no value"
+}
+
+###

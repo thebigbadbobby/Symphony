@@ -1,0 +1,59 @@
+# Status: Success
+# Description: Driver lets us know they are going to start their route
+# State Before: The driver has recieved their directions and are in the ready state
+# State After: Driver changes to "on way" state
+POST http://localhost:5000/twilio/sms HTTP/1.1
+Content-Type: application/json
+
+{
+  "ToCountry": "US",
+  "ToState": "TX",
+  "SmsMessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "NumMedia": "0",
+  "ToCity": "",
+  "FromZip": "95602",
+  "SmsSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "FromState": "CA",
+  "SmsStatus": "received",
+  "FromCity": "AUBURN",
+  "Body": "on my way",
+  "FromCountry": "US",
+  "To": "+14085210010",
+  "ToZip": "",
+  "NumSegments": "1",
+  "MessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "AccountSid": "AC6685ca9e7a76c443fab749516bdda464",
+  "From": "+15304013190",
+  "ApiVersion": "2010-04-01"
+}
+
+###
+
+# Status: Fail
+# Description: Driver texts on-way but they were not in the "ready" state
+# State Before: Driver is in any state but ready
+# State After: Send driver message to tell them that they weren't checked in or that they we know they are on their way.
+POST http://localhost:5000/twilio/sms HTTP/1.1
+Content-Type: application/json
+
+{
+  "ToCountry": "US",
+  "ToState": "TX",
+  "SmsMessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "NumMedia": "0",
+  "ToCity": "",
+  "FromZip": "95602",
+  "SmsSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "FromState": "CA",
+  "SmsStatus": "received",
+  "FromCity": "AUBURN",
+  "Body": "on my way",
+  "FromCountry": "US",
+  "To": "+14085210010",
+  "ToZip": "",
+  "NumSegments": "1",
+  "MessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "AccountSid": "AC6685ca9e7a76c443fab749516bdda464",
+  "From": "+15304013190",
+  "ApiVersion": "2010-04-01"
+}

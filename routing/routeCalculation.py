@@ -6,11 +6,11 @@ import requests
 import time
 import sys
 
+# global variable to store the API_KEY used during calls to open route service
 API_KEY = ""
 
-
 # load destination data for today's deliveries
-# currently load from a text file
+# load from a text file
 def get_input_info(filepath):
     with open(filepath) as file:
         data = json.load(file)
@@ -18,9 +18,6 @@ def get_input_info(filepath):
 
 # use openrouteservice.org to get distance between all point of insterest
 # currently we are getting geocode by sending each location one by one. This is very slow
-# need to improve
-
-
 def request_distance_data(locations):
     # make request to obtain the geocode of a address
     def get_geocode(address):
@@ -52,58 +49,53 @@ def request_distance_data(locations):
 
     def get_travel_time(geocodeList):
         # prepare request
-        # XXX need change to send an array of addresses, including starting location (could be arbitrary for now)
         template = 'https://api.openrouteservice.org/v2/matrix/driving-car'
         headers = {"Authorization": API_KEY}  # XXX API key
         body = {"locations": geocodeList}  # XXX locations matrix
 
         # print(template+start+end)
         # send request
-        # XXX change get to post to work with matrix
         r = requests.post(template, json=body, headers=headers)
         # print("test: status code is " + str(r.status_code))
         if(r.status_code != 200):
+            print ("Unexpected status code!")
             print(r.text)
             return 10000000
+
         # read results
-        respondJson = json.loads(r.text)  # XXX read the matrix
+        respondJson = json.loads(r.text)
 
         # print(json.dumps(respondJson))
 
-        if(respondJson):  # XXX need to change how we read from the response. we want "durations" to be saved in a matrix? refer to docs
-            return respondJson['durations']  # XXX may need fixing!\
+        if(respondJson):
+            return respondJson['durations'] 
         else:
-            print(json.dumps(respondJson))
+            print ("Error parsing response from openRouteService")
+            print ("request:")
+            print ( template + header + body)
+            print ("responde:")
+            print (json.dumps(respondJson))
             return 10000000  # XXX error
 
     # print("requesting geocodes...")
+    
     geocodeList = []
-
     # calculate all driver geocodes
     for location in locations:
         geocodeList.append(get_geocode(location))
 
-    # calculate all PoI geocodes
-    # XXX fixed to now create a string of all locations
-    # for location in locations['addressPairs']:
-    #     # XXX calling get_geocode function
-    #     geocodeList.append(get_geocode(location['pick-up-location']))
-    #     geocodeList.append(get_geocode(location['drop-off-location']))
-
+    # this data ojbect will continue be modified before it can be send into googleOR's function
     data = {}  # XXX initialization of object for googleOR
-
-    # construct pickups-deliveries table
-    # print("requesting distances...")
-    # construct adjacency matrix
     data['distance_matrix'] = []
+
+
     # XXX calling get travel time, needs to input matrix
     data['distance_matrix'] = (get_travel_time(geocodeList))
 
-    # data['num_vehicles'] = 1
-    # data['depot'] = 0
+    # Currently it has distance_matrix. We still need [number of vechicle, ]
     return data
 
-
+# This function is not used in production. It could be helpful for debugging so it is not deleted
 def print_solution(data, manager, routing, solution):
     """Prints solution on console."""
     total_distance = 0
@@ -123,7 +115,9 @@ def print_solution(data, manager, routing, solution):
         total_distance += route_distance
     print('Total Distance of all routes: {}m'.format(total_distance))
 
-
+# This function IS used in production. It takes in googleOR's results and pair each address with orderIDs. 
+# Also it assign different route to each drivers(Identified by their driverIds)
+# It also adds some extra information that could be useful in the future (i.e time estimation) 
 def get_solution_obj(data, manager, routing, solution, addresses, driverIds, orderIds):
     """Prints solution to stdout in a better way"""
     solutionObj = {"routes": []}
@@ -155,50 +149,61 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
     solutionObj["totalTime"] = total_time
     return solutionObj
 
-
+# This function calls backend endpoint and stores the info
 def saveSolutionToDB(solutionObj):
     # print(json.dumps(solutionObj))
-    # exit(0)
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
     r = requests.post(url=URL, json=solutionObj)
     # print(solutionObj)
-    print('server responded', r.status_code)
+    print('server respond', r.status_code)
+    print('routing script end')
 
+# Need to temporary collapse driver address with order address because
+# we need the distance info between ALL point of interests
+def process_distance_info(input_info, processed_data):
+    driverInfos = input_info['driverInfo']
+    processed_data['addresses'] = []
+    processed_data['orderIds'] = []
+    processed_data['driverIds'] = []
+    processed_data['address'] = []
+    
+    for info in driverInfos:
+        processed_data['addresses'].append(info['startLocation'])
+        processed_data['driverIds'].append(info['driverId'])
+        processed_data['orderIds'].append('')
+    for Orderinfo in input_info['orderInfo']:
+        processed_data['addresses'].append(Orderinfo['pick-up-location'])
+        processed_data['orderIds'].append(Orderinfo['orderId'])
+
+        processed_data['addresses'].append(Orderinfo['drop-off-location'])
+        processed_data['orderIds'].append(Orderinfo['orderId'])
 
 def main(argv):
+    # load api key
     global API_KEY
     API_KEY = argv[2]
-    input_info = get_input_info(argv[1])
-    print(input_info)
-    driverInfos = input_info['driverInfo']
-    addresses = []
-    orderIds = []
-    driverIds = []
-
-    for info in driverInfos:
-        addresses.append(info['startLocation'])
-        driverIds.append(info['driverId'])
-        orderIds.append('')
-    for Orderinfo in input_info['orderInfo']:
-        addresses.append(Orderinfo['pick-up-location'])
-        addresses.append(Orderinfo['drop-off-location'])
-        orderIds.append(Orderinfo['orderId'])
-        orderIds.append(Orderinfo['orderId'])
-
-    data = request_distance_data(addresses)
     
+    input_info = get_input_info(argv[1])
+    
+    processed_data = {}
+    
+    process_distance_info(input_info, processed_data)
+    # print(processed_data)
+
+    data = request_distance_data(processed_data['addresses'])
+    num_drivers = len(input_info['driverInfo'])
     data['starts'] = []
     data['ends'] = []
-    data['num_vehicles'] = len(driverInfos)
+    data['num_vehicles'] = num_drivers # the amount of drivers
 
     # assume the driver will want to come back home
-    for i in range(0,len(driverInfos)):
+    for i in range(0,num_drivers):
         data['starts'].append(i)
         data['ends'].append(i)
    
 
     data['pickups_deliveries'] = []
-    for i in range(len(driverInfos), len(addresses), 2):
+    for i in range(num_drivers, len(processed_data['addresses']), 2):
         data['pickups_deliveries'] .append([i, i+1])
     # print(json.dumps(data))
     # exit(0)
@@ -261,7 +266,7 @@ def main(argv):
     if solution:
         # print_solution(data, manager, routing, solution)
         solutionObj = get_solution_obj(
-            data, manager, routing, solution, addresses, driverIds, orderIds)
+            data, manager, routing, solution, processed_data['addresses'], processed_data['driverIds'], processed_data['orderIds'])
         # print(json.dumps(solutionObj))
         saveSolutionToDB(solutionObj)
 

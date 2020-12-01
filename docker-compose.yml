@@ -17,6 +17,3 @@ services:
       OPEN_ROUTE_API_KEY_PROD: ${OPEN_ROUTE_API_KEY_PROD}
       DEV_MODE: ${DEV_MODE}
       SERVER_PORT: ${SERVER_PORT}
-  python:
-    build:
-      ./routing

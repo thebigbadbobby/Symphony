@@ -9,7 +9,12 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
-const reservedPhoneNumber = process.env.DEV_PHONE_NUMBER;
+let reservedPhoneNumber;
+if (process.env.DEV_MODE === 'FALSE') {
+  reservedPhoneNumber = process.env.RESERVED_PHONE_NUMBER;
+} else {
+  reservedPhoneNumber = process.env.DEV_PHONE_NUMBER;
+}
 
 /**
  * @description Function that simply sends a twilio message

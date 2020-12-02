@@ -5,6 +5,7 @@ const PendingOrder = require('../models/pending_order');
 const CompletedOrder = require('../models/completed_order');
 
 const router = express.Router();
+const port = process.env.SERVER_PORT || 5000;
 
 // @description when driver completes order
 // move a pending order to complete order collection

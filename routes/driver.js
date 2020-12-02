@@ -169,11 +169,15 @@ router.post('/add-driver', (req, res) => {
   if (!req.body.hasOwnProperty('startLocation')) {
     res.status(400).send('Missing startLocation');
   }
+  if (!req.body.hasOwnProperty('locality')) {
+    res.status(400).send('Missing locality');
+  }
   const driver = new Driver({
     fullName: req.body.fullName,
     phone: req.body.phone,
     email: req.body.email,
     startLocation: req.body.startLocation,
+    locality: req.body.locality,
   });
   driver.save()
     .then((result) => {

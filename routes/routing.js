@@ -160,6 +160,7 @@ router.post('/saveRoutingOutput', (req, res) => {
   console.log('serverside log');
   console.log(req.body);
   const personalRoutes = [];
+  const promises = [];
   req.body.routes.forEach((routingOutput) => {
     if (!routingOutput.hasOwnProperty('driverId')) {
       res.status(400).send('Missing driverId');
@@ -193,15 +194,22 @@ router.post('/saveRoutingOutput', (req, res) => {
       // console.log('driver: ' , driver);
       driver.todaysRoute = personalRoute._id;
       // console.log('new driver: ' , driver);
-      driver.save()
-        .catch((err) => {
-          console.log(err);
-          res.status(500).send(`${JSON.stringify(err)}`);
-        });
+      promises.push(new Promise((resolve, reject) => {
+        driver.save().then((result) => {
+          resolve(result);
+        })
+          .catch((error) => {
+            reject(error);
+          });
+      }));
     });
   });
-  // TODO change to success message
-  res.status(200).send('success');
+  Promise.all(promises).then((success) => {
+    res.status(200).send(success);
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send(`${JSON.stringify(err)}`);
+  });
 });
 
 // @params

@@ -160,9 +160,17 @@ def saveSolutionToDB(solutionObj):
     # print(json.dumps(solutionObj))
     # exit(0)
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
+    textDriverUrl = 'http://localhost:5000/twilio/deliver-routes'
+
     r = requests.post(url=URL, json=solutionObj)
     # print(solutionObj)
     print('server responded', r.status_code)
+    localities = [{"locality": "auburn"}, {"locality": "santa cruz"}]
+    if r.status_code == 200:
+        for locality in localities:
+            loc_req = requests.post(
+                url=textDriverUrl, json=locality)
+            print('locality responded', loc_req.content)
 
 
 def main(argv):
@@ -186,16 +194,15 @@ def main(argv):
         orderIds.append(Orderinfo['orderId'])
 
     data = request_distance_data(addresses)
-    
+
     data['starts'] = []
     data['ends'] = []
     data['num_vehicles'] = len(driverInfos)
 
     # assume the driver will want to come back home
-    for i in range(0,len(driverInfos)):
+    for i in range(0, len(driverInfos)):
         data['starts'].append(i)
         data['ends'].append(i)
-   
 
     data['pickups_deliveries'] = []
     for i in range(len(driverInfos), len(addresses), 2):

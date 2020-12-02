@@ -254,7 +254,7 @@ const handleDropoff = async (twilioReq, message, driver, twiml, res) => {
 router.post('/deliver-routes', async (req, res) => {
   const drivers = await Driver.find({ locality: req.body.locality, state: 'checkin' }).populate('todaysRoute');
   if (drivers.length === 0) {
-    res.status(200).send('No drivers available in this locality');
+    res.status(200).send(`No drivers available in this locality: ${req.body.locality}`);
   }
   drivers.forEach(async (driver) => {
     let msg = `Hi ${driver.fullName.split(' ')[0]}! Your route today will be as follows:\n`;

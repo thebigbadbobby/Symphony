@@ -6,27 +6,6 @@ const CompletedOrder = require('../models/completed_order');
 
 const router = express.Router();
 
-// // @description gets a business's completed order history
-// // @params
-// // {
-// //   business: id,
-// // }
-// // @payload
-// // array of completed order objects
-// router.get('/completed-orders', (req, res) => {
-//   if (!req.query.hasOwnProperty('business')) {
-//     res.status(400).send('Missing business');
-//     return;
-//   }
-//   CompletedOrder.find({ business: req.query.business }, (err, docs) => {
-//     if (err) {
-//       console.log(err);
-//       res.status(404).send('Could not find business');
-//     }
-//     res.send(JSON.stringify(docs));
-//   });
-// });
-
 // @description deletes a business's order
 // @params
 // {

@@ -21,11 +21,6 @@ const driverSchema = new Schema({
     type: String,
     required: true,
   },
-  ordersDelivering: [{
-    type: Schema.Types.ObjectId,
-    ref: 'PendingOrder',
-    required: true,
-  }],
   todaysRoute: {
     type: Schema.Types.ObjectId,
     ref: 'PersonalRoute',

@@ -79,8 +79,6 @@ This file represents the drivers in the database.
   - This has to be in the format `xxx-xxx-xxxx`
 - `email`
   - The driver's email. Not really used rn, but will be.
-- `ordersDelivering`
-  - An array of id's representing an ordered set of deliveries. The driver will deliver these in order, and when they do, these id's will be popped off and the order moved from pending to completed orders.
 
 #### Desired fields:
 

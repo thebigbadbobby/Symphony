@@ -12,7 +12,6 @@ let OPEN_ROUTE_API_KEY;
 if (process.env.DEV_MODE === 'FALSE') {
   OPEN_ROUTE_API_KEY = process.env.OPEN_ROUTE_API_KEY_PROD;
 } else {
-  // console.log(process.env.OPEN_ROUTE_API_KEY_DEV);
   OPEN_ROUTE_API_KEY = process.env.OPEN_ROUTE_API_KEY_DEV;
 }
 
@@ -219,22 +218,16 @@ router.post('/update-progress', (req, res) => {
       if (err) {
         res.status(404).send('can\'t find route');
       }
-      const routeLength = route.route.length;
-      if (route.currentIndex + 1 === routeLength) {
-        // TODO: I think we should handle this in dropoff, not here.
-        // console.warn('driver is done witht heir route, we need to do somethign here!');
-      } else {
-        // eslint-disable-next-line no-param-reassign
-        route.currentIndex += 1;
-        route.save()
-          .then((saved) => {
-            res.status(200).send(saved);
-          })
-          .catch((error) => {
-            console.log(error);
-            res.status(500).send(`${JSON.stringify(error)}`);
-          });
-      }
+      // eslint-disable-next-line no-param-reassign
+      route.currentIndex += 1;
+      route.save()
+        .then((saved) => {
+          res.status(200).send(saved);
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(500).send(`${JSON.stringify(error)}`);
+        });
     });
   });
 });

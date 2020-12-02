@@ -86,76 +86,16 @@ router.post('/complete-order', async (req, res) => {
   });
 });
 
-// let driver;
-// console.log('hi 1')
-// try {
-//   driver = await Driver.findById(req.body.driver);
-// } catch (e) {
-//   res.status(404).send('Could not find driver');
-// }
-// console.log('hi 2')
-// const index = driver.ordersDelivering.indexOf(req.body.order);
-// console.log('hi 3')
-// if (index > -1) {
-//   console.log('hi 4')
-//   const pendingOrderID = driver.ordersDelivering[index];
-//   let pendingOrder;
-//   try {
-//     pendingOrder = await PendingOrder.findById(pendingOrderID);
-//   } catch (e) {
-//     res.status(404).send('Could not find order inside of pending order');
-//   }
-//   pendingOrder.driver = req.body.driver;
-//   delete pendingOrder._id;
-//   console.log(JSON.stringify(pendingOrder));
-//   const completedOrder = new CompletedOrder();
-//   console.log('dsjkfkf');
-//   await completedOrder.save();
-//   await PendingOrder.findByIdAndDelete(pendingOrderID);
-//   // remove pending order from drivers ordersDelivering
-//   driver.ordersDelivering.splice(index, 1);
-//   await driver.save();
-//   res.send('Success completed delivery');
-// } else {
-//   res.status(404).send('Could not find order inside of driver');
-// }
-
-// @description Add the order to the driver array
+// @description Adds a driver to the db
 // @params
 // {
-//   driver: id,
-//   order: id
+//   fullName: string,
+//   phone: string,
+//   email: string,
+//   startLocation: string,
 // }
 // @payload
-// array of completed order objects
-router.post('/assign-order', (req, res) => {
-  if (!req.body.hasOwnProperty('driver')) {
-    res.status(400).send('Missing driver');
-  }
-  if (!req.body.hasOwnProperty('order')) {
-    res.status(400).send('Missing order');
-  }
-  PendingOrder.findById(req.body.order, (err, order) => {
-    if (err) {
-      res.status(404).send('Could not find order');
-    }
-    Driver.findById(req.body.driver, (errD, driver) => {
-      if (errD) {
-        res.status(404).send('Could not find driver');
-      }
-      driver.ordersDelivering.push(order);
-      driver.save()
-        .then((result) => {
-          res.send(result);
-        })
-        .catch((errSave) => {
-          console.log(err);
-          res.status(500).send(`${JSON.stringify(errSave)}`);
-        });
-    });
-  });
-});
-
+// the new driver
 router.post('/add-driver', (req, res) => {
   if (!req.body.hasOwnProperty('fullName')) {
     res.status(400).send('Missing fullName');
@@ -189,6 +129,9 @@ router.post('/add-driver', (req, res) => {
     });
 });
 
+// @description shows all drivers
+// @payload
+// array drivers
 router.get('/all-drivers', (req, res) => {
   Driver.find()
     .then((result) => {
@@ -200,6 +143,9 @@ router.get('/all-drivers', (req, res) => {
     });
 });
 
+// @description gets a specific driver
+// @payload
+// the driver
 router.get('/:driverID', (req, res) => {
   Driver.findById(req.params.driverID)
     .then((result) => {

@@ -23,6 +23,16 @@ const personalRouteSchema = new Schema({
     default: 0,
     required: true,
   },
+  started : {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  completed : {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 }, { timestamps: true });
 
 const PersonalRoute = mongoose.model('PersonalRoute', personalRouteSchema);

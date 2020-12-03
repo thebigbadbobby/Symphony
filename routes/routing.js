@@ -115,12 +115,14 @@ router.post('/computeRoute', (req, res) => {
     }
 
     // fetch all pending orders
-    dict.orderInfo = await getAllOrder();
 
-    const dictstring = JSON.stringify(dict);
-    const fs = require('fs');
+    dict["orderInfo"] = await getAllOrder();
+    
+    let dictstring = JSON.stringify(dict);
+    const fs = require("fs");
+    const today = (new Date().getTime() / 1000).toFixed(0);
     fs.writeFile(
-      './routing/dailyDestinationList/dests.json',
+      `./routing/dailyDestinationList/${today}.json`,
       dictstring,
       (err, result) => {
         if (err) {
@@ -132,7 +134,7 @@ router.post('/computeRoute', (req, res) => {
     const { spawn } = require('child_process');
     const ls = spawn('python3', [
       './routing/routeCalculation.py',
-      './routing/dailyDestinationList/dests.json',
+      `./routing/dailyDestinationList/${today}.json`,
       `${OPEN_ROUTE_API_KEY}`,
     ]);
 
@@ -171,10 +173,32 @@ router.post('/saveRoutingOutput', (req, res) => {
     if (!routingOutput.hasOwnProperty('route')) {
       res.status(400).send('Missing route');
     }
+    let routeLocal = routingOutput.route;
+    let orders = [];
+    routeLocal[0]['type'] = '';
+    for (i = 1; i<routeLocal.length; i++) {
+      let stop = routeLocal[i];
+      if (orders.includes(stop.orderId)) {
+        stop['type'] = 'dropoff';
+      } else {
+        orders.push(stop.orderId);
+        stop['type'] = 'pickup';
+      }
+      stop['orderId'] = [stop['orderId']];
+    }
+    for (i = 1; i<routeLocal.length-1; i++) {
+      if(routeLocal[i]['type'] == routeLocal[i+1]['type'] &&
+        routeLocal[i]['address'] == routeLocal[i+1]['address']) {
+          routeLocal[i]['orderId'].push(routeLocal[i+1]['orderId'][0]);
+          routeLocal.splice(i+1, 1);
+          i -= 1;
+      }
+    }
+
     const personalRoute = new PersonalRoute({
       driverId: routingOutput.driverId,
-      route: routingOutput.route,
-      routeTime: routingOutput.routeTime,
+      route: routeLocal,
+      routeTime: routingOutput.routeTime
     });
     personalRoute.save()
       .then((result) => {
@@ -214,20 +238,33 @@ router.post('/saveRoutingOutput', (req, res) => {
 
 // @params
 // Driver Id
+// TODO reject if route already complete
 router.post('/update-progress', (req, res) => {
   Driver.findOne({ _id: req.body.id }, (err, driver) => {
     if (err) {
-      res.status(404).send('can\'t find driver');
+      res.status(404).send(`can't find driver`);
+      return;
     }
     // console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
     // console.log('driver: ' , driver);
     const routeId = driver.todaysRoute._id;
     PersonalRoute.findOne({ _id: routeId }, (err, route) => {
       if (err) {
-        res.status(404).send('can\'t find route');
+        res.status(404).send(`can't find route`);
+        return;
+      }
+      if (route.currentIndex >= route.route.length-1){
+        res.status(403).send(`route already completed`);
+        return;
+      }
+      if(route.currentIndex == 0) {
+        route.started = true;
       }
       // eslint-disable-next-line no-param-reassign
       route.currentIndex += 1;
+      if (route.currentIndex == route.route.length-1) {
+        route.completed = true;
+      }
       route.save()
         .then((saved) => {
           res.status(200).send(saved);

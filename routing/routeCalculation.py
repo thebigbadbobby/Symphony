@@ -145,7 +145,7 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
         solutionObj["routes"][vehicle_id]['stop_ids'] = stop_ids
         solutionObj["routes"][vehicle_id]['route'] = stops
         solutionObj["routes"][vehicle_id]['routeTime'] = route_time
-        total_time = route_time
+        total_time += route_time
     solutionObj["totalTime"] = total_time
     return solutionObj
 

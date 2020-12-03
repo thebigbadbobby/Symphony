@@ -20,8 +20,7 @@ if (process.env.DEV_MODE === 'FALSE') {
 // driverId
 // @payload
 // The routing info for that driver, detail TBD
-router.get('/routeUrl', (req, res) => {
-  let routeId;
+router.get('/routeUrl', async (req, res) => {
   let route = [];
   const addresses = [];
   const links = [];
@@ -30,38 +29,62 @@ router.get('/routeUrl', (req, res) => {
     return;
   }
   const body = JSON.parse(req.query.driverId);
-  Driver.findById(body, (err, driver) => {
-    if (err) {
-      res.status(404).send('can\'t find driver');
+  const driver = await Driver.findById(body);
+  if (!driver) {
+    res.status(404).send('can\'t find driver');
+    return;
+  }
+  const routeId = driver.todaysRoute;
+  const personalRoute = await PersonalRoute.findById(routeId);
+  if (!personalRoute) {
+    res.status(404).send('can\'t find route');
+    return;
+  }
+  route = personalRoute.route.slice(1);
+  route.forEach((routeObj, index) => {
+    if (index === 0) {
+      addresses.push(encodeURIComponent(routeObj.get('address')));
+    } else {
+      // get rid of duplicate addresses because it breaks google maps links
+      const currStop = routeObj.get('address');
+      const prevStop = route[index - 1].get('address');
+
+      if (prevStop !== currStop) {
+        addresses.push(encodeURIComponent(currStop));
+      }
     }
-    routeId = driver.todaysRoute;
-  }).then(() => {
-    PersonalRoute.findOne({ _id: routeId }, (err, personalRoute) => {
-      if (err) {
-        res.status(404).send('can\'t find route');
-      }
-      route = personalRoute.route.slice(1);
-    }).then(() => {
-      route.forEach((routeObj) => {
-        addresses.push(encodeURIComponent(routeObj.get('address')));
-      });
-      let stopNum = 0;
-      let link = 'https://www.google.com/maps/dir/my+location';
-      for (let i = 0; i < addresses.length; i++) {
-        if (stopNum == 10) {
-          links.push(link);
-          stopNum = 0;
-          i -= 1;
-          link = 'https://www.google.com/maps/dir/my+location';
-        } else {
-          link += `/${addresses[i]}`;
-          stopNum += 1;
-        }
-      }
-      links.push(link);
-      res.status(200).send(JSON.stringify(links));
-    });
   });
+  let stopNum = 0;
+  let link = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&waypoints=';
+  for (let i = 0; i < addresses.length; i++) {
+    // if we are on the last address, ignore
+    if (i === addresses.length - 1) {
+      break;
+    }
+    if (stopNum === 9) {
+      // add the destination (10th stop because current location counts as a waypoint)
+      const finalLink = `${link.substring(0, link.lastIndexOf('%7C'))}&destination=${addresses[stopNum]}`;
+      links.push(finalLink);
+
+      link = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&waypoints=';
+
+      stopNum = 0;
+    } else {
+      link += `${addresses[i]}%7C`;
+      stopNum += 1;
+    }
+  }
+
+  // if %7C is not found and we blindly did this, we would delete the whole beginning of the string.
+  if (link.lastIndexOf('%7C') >= 0) {
+    const finalLink = `${link.substring(0, link.lastIndexOf('%7C'))}&destination=${addresses[addresses.length - 1]}`;
+    links.push(finalLink);
+  } else {
+    const finalLink = `${link}&destination=${addresses[addresses.length - 1]}`;
+    links.push(finalLink);
+  }
+
+  res.status(200).send(links);
 });
 
 function getAllOrder() {

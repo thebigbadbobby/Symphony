@@ -158,6 +158,12 @@ def saveSolutionToDB(solutionObj):
     r = requests.post(url=URL, json=solutionObj)
     # print(solutionObj)
     print('server respond', r.status_code)
+    localities = [{"locality": "auburn"}, {"locality": "santa cruz"}]
+    if r.status_code == 200:
+        for locality in localities:
+            loc_req = requests.post(
+                url=textDriverUrl, json=locality)
+            print('locality responded', loc_req.content)
     print('routing script end')
 
 

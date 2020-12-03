@@ -8,6 +8,8 @@ const personalRouteSchema = new Schema({
     ref: 'Driver',
     required: true,
   },
+  // orderId
+  // address
   route: [{
     type: Map,
     required: true,
@@ -16,12 +18,21 @@ const personalRouteSchema = new Schema({
     type: String,
     required: true,
   },
-  currentIndex : {
-    type: Number ,
+  currentIndex: {
+    type: Number,
     default: 0,
     required: true,
   },
-
+  started : {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
+  completed : {
+    type: Boolean,
+    default: false,
+    required: true,
+  },
 }, { timestamps: true });
 
 const PersonalRoute = mongoose.model('PersonalRoute', personalRouteSchema);

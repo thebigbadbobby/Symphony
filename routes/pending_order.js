@@ -125,25 +125,4 @@ router.get('/my-orders', (req, res) => {
     });
 });
 
-// // {
-// //     pendingPickups: [id1, id2]
-// // }
-// router.get('/best-route/:pickupID', ((req, res) => {
-//   // req.params.deliveryID
-// }));
-//
-// router.get('/complete-pickup/:pickupID', ((req, res) => {
-//   // req.params.deliveryID
-// }));
-//
-// router.get('/:pickupID', (req, res) => {
-//   PendingPickup.findById(req.params.pickupID)
-//     .then((result) => {
-//       res.send(result);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
-
 module.exports = router;

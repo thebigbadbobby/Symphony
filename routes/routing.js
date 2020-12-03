@@ -12,7 +12,6 @@ let OPEN_ROUTE_API_KEY;
 if (process.env.DEV_MODE === 'FALSE') {
   OPEN_ROUTE_API_KEY = process.env.OPEN_ROUTE_API_KEY_PROD;
 } else {
-  // console.log(process.env.OPEN_ROUTE_API_KEY_DEV);
   OPEN_ROUTE_API_KEY = process.env.OPEN_ROUTE_API_KEY_DEV;
 }
 
@@ -21,45 +20,71 @@ if (process.env.DEV_MODE === 'FALSE') {
 // driverId
 // @payload
 // The routing info for that driver, detail TBD
-router.get('/routeUrl', (req, res) => {
-  let routeId;
+router.get('/routeUrl', async (req, res) => {
   let route = [];
   const addresses = [];
   const links = [];
-  const prefix = 'https://www.google.com/maps/dir/my+location/';
-  const { ObjectId } = require('mongodb');
-  Driver.findOne({ _id: req.body.driverId }, (err, driver) => {
-    if (err) {
-      res.status(404).send('can\'t find driver');
+  if (!req.query.driverId) {
+    res.status(404).send('driverId required');
+    return;
+  }
+  const body = JSON.parse(req.query.driverId);
+  const driver = await Driver.findById(body);
+  if (!driver) {
+    res.status(404).send('can\'t find driver');
+    return;
+  }
+  const routeId = driver.todaysRoute;
+  const personalRoute = await PersonalRoute.findById(routeId);
+  if (!personalRoute) {
+    res.status(404).send('can\'t find route');
+    return;
+  }
+  route = personalRoute.route.slice(1);
+  route.forEach((routeObj, index) => {
+    if (index === 0) {
+      addresses.push(encodeURIComponent(routeObj.get('address')));
+    } else {
+      // get rid of duplicate addresses because it breaks google maps links
+      const currStop = routeObj.get('address');
+      const prevStop = route[index - 1].get('address');
+
+      if (prevStop !== currStop) {
+        addresses.push(encodeURIComponent(currStop));
+      }
     }
-    routeId = `${driver.todaysRoute}`;
-  }).then(() => {
-    PersonalRoute.findOne({ _id: routeId }, (err, personalRoute) => {
-      if (err) {
-        res.status(404).send('can\'t find route');
-      }
-      route = personalRoute.route.slice(1);
-    }).then(() => {
-      route.forEach((routeObj) => {
-        addresses.push(encodeURIComponent(routeObj.get('address')));
-      });
-      let stopNum = 0;
-      let link = 'https://www.google.com/maps/dir/my+location';
-      for (let i = 0; i < addresses.length; i++) {
-        if (stopNum == 10) {
-          links.push(link);
-          stopNum = 0;
-          i -= 1;
-          link = 'https://www.google.com/maps/dir/my+location';
-        } else {
-          link += `/${addresses[i]}`;
-          stopNum += 1;
-        }
-      }
-      links.push(link);
-      res.status(200).send(JSON.stringify(links));
-    });
   });
+  let stopNum = 0;
+  let link = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&waypoints=';
+  for (let i = 0; i < addresses.length; i++) {
+    // if we are on the last address, ignore
+    if (i === addresses.length - 1) {
+      break;
+    }
+    if (stopNum === 9) {
+      // add the destination (10th stop because current location counts as a waypoint)
+      const finalLink = `${link.substring(0, link.lastIndexOf('%7C'))}&destination=${addresses[stopNum]}`;
+      links.push(finalLink);
+
+      link = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&waypoints=';
+
+      stopNum = 0;
+    } else {
+      link += `${addresses[i]}%7C`;
+      stopNum += 1;
+    }
+  }
+
+  // if %7C is not found and we blindly did this, we would delete the whole beginning of the string.
+  if (link.lastIndexOf('%7C') >= 0) {
+    const finalLink = `${link.substring(0, link.lastIndexOf('%7C'))}&destination=${addresses[addresses.length - 1]}`;
+    links.push(finalLink);
+  } else {
+    const finalLink = `${link}&destination=${addresses[addresses.length - 1]}`;
+    links.push(finalLink);
+  }
+
+  res.status(200).send(links);
 });
 
 function getAllOrder() {
@@ -71,7 +96,7 @@ function getAllOrder() {
       info['drop-off-location'] = docs[i].address;
       info.orderId = docs[i]._id;
       Business.findById(docs[i].business).then((doc) => {
-        if(doc == undefined){
+        if (doc == undefined) {
           console.log('unable to find business with id', docs[i].business);
           console.log('skipping order', docs[i]._id);
         } else {
@@ -109,12 +134,14 @@ router.post('/computeRoute', (req, res) => {
       dict.driverInfo.push(info);
     }
     // fetch all pending orders
-    dict.orderInfo = await getAllOrder();
 
-    const dictstring = JSON.stringify(dict);
-    const fs = require('fs');
+    dict["orderInfo"] = await getAllOrder();
+    
+    let dictstring = JSON.stringify(dict);
+    const fs = require("fs");
+    const today = (new Date().getTime() / 1000).toFixed(0);
     fs.writeFile(
-      './routing/dailyDestinationList/dests.json',
+      `./routing/dailyDestinationList/${today}.json`,
       dictstring,
       (err, result) => {
         if (err) {
@@ -125,7 +152,7 @@ router.post('/computeRoute', (req, res) => {
     const { spawn } = require('child_process');
     const ls = spawn('python3', [
       './routing/routeCalculation.py',
-      './routing/dailyDestinationList/dests.json',
+      `./routing/dailyDestinationList/${today}.json`,
       `${OPEN_ROUTE_API_KEY}`,
     ]);
 
@@ -153,6 +180,7 @@ router.post('/saveRoutingOutput', (req, res) => {
   console.log('serverside log');
   console.log(req.body);
   const personalRoutes = [];
+  const promises = [];
   req.body.routes.forEach((routingOutput) => {
     if (!routingOutput.hasOwnProperty('driverId')) {
       res.status(400).send('Missing driverId');
@@ -163,10 +191,32 @@ router.post('/saveRoutingOutput', (req, res) => {
     if (!routingOutput.hasOwnProperty('route')) {
       res.status(400).send('Missing route');
     }
+    let routeLocal = routingOutput.route;
+    let orders = [];
+    routeLocal[0]['type'] = '';
+    for (i = 1; i<routeLocal.length; i++) {
+      let stop = routeLocal[i];
+      if (orders.includes(stop.orderId)) {
+        stop['type'] = 'dropoff';
+      } else {
+        orders.push(stop.orderId);
+        stop['type'] = 'pickup';
+      }
+      stop['orderId'] = [stop['orderId']];
+    }
+    for (i = 1; i<routeLocal.length-1; i++) {
+      if(routeLocal[i]['type'] == routeLocal[i+1]['type'] &&
+        routeLocal[i]['address'] == routeLocal[i+1]['address']) {
+          routeLocal[i]['orderId'].push(routeLocal[i+1]['orderId'][0]);
+          routeLocal.splice(i+1, 1);
+          i -= 1;
+      }
+    }
+
     const personalRoute = new PersonalRoute({
       driverId: routingOutput.driverId,
-      route: routingOutput.route,
-      routeTime: routingOutput.routeTime,
+      route: routeLocal,
+      routeTime: routingOutput.routeTime
     });
     personalRoute.save()
       .then((result) => {
@@ -186,39 +236,62 @@ router.post('/saveRoutingOutput', (req, res) => {
       // console.log('driver: ' , driver);
       driver.todaysRoute = personalRoute._id;
       // console.log('new driver: ' , driver);
-      driver.save()
-        .catch((err) => {
-          console.log(err);
-          res.status(500).send(`${JSON.stringify(err)}`);
-        });
+      promises.push(new Promise((resolve, reject) => {
+        driver.save().then((result) => {
+          resolve(result);
+        })
+          .catch((error) => {
+            reject(error);
+          });
+      }));
     });
   });
-  // TODO change to success message
-  res.status(200).send('success');
+  Promise.all(promises).then((success) => {
+    res.status(200).send(success);
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).send(`${JSON.stringify(err)}`);
+  });
 });
 
 // @params
 // Driver Id
+// TODO reject if route already complete
 router.post('/update-progress', (req, res) => {
   Driver.findOne({ _id: req.body.id }, (err, driver) => {
     if (err) {
-      res.status(404).send('can\'t find driver');
+      res.status(404).send(`can't find driver`);
+      return;
     }
     // console.log('driver id:' + driver._id + ' route id: ' + personalRoute._id);
     // console.log('driver: ' , driver);
     const routeId = driver.todaysRoute._id;
     PersonalRoute.findOne({ _id: routeId }, (err, route) => {
       if (err) {
-        res.status(404).send('can\'t find route');
+        res.status(404).send(`can't find route`);
+        return;
       }
+      if (route.currentIndex >= route.route.length-1){
+        res.status(403).send(`route already completed`);
+        return;
+      }
+      if(route.currentIndex == 0) {
+        route.started = true;
+      }
+      // eslint-disable-next-line no-param-reassign
       route.currentIndex += 1;
+      if (route.currentIndex == route.route.length-1) {
+        route.completed = true;
+      }
       route.save()
-        .catch((err) => {
-          console.log(err);
-          res.status(500).send(`${JSON.stringify(err)}`);
+        .then((saved) => {
+          res.status(200).send(saved);
+        })
+        .catch((error) => {
+          console.log(error);
+          res.status(500).send(`${JSON.stringify(error)}`);
         });
     });
-    res.status(200).send();
   });
 });
 

@@ -153,10 +153,13 @@ def get_solution_obj(data, manager, routing, solution, addresses, driverIds, ord
 def saveSolutionToDB(solutionObj):
     # print(json.dumps(solutionObj))
     URL = 'http://localhost:5000/routing/saveRoutingOutput'
+    textDriverUrl = 'http://localhost:5000/twilio/deliver-routes'
+
     r = requests.post(url=URL, json=solutionObj)
     # print(solutionObj)
     print('server respond', r.status_code)
     print('routing script end')
+
 
 # Need to temporary collapse driver address with order address because
 # we need the distance info between ALL point of interests
@@ -192,15 +195,16 @@ def main(argv):
 
     data = request_distance_data(processed_data['addresses'])
     num_drivers = len(input_info['driverInfo'])
+
     data['starts'] = []
     data['ends'] = []
     data['num_vehicles'] = num_drivers # the amount of drivers
 
     # assume the driver will want to come back home
     for i in range(0,num_drivers):
+
         data['starts'].append(i)
         data['ends'].append(i)
-   
 
     data['pickups_deliveries'] = []
     for i in range(num_drivers, len(processed_data['addresses']), 2):

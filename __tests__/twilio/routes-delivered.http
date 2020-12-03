@@ -1,0 +1,12 @@
+# Status: Success
+# Description: Drivers that are checked in recieve a text with their route
+# State Before: Driver is in "check-in", but can't start their route
+# State After: Drivers that were checked in in the "Auburn Area" have their state changed to "ready"
+POST http://localhost:5000/twilio/deliver-routes HTTP/1.1
+Content-Type: application/json
+
+{
+  "locality": "auburn"
+}
+
+###

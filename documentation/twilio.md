@@ -28,9 +28,51 @@
 
 ## API
 
-`handleDropoff(twilioReq: twilio body, message: twilio message)`
+### Helper functions
+
+`deliverResponse(res: responseObject, twiml: twilio response)`
+
+- Simply delivers messages after the body has been set
+
+`getRouteInfoFromTodaysRoute(todaysRoute: todaysRouteObject)`
+
+- Helper function that takes a "today's routes" object and looks through the route populating it with business info and order info.
+
+`getPickupBusinessName(todaysRoute: todaysRouteObject)`
+
+- Helper function that gets the business name from the today's route object
+
+`isDriverDone(driver: DBDriver)`
+
+- Helper function for determining if the driver is done with their route.
+
+`resetDriverState(driver: DBDriver)`
+
+- Helper function for resetting the driver's state once they have finished their last order for the day
+
+### Main Twilio functions
+
+`handleCheckin(driver: DBDriver, res: responseObject, message: twilioMessageObject, twiml: twilio response)`
+This function essentially takes the the driver and changes their state to checkin so they can be included in the routing script.
+
+- Called first in the order
+
+- **NOTE:** does not handle the case where the driver tries to check in _AFTER_ the route has been calculated
+
+`handleOnWay(driver: DBDriver, res: responseObject, message: twilioMessageObject, twiml: twilio response)`
+Makes sure that the driver is in the ready state, and if they are, if finds their maps urls and sends them to them so they can start delivering.
+
+- Called third in the order
+
+`handlePickup(driver: DBDriver, res: responseObject, message: twilioMessageObject, twiml: twilio response)`
+Makes sure the driver is on their way, and as long as they are, it updates their progress and lets them know
+
+- Called fourth (and potentially many other times after that) in the order
+
+`handleDropoff(driver: DBDriver, res: responseObject, message: twilioMessageObject, twiml: twilio response)`
 This function essentially takes in the body of the incoming text request and fetches the driver by their phone number, the business, and the latest order and sends a message and image to the customer, sets the order to completed, then sends a confirmation message to the driver.
-Returns: Boolean representing whether we are in a failure state or a success state.
+
+- Called always after a pickup and is the last thing called for a driver's route
 
 - Currently handles the following edge cases:
   - There are no orders

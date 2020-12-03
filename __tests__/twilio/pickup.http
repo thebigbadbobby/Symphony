@@ -1,0 +1,59 @@
+# Status: Success
+# Description: Driver completes a pickup from a business
+# State Before: The driver is in the "onWay" state
+# State After: The driver is still in "onWay", but they increment their counter by one
+POST http://localhost:5000/twilio/sms HTTP/1.1
+Content-Type: application/json
+
+{
+  "ToCountry": "US",
+  "ToState": "TX",
+  "SmsMessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "NumMedia": "0",
+  "ToCity": "",
+  "FromZip": "95602",
+  "SmsSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "FromState": "CA",
+  "SmsStatus": "received",
+  "FromCity": "AUBURN",
+  "Body": "pickup",
+  "FromCountry": "US",
+  "To": "+14085210010",
+  "ToZip": "",
+  "NumSegments": "1",
+  "MessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "AccountSid": "AC6685ca9e7a76c443fab749516bdda464",
+  "From": "+15304013190",
+  "ApiVersion": "2010-04-01"
+}
+
+###
+
+# Status: Fail
+# Description: Driver texts pickup but they were supposed to be dropping off next
+# State Before: Driver is in any state but enroute
+# State After: Driver recieves a failure message that they were supposed to be delivering
+POST http://localhost:5000/twilio/sms HTTP/1.1
+Content-Type: application/json
+
+{
+  "ToCountry": "US",
+  "ToState": "TX",
+  "SmsMessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "NumMedia": "0",
+  "ToCity": "",
+  "FromZip": "95602",
+  "SmsSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "FromState": "CA",
+  "SmsStatus": "received",
+  "FromCity": "AUBURN",
+  "Body": "pickup",
+  "FromCountry": "US",
+  "To": "+14085210010",
+  "ToZip": "",
+  "NumSegments": "1",
+  "MessageSid": "SMce3fbbee7d9982da6e14863ec3266cbf",
+  "AccountSid": "AC6685ca9e7a76c443fab749516bdda464",
+  "From": "+15304013190",
+  "ApiVersion": "2010-04-01"
+}

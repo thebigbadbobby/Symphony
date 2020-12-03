@@ -49,6 +49,9 @@ router.post('/add-owner', (req, res) => {
   });
 });
 
+// @description gets all the owners (this is unsafe and should be removed)
+// @payload
+// array of owners
 router.get('/all-owners', (req, res) => {
   Owner.find()
     .then((result) => {
@@ -60,6 +63,11 @@ router.get('/all-owners', (req, res) => {
     });
 });
 
+// @description gets a specific owner
+// @params
+// ownerID: id
+// @payload
+// the owner
 router.get('/:ownerID', (req, res) => {
   Owner.findById(req.params.ownerID)
     .then((result) => {

@@ -107,3 +107,6 @@ dist
 
 # TernJS port file
 .tern-port
+
+# timestamped destination list
+[0-9]*.json

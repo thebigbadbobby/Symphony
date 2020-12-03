@@ -4,7 +4,7 @@ const express = require('express');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const {
-  sendMediaMsg, formatPhoneNumber, textCompare, sendMsg,
+  sendMediaMsg, formatPhoneNumber, textCompare, sendMsg, getOrdersFromOrderIds,
 } = require('../twilio/helpers');
 const Driver = require('../models/driver');
 const Business = require('../models/business');
@@ -40,21 +40,12 @@ const getRouteInfoFromTodaysRoute = (todaysRoute) => {
 
 /** Helper function that gets the business name from the today's route object */
 const getPickupBusinessName = async (todaysRoute) => {
-  // let businessName = [];
-  // todaysRoute.currentIndex 0 is drivers address
-  const orderId = todaysRoute.route[todaysRoute.currentIndex === 0 ? 1 : todaysRoute.currentIndex].get('orderId');
+  // even with an array of orders, it is impossible to pick up orders from
+  // different businesses at the same time.
+  // so here, we just use the zero index
+  const orderId = todaysRoute.route[todaysRoute.currentIndex + 1].get('orderId')[0];
   const order = await PendingOrder.findOne({ _id: orderId }).populate('business');
   const businessName = order.business.businessName;
-
-  // TODO change to forEach when orderID property is an array
-  // const orderIds = todaysRoute.route[1].get('orderId');
-  // orderIds.forEach((orderId) => {
-  //   PendingOrder.findOne({ _id: orderId }).populate('business')
-  //     .then((order) => {
-  //       businessName.push(order.business.businessName);
-  //     });
-  // });
-
   return businessName;
 };
 
@@ -66,8 +57,6 @@ const isDriverDone = async (driver) => {
 
 /** Helper function for resetting the driver's state */
 const resetDriverState = async (driver) => {
-  // TODO: finish this function
-  console.log('resetting the driver!', driver);
   driver.state = 'idle';
   driver.todaysRoute = null;
   driver.save();
@@ -93,7 +82,7 @@ const handleCheckin = async (driver, res, message, twiml) => {
   // eslint-disable-next-line no-param-reassign
   driver.state = 'checkin';
   driver.save();
-  message.body('Thanks for checking in! We will send you your route at 1:30 pm');
+  message.body('Thanks for checking in! We will send you your route at 1:00 pm');
   deliverResponse(res, twiml);
   return true;
 };
@@ -113,7 +102,17 @@ const handleOnWay = async (driver, res, message, twiml) => {
       deliverResponse(res, twiml);
       return false;
     }
-    message.body('Seems like you are already enroute.');
+    // We just should do this in case drivers are confused
+    const mapUrlArray = await axios.get(`http://localhost:${port}/routing/routeUrl`, {
+      params: {
+        driverId: driver._id,
+      },
+    });
+    let mapUrlString = '';
+    mapUrlArray.data.forEach((mapUrl) => {
+      mapUrlString += `${mapUrl}\n`;
+    });
+    message.body(`Seems like you are already enroute. Here's your route again if you need it:\n\n ${mapUrlString}`);
     deliverResponse(res, twiml);
     return false;
   }
@@ -126,8 +125,18 @@ const handleOnWay = async (driver, res, message, twiml) => {
   mapUrlArray.data.forEach((mapUrl) => {
     mapUrlString += `${mapUrl}\n`;
   });
-  const todaysRoute = await PersonalRoute.findOne({ _id: driver.todaysRoute });
-  const route = await getRouteInfoFromTodaysRoute(todaysRoute);
+
+  let route;
+  let todaysRoute;
+  try {
+    todaysRoute = await PersonalRoute.findOne({ _id: driver.todaysRoute });
+    route = await getRouteInfoFromTodaysRoute(todaysRoute);
+  } catch (err) {
+    console.log("either couldn't get route info or today's route.");
+    message.body('Your route does not exist anymore for some reason. Contact the kahzum team.');
+    deliverResponse(res, twiml);
+    return false;
+  }
   let msg = `Great! Here is your route: \n${mapUrlString}\n`;
   msg += 'In general, text pickup when you pick up orders and “dropoff” and an image when you dropoff orders.\n';
   msg += `For now, text: “pickup” after you have picked up your order(s) from ${route[0].order.business.businessName}`;
@@ -161,19 +170,51 @@ const handlePickup = async (driver, res, message, twiml) => {
 
   const todaysRoute = await PersonalRoute.findOne({ _id: driver.todaysRoute });
   const businessName = await getPickupBusinessName(todaysRoute);
-  try {
-    await axios.post(`http://localhost:${port}/routing/update-progress`, {
-      id: driver._id,
-    });
-  } catch (err) {
-    console.log("Couldn't update progress", err);
-    message.body("We couldn't update your progress. If this happens multiple times, continue on your route.");
+
+  // NOTE: this is a Map, so you have to use .get()
+  const nextStopInfo = todaysRoute.route[todaysRoute.currentIndex + 1];
+
+  if (nextStopInfo.get('type') === 'pickup') {
+    const orderIds = nextStopInfo.get('orderId');
+    let addressesString = '';
+    let orders;
+
+    // get all the orders and list their addresses so
+    // the driver knows they picked up the right stuff.
+    try {
+      orders = await getOrdersFromOrderIds(orderIds);
+      orders.forEach((order) => {
+        addressesString += `\n${order.address}`;
+      });
+    } catch (err) {
+      console.log('error in populating orders from order ids', err);
+      message.body("We couldn't find some of the orders for this stop");
+      deliverResponse(res, twiml);
+      return false;
+    }
+
+    // Update the driver's progress
+    try {
+      await axios.post(`http://localhost:${port}/routing/update-progress`, {
+        id: driver._id,
+      });
+    } catch (err) {
+      console.log("Couldn't update progress", err);
+      message.body("We couldn't update your progress. If this happens multiple times, continue on your route.");
+      deliverResponse(res, twiml);
+      return false;
+    }
+
+    // deliver response
+    message.body(`Pickup recorded at ${businessName} for the following ${orders.length} order(s):\n${addressesString}`);
     deliverResponse(res, twiml);
-    return false;
+    return true;
   }
-  message.body(`Pickup recorded for ${businessName}.`);
+
+  // it wasn't a pickup so maybe the driver made a mistake?
+  message.body('We were expecting a dropoff. Did you mean to text "dropoff"?');
   deliverResponse(res, twiml);
-  return true;
+  return false;
 };
 
 /**
@@ -187,59 +228,87 @@ const handleDropoff = async (twilioReq, message, driver, twiml, res) => {
     deliverResponse(res, twiml);
     return false;
   }
+
+  // if the driver is done, let them know.
+  if (await isDriverDone(driver)) {
+    message.body("Looks like you don't have any orders left to dropoff. Let us know if this is an error!");
+    deliverResponse(res, twiml);
+    return false;
+  }
+
   // if we have an image
+  // "Body" is the text, "MediaUrl0" is the image
   if (twilioReq.NumMedia !== '0' && twilioReq.MediaUrl0) {
     const todaysRoute = await PersonalRoute.findOne({ _id: driver.todaysRoute });
 
-    // "Body" is the text, "MediaUrl0" is the image
-    // TODO: does this ever get called?
-    if (todaysRoute.currentIndex + 1 === todaysRoute.route.length) {
-      message.body("Looks like you don't have any orders left to dropoff. Let us know if this is an error!");
+    // NOTE: this is a Map, so you have to use .get()
+    const nextStopInfo = todaysRoute.route[todaysRoute.currentIndex + 1];
+
+    // if the next stop is a dropoff
+    if (nextStopInfo.get('type') === 'dropoff') {
+      const currentOrderIds = nextStopInfo.get('orderId');
+      let latestOrders;
+      let businessListString = '';
+      const imageUrl = twilioReq.MediaUrl0;
+      try {
+        latestOrders = await getOrdersFromOrderIds(currentOrderIds);
+        const promises = latestOrders.map((order) => new Promise((resolve, reject) => {
+          Business.findById(order.business)
+            .then((result) => resolve(result))
+            .catch((err) => reject(err));
+        }));
+        const businesses = await Promise.all(promises);
+        businesses.forEach((businessDelivered, index) => {
+          if (index > 0) {
+            businessListString += ' AND';
+          }
+          businessListString += ` ${businessDelivered.businessName}`;
+        });
+      } catch (err) {
+        console.log('Error trying to fetch orders from orderIds or businesses from orders in dropoff', err);
+        message.body("We couldn't find some of the orders for this stop");
+        deliverResponse(res, twiml);
+        return false;
+      }
+
+      try {
+        await axios.post(`http://localhost:${port}/driver/complete-orders`, {
+          driver: driver._id,
+          imageUrl,
+        });
+      } catch (error) {
+        console.log('error when completing order', error);
+        message.body("We couldn't complete your order for some reason.");
+        deliverResponse(res, twiml);
+        return false;
+      }
+
+      const customerNumber = latestOrders[0].customer_phone;
+      const driverName = driver.fullName;
+      const customerMessage = `Hi, this is ${driverName.split(' ')[0]} from Kahzum! I just dropped off your order from${businessListString}. Thanks for supporting small businesses!`;
+      const driverMessage = `Confirmed dropoff at ${latestOrders[0].address} from${businessListString}`;
+
+      // send the message to the customer
+      sendMediaMsg(customerMessage, [imageUrl], customerNumber);
+
+      // send the message to the driver
+      message.body(driverMessage);
       deliverResponse(res, twiml);
-      return false;
-    }
 
-    const currentOrderId = todaysRoute.route[todaysRoute.currentIndex === 0 ? 1 : todaysRoute.currentIndex].get('orderId');
-
-    let latestOrder;
-    let business;
-    const imageUrl = twilioReq.MediaUrl0;
-    try {
-      latestOrder = await PendingOrder.findById(currentOrderId);
-      business = await Business.findById(latestOrder.business);
-      await axios.post(`http://localhost:${port}/driver/complete-order`, {
-        driver: driver._id,
-        imageUrl,
-      });
-    } catch (error) {
-      console.log('error when completing order', error);
-      message.body("We couldn't complete your order for some reason.");
-      deliverResponse(res, twiml);
-      return false;
-    }
-
-    const customerNumber = latestOrder.customer_phone;
-    const driverName = driver.fullName;
-    const businessName = business.businessName;
-    const customerMessage = `Hi, this is ${driverName.split(' ')[0]} from Kahzum! I just dropped off your order from ${businessName}. Thanks for supporting small businesses!`;
-    const deliveredTo = latestOrder.address;
-    const driverMessage = `Confirmed dropoff at ${deliveredTo}`;
-
-    // send the message to the customer
-    sendMediaMsg(customerMessage, [twilioReq.MediaUrl0], customerNumber);
-
-    // send the message to the driver
-    message.body(driverMessage);
-    deliverResponse(res, twiml);
-
-    // Check if the driver is done
-    if (await isDriverDone(driver)) {
+      // Check if the driver is done
+      if (await isDriverDone(driver)) {
       // reset the driver's state.
-      resetDriverState(driver);
-      sendMsg('Looks like you are all done for today!', driver.phone);
+        resetDriverState(driver);
+        sendMsg('Looks like you are all done for today!', driver.phone);
+      }
+      return true;
     }
-    return true;
+    // it's not a dropoff, so they can't dropoff
+    message.body('We were expecting a pickup next. Did you mean to text "pickup"?');
+    deliverResponse(res, twiml);
+    return false;
   }
+  // there was no image.
   message.body('You dropped off without an image. If you forgot to send the image, please resend "Dropoff" with the image of the order.');
   deliverResponse(res, twiml);
   return false;
@@ -255,10 +324,21 @@ router.post('/deliver-routes', async (req, res) => {
   const drivers = await Driver.find({ locality: req.body.locality, state: 'checkin' }).populate('todaysRoute');
   if (drivers.length === 0) {
     res.status(200).send(`No drivers available in this locality: ${req.body.locality}`);
+    return;
   }
   drivers.forEach(async (driver) => {
     let msg = `Hi ${driver.fullName.split(' ')[0]}! Your route today will be as follows:\n`;
+    // if there is no Todaysroute, the driver wasn't assigned anything, despite being checked in
+    if (!driver.todaysRoute) {
+      // eslint-disable-next-line no-param-reassign
+      driver.state = 'idle';
+      driver.save();
+      sendMsg("Looks like you weren't assigned a route today. Make sure you check in before 1pm or you won't get assigned a route!", driver.phone);
+      res.status(200).send(`${driver.fullName} was not assigned a route and was set back to idle.`);
+      return;
+    }
     const route = await getRouteInfoFromTodaysRoute(driver.todaysRoute);
+
     route.forEach((routeStop, index) => {
       // we know if it is a dropoff if stop.address == order.address
       try {
@@ -278,7 +358,7 @@ router.post('/deliver-routes', async (req, res) => {
     driver.state = 'ready';
     driver.save().then(() => {
       sendMsg(msg, driver.phone);
-      res.status(200).send(msg);
+      res.status(200).send('sent message successfully');
     }).catch((err) => {
       res.sendStatus(500).send(`something went wrong when saving the driver: ${JSON.stringify(err)}`);
     });

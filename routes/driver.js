@@ -3,6 +3,7 @@ const axios = require('axios');
 const Driver = require('../models/driver');
 const PendingOrder = require('../models/pending_order');
 const CompletedOrder = require('../models/completed_order');
+const { getOrdersFromOrderIds } = require('../twilio/helpers');
 
 const router = express.Router();
 const port = process.env.SERVER_PORT || 5000;
@@ -16,7 +17,7 @@ const port = process.env.SERVER_PORT || 5000;
 // }
 // @payload
 // array of completed order objects
-router.post('/complete-order', async (req, res) => {
+router.post('/complete-orders', async (req, res) => {
   if (!req.body.driver) {
     res.status(400).send('Missing driver');
   }
@@ -33,57 +34,54 @@ router.post('/complete-order', async (req, res) => {
   }
 
   if (driver.todaysRoute.route.length === driver.todaysRoute.currentIndex + 1) {
-    res.status(400).send('The driver is done for the day!');
+    res.status(400).send('You\'re already done for the day!');
     return;
   }
 
-  let completedOrder;
-  let orderIdToBeCompleted;
+  let orderIdsToBeCompleted;
+  const completedOrders = [];
   try {
-    orderIdToBeCompleted = driver.todaysRoute.route[
-      driver.todaysRoute.currentIndex === 0 ? 1 : driver.todaysRoute.currentIndex
-    ].get('orderId');
-    const orderToBeCompleted = await PendingOrder.findById(orderIdToBeCompleted);
-    completedOrder = new CompletedOrder(
-      {
-        driver: driver._id,
-        imageUrl: body.imageUrl,
-        business: orderToBeCompleted.business,
-        customer_name: orderToBeCompleted.customer_name,
-        customer_phone: orderToBeCompleted.customer_phone,
-        address: orderToBeCompleted.address,
-      },
-    );
+    orderIdsToBeCompleted = driver.todaysRoute.route[driver.todaysRoute.currentIndex + 1].get('orderId');
+    const ordersToBeCompleted = await getOrdersFromOrderIds(orderIdsToBeCompleted);
+    ordersToBeCompleted.forEach((orderToBeCompleted) => {
+      completedOrders.push(new CompletedOrder(
+        {
+          driver: driver._id,
+          imageUrl: body.imageUrl,
+          business: orderToBeCompleted.business,
+          customer_name: orderToBeCompleted.customer_name,
+          customer_phone: orderToBeCompleted.customer_phone,
+          address: orderToBeCompleted.address,
+        },
+      ));
+    });
   } catch (err) {
-    console.log('Something went wrong with the orderId', err);
+    console.log('Something went wrong when trying to get orders and create completed orders', err);
     res.status(400).send('Something went wrong when trying to make a completed order.');
     return;
   }
 
-  // Save completed order
-  completedOrder.save().then((orderSaved) => {
+  // we want to handle the case where we have multiple orders to the same house
+  const promises = completedOrders.map(async (order, idx) => {
+    const orderSaved = await order.save();
+    console.log('order saved', orderSaved);
     // Delete the completed order from pending orders
-    PendingOrder.findByIdAndDelete(orderIdToBeCompleted).then(() => {
-      // Update the driver's progress along their route.
-      axios.post(`http://localhost:${port}/routing/update-progress`, {
-        id: driver._id,
-      }).then(() => {
-        // Everything has successfully updated
-        res.status(200).send(orderSaved);
-      }).catch((err) => {
-        console.log("Couldn't update progress", err);
-        // couldn't update driver progress
-        res.status(400).send('Driver\'s progress was not updated!!');
-      });
-    }).catch((err) => {
-      // couldn't delete
-      console.log("Couldn't delete pending order", err);
-      res.status(400).send('Couldn\'t delete the pending order');
+    const deletedSuccess = await PendingOrder.findByIdAndDelete(orderIdsToBeCompleted[idx]);
+    // Update the driver's progress.
+    const updatedProgress = await axios.post(`http://localhost:${port}/routing/update-progress`, {
+      id: driver._id,
     });
+    if (!orderSaved || !deletedSuccess || !updatedProgress) {
+      throw new Error("order didn't save, didn't this.delete, or didn't update the progress!");
+    }
+    return orderSaved;
+  });
+
+  Promise.all(promises).then((orderSaved) => {
+    res.status(200).send(orderSaved);
   }).catch((err) => {
-    // couldn't save
-    console.log("Couldn't save completed order", err);
-    res.status(400).send('Couldn\'t archive the order');
+    console.log('Failed trying to save or delete the order, or trying to progress', err);
+    res.status(400).send('Failed trying to save or delete the order, or trying to progress', err);
   });
 });
 

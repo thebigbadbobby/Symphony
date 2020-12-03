@@ -8,6 +8,7 @@ dotenv.config();
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+const PendingOrder = require('../models/pending_order');
 
 let reservedPhoneNumber;
 if (process.env.DEV_MODE === 'FALSE') {
@@ -70,4 +71,14 @@ exports.formatPhoneNumber = (phoneNumberString) => {
     return [match[2], '-', match[3], '-', match[4]].join('');
   }
   return null;
+};
+
+/** Helper function that takes in an order */
+exports.getOrdersFromOrderIds = (orderIds) => {
+  const promises = orderIds.map((orderId) => new Promise((resolve, reject) => {
+    PendingOrder.findById(orderId)
+      .then((result) => resolve(result))
+      .catch((err) => reject(err));
+  }));
+  return Promise.all(promises);
 };

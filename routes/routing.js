@@ -119,24 +119,20 @@ function getAllOrder() {
 router.post('/computeRoute', (req, res) => {
   // fetch info from db.
 
-  let driverDocs;
   const dict = {};
   // fetch all(one, for now) driver id
-  Driver.find({}, (err, docs) => {
+  Driver.find({}, async (err, docs) => {
     if (err) {
       console.log(err);
       return;
     }
-    driverDocs = docs;
-  }).then(async () => {
     dict.driverInfo = [];
-    for (let i = 0; i < driverDocs.length; i += 1) {
+    for (let i = 0; i < docs.length; i += 1) {
       const info = {};
-      info.driverId = driverDocs[i]._id;
-      info.startLocation = driverDocs[i].startLocation;
+      info.driverId = docs[i]._id;
+      info.startLocation = docs[i].startLocation;
       dict.driverInfo.push(info);
     }
-
     // fetch all pending orders
 
     dict["orderInfo"] = await getAllOrder();
@@ -153,7 +149,6 @@ router.post('/computeRoute', (req, res) => {
         }
       },
     );
-
     const { spawn } = require('child_process');
     const ls = spawn('python3', [
       './routing/routeCalculation.py',

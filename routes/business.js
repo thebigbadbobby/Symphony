@@ -105,6 +105,10 @@ router.post('/add-business', (req, res) => {
     res.status(400).send('Missing pickup times');
     return;
   }
+  if (!req.body.hasOwnProperty('locality')) {
+    res.status(400).send('Missing locality');
+    return;
+  }
   const owner = new Owner({
     fullName: req.body.ownerFullName,
     phone: req.body.ownerPhone,
@@ -115,6 +119,7 @@ router.post('/add-business', (req, res) => {
     pickupAddress: req.body.pickupAddress,
     businessPhone: req.body.businessPhone,
     pickupTimes24hr: req.body.pickupTimes24hr,
+    locality: req.body.locality,
     owners: [owner._id],
   });
   owner.save().catch((err) => {
@@ -154,6 +159,9 @@ router.patch('/update-business', async (req, res) => {
     }
     if (req.body.businessName) {
       business.businessName = req.body.businessName;
+    }
+    if (req.body.locality) {
+      business.locality = req.body.locality;
     }
     business.save();
     res.send('Updated business');

@@ -187,6 +187,8 @@ export const TodaysOrders = (props) => {
 
   /** Deletes an order from the list (and should also from the DB, if it isn't there, it just deletes locally) */
   const deleteOrder = (id, key) => {
+    const thisOrder = orders.find(order=> order.id===id);
+    if(thisOrder.customer_name && thisOrder.address && thisOrder.customer_phone){
       axiosWrap
         .delete('/order/delete-order', { data: { orderId: id } })
         .then(() => {
@@ -205,7 +207,15 @@ export const TodaysOrders = (props) => {
           const deleteIndex = ordersTemp.findIndex(val => val.id === id);
           ordersTemp.splice(deleteIndex, 1);
           setOrders(ordersTemp)
-        })      
+        })
+    }  
+    else{
+      // if it isn't in the database, then delete it locally
+      const ordersTemp = [...orders]
+      const deleteIndex = ordersTemp.findIndex(val => val.id === id);
+      ordersTemp.splice(deleteIndex, 1);
+      setOrders(ordersTemp)
+    }
   };
 
   /** Runs every time the input changes and updates the value in orders. */
@@ -299,8 +309,10 @@ export const TodaysOrders = (props) => {
 
   /** Once everything is set up, fetch the orders */
   useEffect(() => {
-    fetchBusiness();
-    fetchOrders();
+    if(props.business){
+      fetchBusiness();
+      fetchOrders();
+    }
   }, [props.business]);
 
   /** The input fields where the customer inputs are collected. */

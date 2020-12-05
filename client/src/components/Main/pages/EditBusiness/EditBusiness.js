@@ -3,10 +3,12 @@ import {
   Button,
   Input,
   FormHelperText,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import styles from "./EditBusiness.styles";
 import { axiosWrap } from '../../../../axios-wrapper';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -21,33 +23,29 @@ function Alert(props) {
 export const EditBusiness = (props) => {
   const style = styles();
 
-  // Initialize string variables for pulling
-  var businessName = "";
-  var businessAddress = "";
-  var businessPhone = "";
+  // Handles drop down changes
+  const [locality, setLocality] = useState("");
+
+  // Handles when one of the dropdowns changes (since annoyingly this has a different process than the inputs)
+  const handleDropdownChange = (e) => {
+    e.preventDefault();
+    setLocality(e.target.value);
+  };
 
   // Calls the pullInfo function on page loading
-
   useEffect(() => {
     axiosWrap.get('/business/business-info',
         { params: { business: props.business } }
     )
         // On success, we auto-fill the page.
         .then(function (response) {
-          businessName = response.data.businessName;
-          businessAddress = response.data.pickupAddress;
-          businessPhone = response.data.businessPhone;
-          updateFillins();
+          document.getElementById("companyName").value = response.data.businessName;
+          document.getElementById("address").value = response.data.pickupAddress;
+          document.getElementById("phone").value = response.data.businessPhone;
+          setLocality(response.data.locality);
         })
         // It should never fail since they should have a business already.
   }, []);
-
-  // Updates the fill-in values if the user already has a business.
-  function updateFillins(){
-    document.getElementById("companyName").value = businessName;
-    document.getElementById("address").value = businessAddress;
-    document.getElementById("phone").value = businessPhone;
-  }
 
   // Initialize alert varaiables
   const [success, setOpenSuccess] = React.useState(false);
@@ -85,6 +83,7 @@ export const EditBusiness = (props) => {
         businessName: document.getElementById("companyName").value,
         businessPhone: document.getElementById("phone").value,
         pickupAddress: document.getElementById("address").value,
+        locality: locality,
       })
       // Opens success pop-up.
       .then(function (response) {
@@ -141,6 +140,21 @@ export const EditBusiness = (props) => {
               fullWidth
               variant="filled"
             />
+            <FormHelperText className={style.inputSpacing}>
+              Locality
+            </FormHelperText>
+            <Select
+              labelId="demo-simple-select-label"
+              id="locality"
+              displayEmpty
+              fullWidth
+              align = "left"
+              value={locality}
+              onChange={(e) => handleDropdownChange(e)}
+            >
+              <MenuItem value="auburn">Auburn</MenuItem>
+              <MenuItem value="santa cruz">Santa Cruz</MenuItem>
+            </Select>
           </CardContent>
         </Card>
         <div>

@@ -53,6 +53,7 @@ export const SignUp = (props) => {
     storeAddress: "",
     phoneNumber: "",
     pickupTime: "2-5",
+    locality: "santa cruz",
     // deliveryDays: "MWF",
   });
   const [timeDict] = useState({
@@ -64,6 +65,7 @@ export const SignUp = (props) => {
     storeAddress: false,
     phoneNumber: false,
     pickupTime: false,
+    locality: false,
     // deliveryDays: false,
   });
 
@@ -102,6 +104,7 @@ export const SignUp = (props) => {
           ownerPhone: formState.phoneNumber,
           pickupAddress: formState.storeAddress,
           pickupTimes24hr: timeDict[formState.pickupTime],
+          locality: formState.locality,
           ownerEmail: user.email,
         })
         .then((res) => {
@@ -198,6 +201,19 @@ export const SignUp = (props) => {
               <FormHelperText>
                 When should we allow drivers to pick up?
               </FormHelperText>
+              <FormHelperText className={style.fieldHeader}>
+                Locality
+              </FormHelperText>
+              <Select
+                labelId="demo-simple-select-label"
+                id="locality"
+                label="Locality"
+                value={formState.locality}
+                onChange={(e) => handleDropdownChange(e, "locality")}
+              >
+                <MenuItem value="auburn">Auburn</MenuItem>
+                <MenuItem value="santa cruz">Santa Cruz</MenuItem>
+              </Select>
               {/* We can add this in if we ever decide to do two day */}
               {/* <Select
                 labelId="demo-simple-select-label"

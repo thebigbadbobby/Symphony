@@ -30,6 +30,11 @@ const businessSchema = new Schema({
     ref: 'Owner',
     required: true,
   }],
+  locality: {
+    type: String,
+    enum: ['auburn', 'santa cruz'],
+    required: true,
+  },
 }, { timestamps: true });
 
 const Business = mongoose.model('Business', businessSchema);

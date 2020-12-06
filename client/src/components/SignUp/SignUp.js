@@ -208,7 +208,7 @@ export const SignUp = (props) => {
                 labelId="demo-simple-select-label"
                 id="locality"
                 label="Locality"
-                value={formState.locality}
+                defaultValue={formState.locality}
                 onChange={(e) => handleDropdownChange(e, "locality")}
               >
                 <MenuItem value="auburn">Auburn</MenuItem>

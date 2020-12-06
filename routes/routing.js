@@ -120,6 +120,15 @@ router.post('/computeRoute', (req, res) => {
   // fetch info from db.
 
   const dict = {};
+  // fetch all pending orders
+  dict["orderInfo"] = await getAllOrder();
+  if (dict["orderInfo"].length==0){
+    console.log('there\'re no pendingOrders today, scirpt ends');
+    return;
+  }else {
+    console.log(dict);
+  }
+
   // fetch all(one, for now) driver id
   Driver.find({}, async (err, docs) => {
     if (err) {
@@ -133,9 +142,7 @@ router.post('/computeRoute', (req, res) => {
       info.startLocation = docs[i].startLocation;
       dict.driverInfo.push(info);
     }
-    // fetch all pending orders
 
-    dict["orderInfo"] = await getAllOrder();
     
     let dictstring = JSON.stringify(dict);
     const fs = require("fs");

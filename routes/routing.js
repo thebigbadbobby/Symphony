@@ -87,7 +87,7 @@ router.get('/routeUrl', async (req, res) => {
   res.status(200).send(links);
 });
 
-async function getAllOrder() {
+function getAllOrder() {
   const orderInfo = [];
   PendingOrder.find().then((docs) => {
     // console.log(docs);
@@ -116,20 +116,10 @@ async function getAllOrder() {
 // @description Invoke python script to compute route for drivers.
 // This function does not get nor save the result of rouing,
 // the python script will invoke another api call to do that. See /saveRoutingOutput
-router.post('/computeRoute', async (req, res) => {
+router.post('/computeRoute', (req, res) => {
   // fetch info from db.
 
   const dict = {};
-  
-  // fetch all pending orders
-  dict["orderInfo"] = await getAllOrder();
-  if (dict["orderInfo"].length==0){
-    console.log('there\'re no pendingOrders today, scirpt ends');
-    return;
-  }else {
-    console.log(dict);
-  }
-
   // fetch all(one, for now) driver id
   Driver.find({}, async (err, docs) => {
     if (err) {
@@ -143,7 +133,10 @@ router.post('/computeRoute', async (req, res) => {
       info.startLocation = docs[i].startLocation;
       dict.driverInfo.push(info);
     }
+    // fetch all pending orders
 
+    dict["orderInfo"] = await getAllOrder();
+    
     let dictstring = JSON.stringify(dict);
     const fs = require("fs");
     const today = (new Date().getTime() / 1000).toFixed(0);

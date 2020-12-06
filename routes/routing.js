@@ -198,6 +198,11 @@ router.post('/saveRoutingOutput', (req, res) => {
     if (!routingOutput.hasOwnProperty('route')) {
       res.status(400).send('Missing route');
     }
+    if (routingOutput.route.length <= 1){
+      // this driver is not assigned any route. This could be happen when there's more driver than order
+      return;
+    }
+
     let routeLocal = routingOutput.route;
     let orders = [];
     routeLocal[0]['type'] = '';

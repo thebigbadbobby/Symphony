@@ -161,7 +161,7 @@ router.post('/computeRoute', async (req, res) => {
       },
     );
     const { spawn } = require('child_process');
-    const ls = spawn('python', [
+    const ls = spawn('python3', [
       './routing/routeCalculation.py',
       `./routing/dailyDestinationList/${today}.json`,
       `${OPEN_ROUTE_API_KEY}`,

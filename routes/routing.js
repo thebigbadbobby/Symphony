@@ -116,7 +116,7 @@ function getAllOrder() {
 // @description Invoke python script to compute route for drivers.
 // This function does not get nor save the result of rouing,
 // the python script will invoke another api call to do that. See /saveRoutingOutput
-router.post('/computeRoute', (req, res) => {
+router.post('/computeRoute', async (req, res) => {
   // fetch info from db.
 
   const dict = {};
@@ -130,10 +130,14 @@ router.post('/computeRoute', (req, res) => {
   }
 
   // fetch all(one, for now) driver id
-  Driver.find({}, async (err, docs) => {
+  Driver.find({'state':'checkin'}, async (err, docs) => {
     if (err) {
       console.log(err);
       return;
+    }
+    if (docs.length == 0){
+      console.log('No driver available');
+      return
     }
     dict.driverInfo = [];
     for (let i = 0; i < docs.length; i += 1) {
@@ -157,7 +161,7 @@ router.post('/computeRoute', (req, res) => {
       },
     );
     const { spawn } = require('child_process');
-    const ls = spawn('python3', [
+    const ls = spawn('python', [
       './routing/routeCalculation.py',
       `./routing/dailyDestinationList/${today}.json`,
       `${OPEN_ROUTE_API_KEY}`,

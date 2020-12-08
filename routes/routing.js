@@ -203,6 +203,7 @@ router.post('/saveRoutingOutput', (req, res) => {
       res.status(400).send('Missing route');
     }
     if (routingOutput.route.length <= 1){
+      // TODO, reset the driver's state
       // this driver is not assigned any route. This could be happen when there's more driver than order
       return;
     }

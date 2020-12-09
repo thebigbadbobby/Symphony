@@ -24,13 +24,11 @@ This file represents the small businesses (the physical entity) in the database.
   - This is an array of all the owners of the small business. We do this to allow for multiple people to log in with their google account and still be editing the same stuff.
 - `pickupTimes24hr`
   - This is an array representing a range of times (in military time). `pickupTimes24hr[0]` is the start time, `pickupTimes24hr[0]` is the end time.
+- `locality`
+  - So we know what drivers are allowed to be assigned there.
 
 #### Desired fields:
 
-- `pickupTime`
-  - When they want the driver to come and pick up their orders every day.
-- `locality`
-  - So we know what drivers are allowed to be assigned there.
 - `cutoffTime`
   - So we can warn the small business owner what that time is and when they are beyond it (so we can't fullfill it that day)
 
@@ -60,7 +58,8 @@ This file represents orders that have been delivered and are "history" so to spe
 
 #### Desired fields:
 
-- None at this time
+- `locality`
+  - So the routing script knows what's up and which orders to run
 
 ## Driver
 
@@ -79,11 +78,23 @@ This file represents the drivers in the database.
   - This has to be in the format `xxx-xxx-xxxx`
 - `email`
   - The driver's email. Not really used rn, but will be.
+- `locality`
+  - The driver's locality so we know their pickup "radius"
+- `todaysRoute`
+  - The driver's route for the day. Is set to null if the driver has not been assigned a route or is done for the day
+    - An enum that currently only allows for `auburn` and `santa cruz`
+- `startLocation`
+  - The driver's start location indicating what address should be used when calculating their route.
+- `state`
+  - The state of the driver in their route. Has 4 options:
+    - `idle`: the driver can't do anything except check in. They will not get assigned a route in this state.
+    - `checkin`: the driver has checked in and is ready for a route.
+    - `ready`: the driver has recieved their route but has not let us know that they have started it yet.
+    - `onWay`: The driver is picking up/dropping off packages. When they are done with their route, their state will be reset to `idle`
 
 #### Desired fields:
 
-- `locality`
-  - The driver's locality so we know their pickup "radius"
+- None right now
 
 ## Owner
 
@@ -146,8 +157,14 @@ This file stores the optimized route for each driver every day.
   - In-order places/addresses that the driver is going to follow for the day
 - `routeTime`
   - Total time of going through the whole route
+- `currentIndex` (This is poorly named)
+  - The index in route representing the stop that the driver has just completed.
+    - `currentIndex + 1` is the driver's next stop (index) in the route
+- `started`
+  - if the driver has started their route
+- `completed`
+  - if this route is completed route
 
 #### Desired fields:
 
-- `currentStop`
-  - So that Kahzum can keep track of the driver's working progress of the day.
+- None right now

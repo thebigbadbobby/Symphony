@@ -27,3 +27,4 @@ In general, the format is:
 - If business enters incorrect address, then the google maps link doesn’t work
   - Not trust our users so much
 - `compute_route.sh` doesn’t return a status code when there are no orders.
+  - Figure out where it needs to return the status code.

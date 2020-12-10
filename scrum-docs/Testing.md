@@ -51,7 +51,24 @@
   - Edit one of the order's fields
     - verify that the state updates to show that it has been edited.
 
-**David**
+**David**  
+- Python Routing Script:
+  - Manual Testing 
+    - Test /computeRoute  
+      - STEP UP: Put Testing Data inside Dev/Test  
+      - EXECUTION: Call /computeRoute, using calculate-route.http  
+      - VERIFY: Mannual inspect. Result should be a valid json inside /routes/dailyDestinationList  
+    - Test Python Scirpt  
+      - STEP UP: Have the output from /computeRoute ready  
+      - EXECUTION: run `python3 ./routing/routeCalculation.py [path-to-json] [OPEN_ROUTE_API_KEY]`  
+      - VERYIFY: Make sure python script ends without error. Its very hard to systematically proof the correctness of the every route so we are going to trust the ORTools library. Verify that the output is in a desired json format see inside save-routing-output.http for sample format
+    - Test /save-routing-output
+      - STEP UP: Prepare test data, format @save-routing-output.http
+      - EXECUTION: Run save-routing-output.http
+      - VERYIFY: Mannual inspect newly created route inside DB, inspect all inputed driver has recieve a route
+
+    
+
 **Daniel**
 **Langqi**
 

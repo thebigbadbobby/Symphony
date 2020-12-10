@@ -22,3 +22,8 @@ In general, the format is:
   - This is some edge case that I can't find. The fix is unclear.
 - On rare occasions, texting "on my way" doesn't register with twilio (but also doesn't error?)
   - I'm not sure if this is a real problem or not since texting "on my way" again returns a result.
+- Async problem with compute-routing-output 
+  - needs async function and await
+- If business enters incorrect address, then the google maps link doesn’t work
+  - Not trust our users so much
+- `compute_route.sh` doesn’t return a status code when there are no orders.

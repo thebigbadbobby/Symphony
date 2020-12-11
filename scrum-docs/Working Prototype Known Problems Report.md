@@ -28,3 +28,5 @@ In general, the format is:
   - Not trust our users so much
 - `compute_route.sh` doesn’t return a status code when there are no orders.
   - Figure out where it needs to return the status code.
+- On the on my way text for multiple orders causes an off by one. It's because that code is based on an old assumption where there couldn't be multiple orders
+   - Fixing twilio function for onway to use fairly new data structure

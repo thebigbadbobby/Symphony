@@ -11,13 +11,10 @@ export const styles = makeStyles((theme) => ({
     position: "relative",
     width: "20%",
   },
-  loading: {
-    position: "absolute"
-  },
   loadingIcon: {
     width: "60%",
-    marginTop: "12%",
-    padding: "10%"
+    padding: "10%",
+    position: "absolute"
   },
 }));
 

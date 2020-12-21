@@ -11,6 +11,7 @@ import logo from "./assets/mint-stacked.svg";
 import { Loading } from "./components/Loading/Loading";
 import { axiosWrap } from "./axios-wrapper";
 import { SignUp } from "./components/SignUp/SignUp";
+import { Popup } from "./components/Popup/Popup"
 
 const Copyright = () => {
   const style = styles();
@@ -40,6 +41,8 @@ export default function App() {
   let [loading, setLoading] = useState(true);
   let [businessID, setBusinessID] = useState(undefined);
   let [newUser, setNewUser] = useState(undefined);
+  let [showErrorDialog, setShowErrorDialog] = useState(false);
+  let [popupContent, setPopupContent] = useState({title: "", message: "", button1: "", button1Action: () => {}})
   // creats a global state for all components
   const style = styles();
 
@@ -89,6 +92,17 @@ export default function App() {
           window.gapi.auth2
             .getAuthInstance()
             .isSignedIn.listen(handleAuthChange);
+        }).catch(err => {
+          console.log("Likely a cookie or ad blocker problem", err)
+          setPopupContent({
+            title: "Cookies required to access Kahzum",
+            message: "It seems like you are blocking our access to third-party cookies, which is unfortunately required by Google's Sign-in process. Please try disabling any ad blocker you may be using, and make sure that you are using a normal (non-incognito) browser window.",
+            button1: "Close",
+            button1Action: () => {
+              handleSignOut()
+            }
+          })
+          openErrorDialog();
         });
     });
   }, []);
@@ -115,8 +129,15 @@ export default function App() {
           }
         })
         .catch(function (error) {
-          alert("error");
-          alert(JSON.stringify(error));
+          setPopupContent({
+            title: "Your business has been deleted.",
+            message: "It seems that you once had a business registered in our system. Your Owner account has not been deleted but your business has. Please contact us to get this resolved at info@kahzum.com.",
+            button1: "Sign Out",
+            button1Action: () => {
+              handleSignOut()
+            }
+          })
+          openErrorDialog();
         });
     }
   }, [user]);
@@ -173,6 +194,16 @@ export default function App() {
     setBusinessID(businessId)
   }
 
+  /** Handles the opening of the dialog box in the case of an error */
+  const openErrorDialog = () => {
+    setShowErrorDialog(true);
+  };
+
+  /** Handles the closing of the dialog box in the case of an error */
+  const closeErrorDialog = () => {
+    setShowErrorDialog(false);
+  };
+
   /** Used to decide which screen should be shown to the user */
   const SelectScreen = (props) => {
     if (props.newUser) {
@@ -216,6 +247,7 @@ export default function App() {
       disableGutters={true}
     >
       <CssBaseline />
+      <Popup open={showErrorDialog} handleClose={closeErrorDialog} title={popupContent.title} message={popupContent.message} button1={popupContent.button1} />
       {loading ? (
         <Loading />
       ) : (

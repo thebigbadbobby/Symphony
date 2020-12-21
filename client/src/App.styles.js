@@ -5,14 +5,13 @@ const styles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    height: "100vh",
+    minHeight: "100vh"
   },
   signInContainer: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     marginTop: "auto",
-    marginBottom: "auto",
   },
   imageIcon: {
     [theme.breakpoints.down("xs")]: {

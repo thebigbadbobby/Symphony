@@ -36,6 +36,13 @@ export const styles = makeStyles((theme) => ({
     marginLeft: 0,
   },
   signOutButton: {
+      //   root: {
+  //       background: 'inherit',
+  //     "&.Mui-selected": {
+  //       backgroundColor: "red"
+  //     }
+  //   },
+    fill: "#add8e6",
     marginLeft: "auto",
     marginRight: theme.spacing(2),
   },

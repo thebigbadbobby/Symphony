@@ -6,11 +6,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import { OrderHistory } from "./pages/OrderHistory/OrderHistory"
-import { TodaysOrders } from "./pages/TodaysOrders/TodaysOrders"
 import { LogIn } from "../LogIn/LogIn";
 import styles from "./Main.styles";
-import { EditBusiness } from './pages/EditBusiness/EditBusiness'
+import { PurchaseHistory } from './pages/PurchaseHistory/purchaseHistory'
+import { CheckoutProducts } from "./pages/CheckoutProducts/checkoutProducts"
+import { EditAccount } from "./pages/EditAccount/editAccount"
+import { RequestProducts } from "./pages/RequestProducts/requestProducts"
+import {withStyles} from "@material-ui/core";
 
 export const Main = (props) => {
   const style = styles();
@@ -26,14 +28,16 @@ export const Main = (props) => {
 
   const renderSwitch = () => {
     switch (pageState) {
-      case 'order-history':
-        return <OrderHistory business={business}/>
-      case 'store-settings':
-        return <EditBusiness user={props.user} business={business}/>
-      case 'today\'s-orders':
-        return <TodaysOrders business={business}/>
+      case '1':
+        return <CheckoutProducts business={business}/>
+      case '2':
+        return <PurchaseHistory user={props.user} business={business}/>
+      case '3':
+        return <EditAccount business={business}/>
+      case '4':
+        return <RequestProducts business={business}/>
       default:
-        return <TodaysOrders business={business}/>
+        return <RequestProducts business={business}/>
     }
   }
   const handleDrawerOpen = () => {
@@ -43,10 +47,19 @@ export const Main = (props) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const StyledAppBar = withStyles({
+    root: {
+        background: 'linear-gradient(to left, white , #add8e6)',
+      "&.Mui-selected": {
+        backgroundColor: "red"
+      }
+    },
+  })(AppBar);
+
 
   return (
       <React.Fragment>
-        <AppBar
+        <StyledAppBar
             position="static"
             className={style.appBar}
         >
@@ -61,7 +74,7 @@ export const Main = (props) => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" className={style.appTitle}>
-              Kahzum Same Day
+              Kahzum Shoplink
             </Typography>
             <div className={style.signOutButton}>
               <LogIn
@@ -71,7 +84,7 @@ export const Main = (props) => {
             </div>
  
           </Toolbar>
-        </AppBar>
+        </StyledAppBar>
         <Drawer handleDrawerClose={handleDrawerClose} changePage={changePage} open={open}/>
         <div className={style.mainContainer}>
         {renderSwitch()}

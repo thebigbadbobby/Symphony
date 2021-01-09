@@ -17,20 +17,25 @@ export const Drawer = (props) => {
     const style = styles()
     const itemsList = [
         {
-            text: "Today's Orders",
-            icon: <StorefrontIcon />,
-            onClick: () => changePage("today's-orders")
-        },
-        {
-            text: "Order History",
-            icon: <HistoryIcon />,
-            onClick: () => changePage("order-history")
-        },
-        {
-            text: "Store Settings",
+            text: "Request Products",
             icon: <SettingsIcon />,
-            onClick: () => changePage("store-settings")
-        }
+            onClick: () => changePage("4")
+        },
+        {
+            text: "Checkout Products",
+            icon: <StorefrontIcon />,
+            onClick: () => changePage("1")
+        },
+        {
+            text: "Purchase History",
+            icon: <SettingsIcon />,
+            onClick: () => changePage("2")
+        },
+        {
+            text: "Edit Account",
+            icon: <HistoryIcon />,
+            onClick: () => changePage("3")
+        },
     ];
     return (<React.Fragment>
         <MUIDrawer

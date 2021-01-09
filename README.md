@@ -1,10 +1,9 @@
 # Kahzum Logistical Delivery Platform
 
 ## Production Setup
-
-- We currently have a production environment set up for both the backend api and the frontend application.
 - The frontend for small business owners can be found by navigating to [my.kahzum.com](https://my.kahzum.com)
-- The backend is hosted on [api.kahzum.com](https://api.kahzum.com).
+- This goal of this project is to also make an interface for customers to engage with small businesses.
+- The backend for both projects is hosted on [api.kahzum.com](https://api.kahzum.com).
   - Please note that there is no documentation currently publicly available for the api because it is not secured, so our best protection right now is secrecy.
   - The production environment is hosted in a docker container for portability across environments.
 
@@ -14,7 +13,7 @@
 2. Clone the repository
 
 ```bash
-  git clone https://github.com/mlpierce22/kahzum-app
+  git clone https://github.com/thebigbadbobby/kahzum-shoplink/
 ```
 
 3. Install the .env file in the root directory of the repo (same level as package.json). You can find this file [here](https://drive.google.com/drive/u/0/folders/1h9CU87eD4Zl5cfRoPP3CgqPF0SmlagkZ)
@@ -26,6 +25,7 @@
 ```bash
 # Install dependencies for server and client
 npm run update
+# If node_modules wasn't automatically installed in client folder, cd into client folderand run again.
 
 # Run the client, server, and twilio (if applicable) concurrently
 npm run dev

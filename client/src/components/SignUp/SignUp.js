@@ -136,7 +136,7 @@ export const SignUp = (props) => {
           color="textPrimary"
           align="center"
         >
-          We just need a little information from you about your business before
+          We just need a little information about you before
           we get started!
         </Typography>
         <Card className={style.card}>

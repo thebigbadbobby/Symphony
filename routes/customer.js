@@ -16,25 +16,9 @@ const router = express.Router();
 // }
 // @payload
 // success message
-
-//@adds customer to database
-//@params
-//fullName: string
-//phone: string
-//email: string
 router.post('/add-customer', (req, res) => {
-  // if (!req.body.hasOwnProperty('customer')) {
-  //   res.status(400).send('Missing customer');
-  // }
-  //check that all properties are filled in
-  if (!req.body.hasOwnProperty('fullName')) {
-    res.status(400).send('Missing customer name');
-  }
-  if (!req.body.hasOwnProperty('phone')) {
-    res.status(400).send('Missing customer phone number');
-  }
-  if (!req.body.hasOwnProperty('email')) {
-    res.status(400).send('Missing customer email');
+  if (!req.body.hasOwnProperty('customer')) {
+    res.status(400).send('Missing customer');
   }
   const customer = new Customer({
     fullName: req.body.customer.fullName,

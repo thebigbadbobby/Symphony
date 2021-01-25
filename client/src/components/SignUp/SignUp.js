@@ -23,15 +23,24 @@ const validateInput = (formState, errors) => {
   );
   // check if any of them are empty, if they are, set to error state to true
   if (
-    !formState.businessName ||
-    !formState.storeAddress ||
-    !formState.phoneNumber
+    // !formState.businessName ||
+    // !formState.storeAddress ||
+    // !formState.phoneNumber
+    !formState.fullName ||
+    !formState.phone ||
+    !formState.email
   ) {
-    returnedErrors.businessName = !formState.businessName;
-    returnedErrors.storeAddress = !formState.storeAddress;
+    // returnedErrors.businessName = !formState.businessName;
+    // returnedErrors.storeAddress = !formState.storeAddress;
+    returnedErrors.fullName = !formState.fullName;
+    returnedErrors.phone = !formState.phone;
+    returnedErrors.email = !formState.email;
   } else {
-    returnedErrors.businessName = formState.businessName.length <= 0;
-    returnedErrors.storeAddress = formState.storeAddress.length <= 0;
+    // returnedErrors.businessName = formState.businessName.length <= 0;
+    // returnedErrors.storeAddress = formState.storeAddress.length <= 0;
+    returnedErrors.fullName = formState.fullName.length <= 0;
+    returnedErrors.phone = formState.phone.length <= 0;
+    returnedErrors.email = formState.email.length <= 0;
   }
 
   return returnedErrors;
@@ -49,23 +58,32 @@ export const SignUp = (props) => {
   // State variables
   const user = props.user
   const [formState, setFormState] = useState({
-    businessName: "",
-    storeAddress: "",
-    phoneNumber: "",
-    pickupTime: "2-5",
-    locality: "santa cruz",
+    // businessName: "",
+    // storeAddress: "",
+    // phoneNumber: "",
+    // pickupTime: "2-5",
+    // locality: "santa cruz",
     // deliveryDays: "MWF",
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+
   });
   const [timeDict] = useState({
     '2-5': [14,17]
   })
 
   const [formErrors, setFormErrors] = useState({
-    businessName: false,
-    storeAddress: false,
-    phoneNumber: false,
-    pickupTime: false,
-    locality: false,
+    // businessName: false,
+    // storeAddress: false,
+    // phoneNumber: false,
+    // pickupTime: false,
+    // locality: false,
+    // fullName: false,
+    // phoneNumber: false,
+    fullName: false,
+    phone: false,
+    email: false,
     // deliveryDays: false,
   });
 
@@ -97,18 +115,22 @@ export const SignUp = (props) => {
 
     if (!hasErrors) {
       axiosWrap
-        .post("/business/add-business", {
-          businessName: formState.businessName,
-          businessPhone: formState.phoneNumber,
-          ownerFullName: user.fullName,
-          ownerPhone: formState.phoneNumber,
-          pickupAddress: formState.storeAddress,
-          pickupTimes24hr: timeDict[formState.pickupTime],
-          locality: formState.locality,
-          ownerEmail: user.email,
+        .post("/customer/add-customer", {
+          // businessName: formState.businessName,
+          // businessPhone: formState.phoneNumber,
+          // ownerFullName: user.fullName,
+          // ownerPhone: formState.phoneNumber,
+          // pickupAddress: formState.storeAddress,
+          // pickupTimes24hr: timeDict[formState.pickupTime],
+          // locality: formState.locality,
+          // ownerEmail: user.email,
+          fullName: formState.fullName,
+          phone: formState.phoneNumber,
+          email: formState.email,
         })
         .then((res) => {
-          props.businessCreated(res.data._id);
+          //props.businessCreated(res.data._id);
+          props.customerCreated(res.data._ida);
         })
         .catch((err) => {
           console.log("Couldn't reach server!", err);

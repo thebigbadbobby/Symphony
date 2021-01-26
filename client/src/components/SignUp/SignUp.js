@@ -27,20 +27,20 @@ const validateInput = (formState, errors) => {
     // !formState.storeAddress ||
     // !formState.phoneNumber
     !formState.fullName ||
-    !formState.phone ||
-    !formState.email
+    !formState.phoneNumber
+    //!formState.email
   ) {
     // returnedErrors.businessName = !formState.businessName;
     // returnedErrors.storeAddress = !formState.storeAddress;
     returnedErrors.fullName = !formState.fullName;
-    returnedErrors.phone = !formState.phone;
-    returnedErrors.email = !formState.email;
+    returnedErrors.phoneNumber = !formState.phoneNumber;
+    //returnedErrors.email = !formState.email;
   } else {
     // returnedErrors.businessName = formState.businessName.length <= 0;
     // returnedErrors.storeAddress = formState.storeAddress.length <= 0;
     returnedErrors.fullName = formState.fullName.length <= 0;
-    returnedErrors.phone = formState.phone.length <= 0;
-    returnedErrors.email = formState.email.length <= 0;
+    returnedErrors.phoneNumber = formState.phoneNumber.length <= 0;
+    //returnedErrors.email = formState.email.length <= 0;
   }
 
   return returnedErrors;
@@ -82,7 +82,7 @@ export const SignUp = (props) => {
     // fullName: false,
     // phoneNumber: false,
     fullName: false,
-    phone: false,
+    phoneNumber: false,
     email: false,
     // deliveryDays: false,
   });
@@ -125,7 +125,7 @@ export const SignUp = (props) => {
           // locality: formState.locality,
           // ownerEmail: user.email,
           fullName: formState.fullName,
-          phone: formState.phoneNumber,
+          phoneNumber: formState.phoneNumber,
           email: formState.email,
         })
         .then((res) => {

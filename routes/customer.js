@@ -9,12 +9,14 @@ router.post('/sign-in', (req, res) => {
     res.status(400).send('Missing email');
     return;
   }
+  console.timeLog(req.body.email)
   Customer.findOne({ email: req.body.email })
     .then((customer) => {
           if (customer) {
+            console.log("found")
             res.send({ customerID: customer._id, newUser: false });
           } else {
-            res.status(400).send(`Owner ${customer._id} does not belong to any business`);
+            res.send({ customerID: undefined, newUser: true });
           }
     })
     .catch(() => {
@@ -34,7 +36,6 @@ router.post('/sign-in', (req, res) => {
 // @payload
 // success message
 router.post('/add-customer', (req, res) => {
-  console.log('ekans')
   if (!req.body.hasOwnProperty('fullName')) {
     res.status(400).send('Missing customer');
   }
@@ -49,11 +50,14 @@ router.post('/add-customer', (req, res) => {
     phone: req.body.phone,
     email: req.body.email,
   });
-  customer.save()
+  customer.save().then((result) => {
+    res.send(result);
+  })
     .catch((err) => {
       console.log(err);
       res.status(500).send(`${JSON.stringify(err)}`);
     });
+
 //   Business.findOne({ _id: req.body.business }, (err, business) => {
 //     if (err) {
 //       res.status(404).send(`can't find business ${req.body.business}`);

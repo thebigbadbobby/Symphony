@@ -117,7 +117,6 @@ export const SignUp = (props) => {
     console.log(formState.phoneNumber)
     console.log(errorState)
     if (!hasErrors) {
-      console.log('errors')
       axiosWrap
         .post("/customer/add-customer", {
           // businessName: formState.businessName,
@@ -133,6 +132,7 @@ export const SignUp = (props) => {
           email: user.email,
         })
         .then((res) => {
+          console.log("arbok")
           //props.businessCreated(res.data._id);
           props.customerCreated(res.data._ida);
         })

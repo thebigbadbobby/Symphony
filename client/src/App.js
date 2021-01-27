@@ -190,9 +190,11 @@ export default function App() {
 
   /** When the user creates a customer from the sign up screen, this is called. */
   const customerCreated = (customerId) => {
+    console.log("a")
     setNewUser(false);
     setSignIn(true);
     setCustomerID(customerId)
+    console.log("a")
   }
 
   /** Handles the opening of the dialog box in the case of an error */
@@ -209,7 +211,7 @@ export default function App() {
   const SelectScreen = (props) => {
     if (props.newUser) {
       // show the sign up screen
-      return <SignUp user={user} customerCreated={customerCreated} />
+      return <SignUp user={user} signedIn={signedIn} customerCreated={customerCreated} />
     } else if (props.isSignedIn) {
       // direct them to the app
       return (

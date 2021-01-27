@@ -16,7 +16,7 @@ import {withStyles} from "@material-ui/core";
 
 export const Main = (props) => {
   const style = styles();
-  const { business } = props
+  const { customer } = props
   const [open, setOpen] = useState(false);
 
   let [pageState, setPageState] = useState('today\'s-orders');
@@ -29,15 +29,15 @@ export const Main = (props) => {
   const renderSwitch = () => {
     switch (pageState) {
       case '1':
-        return <CheckoutProducts business={business}/>
+        return <CheckoutProducts customer={customer}/>
       case '2':
-        return <PurchaseHistory user={props.user} business={business}/>
+        return <PurchaseHistory user={props.user} customer={customer}/>
       case '3':
-        return <EditAccount business={business}/>
+        return <EditAccount customer={customer}/>
       case '4':
-        return <RequestProducts business={business}/>
+        return <RequestProducts customer={customer}/>
       default:
-        return <RequestProducts business={business}/>
+        return <RequestProducts customer={customer}/>
     }
   }
   const handleDrawerOpen = () => {

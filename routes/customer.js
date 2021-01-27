@@ -4,6 +4,23 @@ const Business = require('../models/business');
 
 const router = express.Router();
 
+router.post('/sign-in', (req, res) => {
+  if (!req.body.hasOwnProperty('email')) {
+    res.status(400).send('Missing email');
+    return;
+  }
+  Customer.findOne({ email: req.body.email })
+    .then((customer) => {
+          if (customer) {
+            res.send({ customerID: customer._id, newUser: false });
+          } else {
+            res.status(400).send(`Owner ${customer._id} does not belong to any business`);
+          }
+    })
+    .catch(() => {
+      res.send({ customerID: undefined, newUser: true });
+    });
+});
 // @description returns the pending orders for a specific business
 // @params
 // {
@@ -17,13 +34,20 @@ const router = express.Router();
 // @payload
 // success message
 router.post('/add-customer', (req, res) => {
-  if (!req.body.hasOwnProperty('customer')) {
+  console.log('ekans')
+  if (!req.body.hasOwnProperty('fullName')) {
+    res.status(400).send('Missing customer');
+  }
+  if (!req.body.hasOwnProperty('phone')) {
+    res.status(400).send('Missing customer');
+  }
+  if (!req.body.hasOwnProperty('email')) {
     res.status(400).send('Missing customer');
   }
   const customer = new Customer({
-    fullName: req.body.customer.fullName,
-    phone: req.body.customer.phone,
-    email: req.body.customer.email,
+    fullName: req.body.fullName,
+    phone: req.body.phone,
+    email: req.body.email,
   });
   customer.save()
     .catch((err) => {

@@ -39,7 +39,7 @@ export default function App() {
   let [auth, setAuth] = useState(undefined);
   let [user, setUser] = useState(undefined);
   let [loading, setLoading] = useState(true);
-  let [businessID, setBusinessID] = useState(undefined);
+  let [customerID, setCustomerID] = useState(undefined);
   let [newUser, setNewUser] = useState(undefined);
   let [showErrorDialog, setShowErrorDialog] = useState(false);
   let [popupContent, setPopupContent] = useState({title: "", message: "", button1: "", button1Action: () => {}})
@@ -119,19 +119,20 @@ export default function App() {
     if (user) {
       let email = user.email
       axiosWrap
-        .post("/business/sign-in", { ownerEmail: email })
+        .post("/customer/sign-in", { email: email })
         .then((res) => {
           setNewUser(res.data.newUser);
-          setBusinessID(res.data.businessID);
+          setCustomerID(res.data.customerID);
           setLoading(false);
           if (!res.data.newUser) {
             setSignIn(true);
           }
         })
         .catch(function (error) {
+          console.log(error)
           setPopupContent({
-            title: "Your business has been deleted.",
-            message: "It seems that you once had a business registered in our system. Your Owner account has not been deleted but your business has. Please contact us to get this resolved at info@kahzum.com.",
+            title: "Your customer has been deleted.",
+            message: "It seems that you once had a customer registered in our system. Your Owner account has not been deleted but your customer has. Please contact us to get this resolved at info@kahzum.com.",
             button1: "Sign Out",
             button1Action: () => {
               handleSignOut()
@@ -187,11 +188,11 @@ export default function App() {
       });
   };
 
-  /** When the user creates a business from the sign up screen, this is called. */
-  const businessCreated = (businessId) => {
+  /** When the user creates a customer from the sign up screen, this is called. */
+  const customerCreated = (customerId) => {
     setNewUser(false);
     setSignIn(true);
-    setBusinessID(businessId)
+    setCustomerID(customerId)
   }
 
   /** Handles the opening of the dialog box in the case of an error */
@@ -208,7 +209,7 @@ export default function App() {
   const SelectScreen = (props) => {
     if (props.newUser) {
       // show the sign up screen
-      return <SignUp user={user} businessCreated={businessCreated} />
+      return <SignUp user={user} customerCreated={customerCreated} />
     } else if (props.isSignedIn) {
       // direct them to the app
       return (
@@ -217,7 +218,7 @@ export default function App() {
           user={user}
           auth={auth}
           signOut={handleSignOut}
-          business={businessID}
+          customer={customerID}
           // newUser={newUser}
         />
       );

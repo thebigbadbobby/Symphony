@@ -26,19 +26,19 @@ const validateInput = (formState, errors) => {
     // !formState.businessName ||
     // !formState.storeAddress ||
     // !formState.phoneNumber
-    !formState.fullName ||
+    //!formState.fullName || This line was the issue because it's user.fullName
     !formState.phoneNumber
     //!formState.email
   ) {
     // returnedErrors.businessName = !formState.businessName;
     // returnedErrors.storeAddress = !formState.storeAddress;
-    returnedErrors.fullName = !formState.fullName;
+    //returnedErrors.fullName = !formState.fullName;
     returnedErrors.phoneNumber = !formState.phoneNumber;
     //returnedErrors.email = !formState.email;
   } else {
     // returnedErrors.businessName = formState.businessName.length <= 0;
     // returnedErrors.storeAddress = formState.storeAddress.length <= 0;
-    returnedErrors.fullName = formState.fullName.length <= 0;
+    //returnedErrors.fullName = formState.fullName.length <= 0;
     returnedErrors.phoneNumber = formState.phoneNumber.length <= 0;
     //returnedErrors.email = formState.email.length <= 0;
   }
@@ -57,6 +57,7 @@ export const SignUp = (props) => {
 
   // State variables
   const user = props.user
+  console.log(user)
   const [formState, setFormState] = useState({
     // businessName: "",
     // storeAddress: "",
@@ -105,6 +106,7 @@ export const SignUp = (props) => {
 
   /** Handles the submit button on the form. */
   const handleSubmit = (payload) => {
+    console.log("ekans")
     payload.preventDefault();
     const errorState = validateInput(formState, formErrors);
     let hasErrors = false;
@@ -112,8 +114,10 @@ export const SignUp = (props) => {
     Object.keys(errorState).map(
       (key) => (hasErrors = hasErrors || errorState[key])
     );
-
+    console.log(formState.phoneNumber)
+    console.log(errorState)
     if (!hasErrors) {
+      console.log('errors')
       axiosWrap
         .post("/customer/add-customer", {
           // businessName: formState.businessName,
@@ -124,9 +128,9 @@ export const SignUp = (props) => {
           // pickupTimes24hr: timeDict[formState.pickupTime],
           // locality: formState.locality,
           // ownerEmail: user.email,
-          fullName: formState.fullName,
-          phoneNumber: formState.phoneNumber,
-          email: formState.email,
+          fullName: user.fullName,
+          phone: formState.phoneNumber,
+          email: user.email,
         })
         .then((res) => {
           //props.businessCreated(res.data._id);

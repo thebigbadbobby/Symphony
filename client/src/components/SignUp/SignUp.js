@@ -121,7 +121,7 @@ export const SignUp = (props) => {
   // Simply checks if we are signed in and displays a sign in or sign out button.
   return (
     <React.Fragment>
-      <Container maxWsm" className={style.signUpContainer}>
+      <Container maxWidth="sm" className={style.signUpContainer}>
         <Typography
           className={style.welcome}
           variant="h5"

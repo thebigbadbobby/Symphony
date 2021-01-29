@@ -153,7 +153,7 @@ export const SignUp = (props) => {
               </FormHelperText>
               <Input
                 className={style.field}
-                id="businessName"
+                id="businessNam e"
                 label="Business Name"
                 placeholder="e.g. Bill's Burgers"
                 onChange={onChange}

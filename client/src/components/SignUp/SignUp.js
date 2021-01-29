@@ -105,7 +105,7 @@ export const SignUp = (props) => {
   };
 
   /** Handles the submit button on the form. */
-  const handleSubmit = (payload) => {
+  const handleSubmit = (payload) => {//
     console.log("ekans")
     payload.preventDefault();
     const errorState = validateInput(formState, formErrors);

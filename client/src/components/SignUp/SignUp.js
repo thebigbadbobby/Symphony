@@ -121,7 +121,7 @@ export const SignUp = (props) => {
   // Simply checks if we are signed in and displays a sign in or sign out button.
   return (
     <React.Fragment>
-      <Container maxWidth="sm" className={style.signUpContainer}>
+      <Container maxWsm" className={style.signUpContainer}>
         <Typography
           className={style.welcome}
           variant="h5"
@@ -156,7 +156,7 @@ export const SignUp = (props) => {
               </FormHelperText>
               <Input
                 className={style.field}
-                id="businessNam e"
+                id="businessName"
                 label="Full Name"
                 placeholder="e.g. John Doe"
                 onChange={onChange}

@@ -162,7 +162,7 @@ export const SignUp = (props) => {
           color="textPrimary"
           align="center"
         >
-          We just need a little information from you about your business before
+          We just need a little information about you before
           we get started!
         </Typography>
         <Card className={style.card}>
@@ -175,17 +175,20 @@ export const SignUp = (props) => {
               onSubmit={handleSubmit}
             >
               <FormHelperText className={style.fieldHeader}>
-              Business Name
+              Full Name
+              </FormHelperText>
+              <FormHelperText>
+              What name would you like us to call you by?
               </FormHelperText>
               <Input
                 className={style.field}
                 id="businessName"
-                label="Business Name"
-                placeholder="e.g. Bill's Burgers"
+                label="Full Name"
+                placeholder="e.g. John Doe"
                 onChange={onChange}
                 error={formErrors.businessName}
               />
-              <FormHelperText className={style.fieldHeader}>
+              {/*<FormHelperText className={style.fieldHeader}>
               Store Address
               </FormHelperText>
               <Input
@@ -198,7 +201,7 @@ export const SignUp = (props) => {
               />
               <FormHelperText className={style.hint}>
               e.g. 1234 Sesame St. New York, New York, 12345
-              </FormHelperText>
+              </FormHelperText>*/}
               <FormHelperText className={style.fieldHeader}>
               Phone Number
               </FormHelperText>
@@ -210,7 +213,7 @@ export const SignUp = (props) => {
                 onChange={onChange}
                 error={formErrors.phoneNumber}
               />
-              <FormHelperText className={style.fieldHeader}>
+              {/*<FormHelperText className={style.fieldHeader}>
               Pickup Time
               </FormHelperText>
               <Select
@@ -220,13 +223,13 @@ export const SignUp = (props) => {
                 defaultValue={formState.pickupTime}
                 onChange={(e) => handleDropdownChange(e, "pickupTime")}
               >
-                <MenuItem value="2-5">2:00pm-5:00pm</MenuItem>
+                <MenuItem value="2-5">2:00pm-5:00pm</MenuItem>*/}
                 {/* <MenuItem value="3pm">3:00pm</MenuItem>
-                <MenuItem value="4pm">4:00pm</MenuItem> */}
-              </Select>
-              <FormHelperText>
+                <MenuItem value="4pm">4:00pm</MenuItem>
+              </Select>*/}
+              {/*<FormHelperText>
                 When should we allow drivers to pick up?
-              </FormHelperText>
+              </FormHelperText>*/}
               <FormHelperText className={style.fieldHeader}>
                 Locality
               </FormHelperText>

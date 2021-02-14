@@ -4,6 +4,8 @@
 - Connected through virtual and real channels
 - Open Source
 - Collaborate to create additional features and resources
+- no underlying commitment
+- Get involved- take on a more active role via chair discussion
 ## Dev Setup
 
 1. You must have node.js installed (v10+)

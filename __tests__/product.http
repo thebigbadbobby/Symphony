@@ -1,0 +1,22 @@
+GET http://localhost:5000/product/6021a40c3860a7036883cd98
+Accept: application/json
+
+###
+GET http://localhost:5000/product/all-products
+Accept: application/json
+
+###
+POST http://localhost:5000/product/add-product
+Content-Type: application/json
+
+
+{"itemName": "Spooky Scary Skeleton",
+  "requestAvail": true,
+  "reqCheckoutDuration": 69,
+  "returnOpt": true,  
+  "price": 1.88,
+  "businessID": "601870c761f9e8013ef589db",
+  "itemDescription": "Sending shivers down your spine since the Reagan Administration"
+}
+
+

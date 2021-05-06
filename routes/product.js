@@ -33,6 +33,8 @@ router.post('/add-product', (req, res) => {
     requestAvail: req.body.requestAvail,
     reqCheckoutDuration: req.body.reqCheckoutDuration,
     returnOpt: req.body.returnOpt,
+    price: req.body.price,
+    itemDescription: req.body.itemDescription,
   });
   product.save()
     .catch((err) => {

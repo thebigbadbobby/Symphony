@@ -19,7 +19,7 @@ export const LogIn = (props) => {
   return (
     <React.Fragment>
         { !props.isSignedIn ? 
-        <Button startIcon={<img src={gIcon} alt="Google"/>} className={style.signIn}variant="contained" size="large" onClick={props.handleSignIn}>Sign in with Google</Button> :
+        <Button startIcon={<img src={gIcon} alt="Google"/>} className={style.signIn}variant="contained" size="large" onClick={props.handleSignIn}>Sign up with Google</Button> :
         <StyledButton variant="contained" color="primary" size="small" onClick={props.handleSignOut}>Sign Out</StyledButton> }
     </React.Fragment>
   );

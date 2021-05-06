@@ -21,6 +21,18 @@ const customerSchema = new Schema({
     type: String,
     required: true,
   },
+  bread: {
+    type: Array,
+    required: false,
+  },
+  stripeCustomerID: {
+    type: String,
+    required: false,
+  },
+  stripePaymentMethod: {
+    type: String,
+    required: false,
+  },
 }, { timestamps: true });
 
 const Customer = mongoose.model('Customer', customerSchema);

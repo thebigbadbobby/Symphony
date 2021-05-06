@@ -1,0 +1,21 @@
+Working Prototype Template - CMPS 115 – Software Methodology
+ShopLink
+3/07/21
+Google OAuth
+This works live with https, but we don’t want to pay for a https certificate for a school project.
+We have it working perfectly on localhost
+Some of our branches have the wrong app name on the login screen due to a discrepancy in clientID
+This business/customer was deleted message 
+Brief error, it is usually resolved by restarting the page, unless the account in question has really been deleted.
+Duplicated items upon creating products
+Intermittently, added products seem to appear duplicated
+checkoutProducts might not work immediately after using editAccount.
+Is usually resolved by restarting the page.
+Don’t have a shopping cart page that would enable shoppers to select items more conventionally
+Don’t have a product return item button or page, so if the site went live, customers would be stuck with products instead of being able to return them after trying them out.
+Don’t have a full product description page to show product details
+Product History cannot be effectively populated due to there being no mechanism to detect when the end date has been exceeded.
+If a dollar sign is entered in the add products page, it breaks something.
+Some of the business app pages still have an old bug where the displayed rows are not quite level.
+The create product page doesn't clearly show where to enter product description.
+

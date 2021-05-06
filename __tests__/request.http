@@ -1,0 +1,20 @@
+GET http://localhost:5000/request/all-requests
+Accept: application/json
+
+###
+POST http://localhost:5000/request/add-request
+Content-Type: application/json
+
+{"businessID": "185", "customerID": "35", "productID": "35", "itemName": "plswork"}
+
+###
+PATCH http://localhost:5000/request/update-request
+Content-Type: application/json
+
+{"request": "6021ace267548507ae65bf6f", "businessID": "185", "customerID": "420", "productID": "69"}
+
+### bad id
+#PATCH http://localhost:5000/request/update-request
+#Content-Type: application/json
+
+#{"request": "1234", "businessID": "185", "customerID": "135", "productID": "135"}

@@ -6,7 +6,7 @@ POST http://localhost:5000/twilio/deliver-routes HTTP/1.1
 Content-Type: application/json
 
 {
-  "locality": "auburn"
+  "locality": "santa cruz"
 }
 
 ###

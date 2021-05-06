@@ -18,7 +18,7 @@ const router = express.Router();
 // success message
 router.post('/add-owner', (req, res) => {
   if (!req.body.hasOwnProperty('business')) {
-    res.status(400).send('Missing business');
+    res.status(400).send(req.body);
   }
   if (!req.body.hasOwnProperty('owner')) {
     res.status(400).send('Missing owner');

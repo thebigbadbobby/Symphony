@@ -5,10 +5,12 @@ const { Schema } = mongoose;
 const requestSchema = new Schema({
   customerID: {
     type: String,
+    ref: 'Product',
     required: true,
   },
   businessID: {
     type: String,
+    ref: 'Business',
     required: true,
   },
   productID: {
@@ -17,6 +19,27 @@ const requestSchema = new Schema({
   },
   state: {
     type: Number,
+    required: false,
+  },
+  itemName:{
+    type: String,
+    required: true,
+
+  },
+  price:{
+    type: Number,
+    required: true,
+  },
+  date:{
+    type: String,
+    required: true,
+  },
+  deliveryInfo:{
+    type: String,
+    required: false,
+  },
+  returnOpt:{
+    type: Array,
     required: false,
   },
 }, { timestamps: true });

@@ -12,6 +12,9 @@ import { Loading } from "./components/Loading/Loading";
 import { axiosWrap } from "./axios-wrapper";
 import { SignUp } from "./components/SignUp/SignUp";
 import { Popup } from "./components/Popup/Popup"
+import {
+  Button
+} from "@material-ui/core";
 
 const Copyright = () => {
   const style = styles();
@@ -33,7 +36,8 @@ const Copyright = () => {
 };
 
 /** Helpful for passing child->parent https://medium.com/how-to-react/pass-data-or-event-from-a-child-component-to-parent-component-in-both-functional-and-class-ae2f8b7ccda2 */
-export default function App() {
+const App = (props) => {
+  const switchApp = props.props
   /** Set state variables */
   let [signedIn, setSignIn] = useState(false);
   let [auth, setAuth] = useState(undefined);
@@ -80,6 +84,8 @@ export default function App() {
 
   /** Initializes sign in for auto log in. */
   useEffect(() => {
+    console.log(props)
+    console.log(props.props)
     window.gapi.load("client:auth2", () => {
       window.gapi.client
         .init({
@@ -190,11 +196,9 @@ export default function App() {
 
   /** When the user creates a customer from the sign up screen, this is called. */
   const customerCreated = (customerId) => {
-    console.log("a")
     setNewUser(false);
     setSignIn(true);
     setCustomerID(customerId)
-    console.log("a")
   }
 
   /** Handles the opening of the dialog box in the case of an error */
@@ -227,14 +231,23 @@ export default function App() {
     } else {
       // direct them to the splash screen
       return (
+       
         <Container
           component="div"
           maxWidth="lg"
           className={style.signInContainer}
         >
+           <Button
+                                              variant="contained"
+                                              color="primary"
+                                              onClick={switchApp}
+                                              // startIcon={<AddIcon />}
+                                            >
+                                              Switch
+                                            </Button>
           <img className={style.imageIcon} src={logo} alt="kahzum-logo" />
           <Typography className={style.tagLine} variant="h5">
-            Same-day Delivery for Your Small Business
+            Local product fulfillment for customers.
           </Typography>
           <LogIn isSignedIn={signedIn} handleSignIn={handleSignIn} />
         </Container>
@@ -262,3 +275,4 @@ export default function App() {
     </Container>
   );
 }
+export default App;

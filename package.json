@@ -22,12 +22,13 @@
   "author": "Kahzum",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^1.14.6",
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^1.14.6"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^1.4.0",
     "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "concurrently": "^3.5.1",
@@ -35,7 +36,8 @@
     "dotenv": "^8.2.0",
     "express": "^4.16.2",
     "mongodb": "^3.6.2",
-    "mongoose": "^5.10.9",
+    "mongoose": "^5.11.11",
+    "react-router-dom": "^5.2.0",
     "twilio": "^3.49.4",
     "twilio-cli": "^2.12.0"
   },

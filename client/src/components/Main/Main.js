@@ -13,7 +13,15 @@ import { CheckoutProducts } from "./pages/CheckoutProducts/checkoutProducts"
 import { EditAccount } from "./pages/EditAccount/editAccount"
 import { RequestProducts } from "./pages/RequestProducts/requestProducts"
 import {withStyles} from "@material-ui/core";
-
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
+import { RequestProducts2 } from './pages/RequestProducts2/requestProducts2';
+import { RequestProductsBack } from './pages/RequestProductsBack/requestProductsBack';
 export const Main = (props) => {
   const style = styles();
   const { customer } = props
@@ -26,18 +34,39 @@ export const Main = (props) => {
     setOpen(false)
   }
 
-  const renderSwitch = () => {
-    switch (pageState) {
-      case '1':
-        return <CheckoutProducts customer={customer}/>
-      case '2':
-        return <PurchaseHistory user={props.user} customer={customer}/>
-      case '3':
-        return <EditAccount customer={customer}/>
-      case '4':
-        return <RequestProducts customer={customer}/>
-      default:
-        return <RequestProducts customer={customer}/>
+  const renderSwitch = (props) => {
+    console.log(props.match.params.id)
+    if (props.match.params.id)
+    {
+      switch (pageState) 
+      {
+        case '1':
+          return <CheckoutProducts customer={customer}/>
+        case '2':
+          return <PurchaseHistory user={props.user} customer={customer}/>
+        case '3':
+          return <EditAccount customer={customer}/>
+        case '4':
+          return <RequestProductsBack customer={customer}/>
+        default:
+          return <RequestProducts2 customer={customer} invoiceID={props.match.params.id}/>
+      }
+    }
+    else
+    {
+      switch (pageState) 
+      {
+        case '1':
+          return <CheckoutProducts customer={customer}/>
+        case '2':
+          return <PurchaseHistory user={props.user} customer={customer}/>
+        case '3':
+          return <EditAccount customer={customer}/>
+        case '4':
+          return <RequestProductsBack customer={customer}/>
+        default:
+          return <RequestProducts customer={customer}/>
+      }
     }
   }
   const handleDrawerOpen = () => {
@@ -59,6 +88,7 @@ export const Main = (props) => {
 
   return (
       <React.Fragment>
+      <Router>
         <StyledAppBar
             position="static"
             className={style.appBar}
@@ -87,8 +117,12 @@ export const Main = (props) => {
         </StyledAppBar>
         <Drawer handleDrawerClose={handleDrawerClose} changePage={changePage} open={open}/>
         <div className={style.mainContainer}>
-        {renderSwitch()}
+        <Switch>
+          <Route path="/:id" component={renderSwitch} />
+          <Route path="/" component={renderSwitch} />
+        </Switch>
         </div>
+        </Router>
       </React.Fragment>
   );
 }

@@ -23,6 +23,19 @@ const productSchema = new Schema({
     type: Array,
     required: false,
   },
+  price:{
+    type: Number,
+    required: true,
+  },
+  businessID: {
+    type: Schema.Types.ObjectId,
+    ref: 'Business',
+    required: true,
+  },
+  itemDescription: {
+    type: String,
+    required: false,
+  },
 
 }, { timestamps: true });
 

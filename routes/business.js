@@ -226,4 +226,21 @@ router.get('/business-info', (req, res) => {
   });
 });
 
+
+// @description gets a specific owner
+// @params
+// ownerID: id
+// @payload
+// the owner
+router.get('/:business', (req, res) => {
+  Business.findById( req.params.business )
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
+    });
+});
+
 module.exports = router;

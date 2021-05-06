@@ -8,6 +8,9 @@ const business = require('./routes/business');
 const owner = require('./routes/owner');
 const order = require('./routes/pending_order');
 const customer = require('./routes/customer');
+const request = require('./routes/request');
+const product = require('./routes/product')
+const invoice = require('./routes/invoice')
 //const twilio = require('./routes/twilio');
 //const routing = require('./routes/routing');
 
@@ -37,6 +40,9 @@ app.use('/business', business);
 app.use('/owner', owner);
 app.use('/order', order);
 app.use('/customer', customer);
+app.use('/request', request);
+app.use('/product', product)
+app.use('/invoice', invoice)
 //app.use('/twilio', twilio);
 //app.use('/routing', routing);
 

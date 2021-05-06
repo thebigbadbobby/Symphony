@@ -21,10 +21,23 @@ router.post('/add-request', (req, res) => {
     res.status(400).send('Missing productID');
     return;
   }
+  if (!req.body.hasOwnProperty('itemName')) {
+    res.status(400).send('Missing itemName');
+    return;
+  }
+  if (!req.body.hasOwnProperty('price')) {
+    res.status(400).send('Missing price');
+    return;
+  }
   const request = new Request({
     businessID: req.body.businessID,
     customerID: req.body.customerID,
     productID: req.body.productID,
+    itemName: req.body.itemName,
+    price: req.body.price,
+    date: req.body.date,
+    deliveryInfo: req.body.deliveryInfo,
+    returnOpt: req.body.returnOpt,
   });
   //owner.save().catch((err) => {
   //  console.log(err);
@@ -35,6 +48,17 @@ router.post('/add-request', (req, res) => {
     console.log(err);
     res.status(400).send(err._message);
   });
+});
+
+router.get('/all-requests', (req, res) => {
+  Request.find()
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(`${JSON.stringify(err)}`);
+    });
 });
 
 // @description updates information about the request

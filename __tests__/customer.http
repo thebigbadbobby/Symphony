@@ -1,0 +1,12 @@
+
+GET http://localhost:5000/customer/all-customers
+Accept: application/json
+
+###
+POST http://localhost:5000/customer/add-customer
+Content-Type: application/json
+
+{"fullName": "First Last",
+          "phone": "400-319-4093",
+          "email": "ramissir@ucsc.edu"}
+

@@ -7,18 +7,20 @@ export const styles = makeStyles((theme) => ({
     textAlign: 'center'
   },
   pageTitle: {
-    color: 'blue',
-    
+    color: "#A958F4",
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: theme.spacing(3)
+  },
+  save:{
+    backgroundColor: "#A958F4"
   },
   rectangle9: { // need to fix the retangle box position, https://www.w3schools.com/css/css_positioning.asp
     position: "relative",
     flex: "auto",
     width: "360px",
     height: "360px",
-    left: "50px",
+    left: "0px",
     top: "0",
     display: "inline-block",
     margin: "15px",
@@ -29,6 +31,7 @@ export const styles = makeStyles((theme) => ({
     boxSizing: "borderBox",
     boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 4px rgba(0, 0, 0, 0.25)",
     borderRadius: "20px",
+    backgroundColor:"white"
   },
   rectangleplus: { // need to fix the retangle box position, https://www.w3schools.com/css/css_positioning.asp
     position: "relative",

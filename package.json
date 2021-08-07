@@ -7,7 +7,7 @@
     "update": "npm install && cd client && npm install",
     "client-install": "cd client && npm install",
     "client-test": "cd client && npm run test",
-    "start": "node server.js",
+    "start": "npm run server",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "twilio-dev": "twilio phone-numbers:update \"+14085210010\n\" --sms-url=\"http://localhost:5000/twilio/sms\"",
@@ -17,7 +17,7 @@
     "lint:fix": "eslint . --fix",
     "twilio-prod": "twilio phone-numbers:update \"+14302390178\n\" --sms-url=\"https://api.kahzum.com/twilio/sms\"",
     "docker": "docker-compose up -d",
-    "prod": "concurrently \"npm run start\" \"npm run twilio-prod\""
+    "prod": "npm run start"
   },
   "author": "Kahzum",
   "license": "MIT",
@@ -25,10 +25,11 @@
     "eslint": "^7.4.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
-    "nodemon": "^1.14.6"
+    "nodemon": "^1.19.4"
   },
   "dependencies": {
-    "@stripe/react-stripe-js": "^1.4.0",
+    "@stripe/react-stripe-js": "^1.4.1",
+    "@stripe/stripe-js": "^1.15.0",
     "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "concurrently": "^3.5.1",
@@ -37,6 +38,7 @@
     "express": "^4.16.2",
     "mongodb": "^3.6.2",
     "mongoose": "^5.11.11",
+    "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "twilio": "^3.49.4",
     "twilio-cli": "^2.12.0"

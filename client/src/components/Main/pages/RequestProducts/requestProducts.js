@@ -20,7 +20,7 @@ import Litecoin from "../../../../assets/Litecoin-Logo.png";
 import Kahzum from "../../../../assets/Checkout Coin.png"
 import { axiosWrap } from "../../../../axios-wrapper";
 import logo from "../../../../assets/Checkout Coin.png";
-
+import Snackbar from '@material-ui/core/Snackbar';
 import {
   BrowserRouter as Router,
   Switch,
@@ -28,6 +28,12 @@ import {
   Link,
   useParams
 } from "react-router-dom";
+import MuiAlert from '@material-ui/lab/Alert';
+
+// Part of alert button
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const validateInput = (formState, errors) => {
   const returnedErrors = { ...errors };
   returnedErrors.phoneNumber = !/[0-9]{3}-[0-9]{3}-[0-9]{4}/.test(
@@ -67,10 +73,30 @@ export const RequestProducts = (props) => {
     // deliveryDays: false,
   });
   const [products, setProducts] = useState(undefined);
+  const [report, setReport] = useState("Ekans");
+  const [error, setError] = useState("Arbok");
   const [customer, setCustomer] = useState(undefined);
   const [logos, setLogos] = useState(undefined);
   const [rules, setRules] = useState(undefined);
   const [transaction, setTransaction] = useState(undefined);
+  const [success, setOpenSuccess] = React.useState(false);
+  const [fail, setOpenFail] = React.useState(false);
+  
+  // Handles closing of the success alert
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSuccess(false);
+  };
+
+  // Handles closing of the failure alert
+  const handleCloseFail = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenFail(false);
+  };
   const onChange = (e) => {
     e.preventDefault();
     const newState = formState;
@@ -148,27 +174,42 @@ export const RequestProducts = (props) => {
   };
   const send = () => {
     var temp=customer
+          for (var assetnum = 0; assetnum < customer.bread.length; assetnum++) {
+            if (formState["Amount"+assetnum]){
+              let amountsent=formState["Amount"+assetnum]
+              console.log("called"+ formState["Amount"+assetnum])
+              axiosWrap
+              .post("/customer/send", {
+                customer: props.customer,
+                recipient: formState.email,
+                amount: formState["Amount"+assetnum],
+                assetnum: assetnum
+              })
+              .then((result)=> {
+                console.log("ekans", result)
+                setCustomer(result.data)
+                setReport("Sent "+ amountsent +" to " + formState.email + ".")
+                setOpenSuccess(true);
+              })
+              .catch((err) => {
+                console.log("Couldn't reach server!", err);
+                console.log("arbok")
+                console.log()
+                if(err.toString().includes("404")){
+                  setError("Incorrect Address")
+                }
+                if(err.toString().includes("401")){
+                  setError("Amount must be positive!")
+                }
+                if(err.toString().includes("402")){
+                  setError("Insufficient Funds!")
+                }
+                setOpenFail(true);
+              });
+            }
+            
+          }
     
-    for (var assetnum = 0; assetnum < customer.bread.length; assetnum++) {
-      if (formState["Amount"+assetnum]){
-        console.log("called"+ formState["Amount"+assetnum])
-        axiosWrap
-        .patch("/customer/send", {
-          customer: props.customer,
-          recipient: formState.email,
-          amount: formState["Amount"+assetnum],
-          assetnum: assetnum
-        })
-        .then((result)=> {
-          console.log("ekans", result)
-          setCustomer(result.data)
-        })
-        .catch((err) => {
-          console.log("Couldn't reach server!", err);
-        });
-      }
-      
-    }
     
   }; 
   const handleDropdownChange = (e, id) => {
@@ -208,7 +249,7 @@ export const RequestProducts = (props) => {
     <React.Fragment>
       <Router>
       <script src="./js/bolt11.min.js"></script>
-      <div className={style.pageTitle}>"Your Rewards Coins"</div>
+      <h1 className={style.pageTitle}>KahZap Rewards</h1>
       <CardContent>
         <form
           id="sign-up-form"
@@ -368,7 +409,12 @@ export const RequestProducts = (props) => {
                   </img>
       </Button> */}
       <Button
-        className={style.save}
+        style={{
+          borderRadius: 35,
+          backgroundColor: "#A958F4",
+          padding: "18px 18px",
+          fontSize: "18px"
+      }}
         variant="contained"
         color="primary"
         type="submit"
@@ -378,9 +424,19 @@ export const RequestProducts = (props) => {
         Send Credits
       </Button>
       <p></p>
-      <Switch>
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleCloseSuccess}>
+        <Alert onClose={handleCloseSuccess} severity="success">
+          {report}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={fail} autoHideDuration={6000} onClose={handleCloseFail}>
+        <Alert onClose={handleCloseFail} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
+      {/* <Switch>
           <Route path="/:id" component={Child} />
-        </Switch>
+        </Switch> */}
       </Router>
     </React.Fragment>
   );

@@ -16,12 +16,13 @@ import MuiAlert from '@material-ui/lab/Alert';
 //import { Elements } from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
 import {CardElement, Elements, useElements, useStripe} from '@stripe/react-stripe-js';
+
 const CARD_OPTIONS = {
   iconStyle: 'solid',
   style: {
     base: {
       iconColor: '#c4f0ff',
-      color: '#ccc',
+      color: '#black',
       fontWeight: 500,
       fontFamily: 'Roboto, Open Sans, Segoe UI, sans-serif',
       fontSize: '16px',
@@ -30,7 +31,7 @@ const CARD_OPTIONS = {
         color: '#fce883',
       },
       '::placeholder': {
-        color: '#87bbfd',
+        color: '#A958F4',
       },
     },
     invalid: {
@@ -38,6 +39,7 @@ const CARD_OPTIONS = {
       color: '#ffc7ee',
     },
   },
+  
 };
 
 const CardField = ({onChange}) => (
@@ -57,11 +59,11 @@ const Field = ({
   onChange,
 }) => (
   <div className="FormRow">
-    <label htmlFor={id} className="FormRowLabel">
+    <label htmlFor={id} className="FormRowLabel" style={{color: '#A958F4', fontWeight:'400', fontSize: '.75rem', fontFamily: 'Roboto', lineHeight:'1.66', marginTop:'3px'}}>
       {label}
     </label>
-    <input
-      className="FormRowInput"
+    <input 
+      style={{display:'block',borderBottomWidth: '1px solid',borderTopWidth: '0px',borderLeftWidth: '0px',borderRightWidth: '0px', borderColor: '#a09c9c', width:'100%', fontSize: '1rem'}}
       id={id}
       type={type}
       placeholder={placeholder}
@@ -69,21 +71,25 @@ const Field = ({
       autoComplete={autoComplete}
       value={value}
       onChange={onChange}
+      
     />
   </div>
 );
 
 const SubmitButton = ({processing, error, children, disabled, submitted}) => (
-  <button
+  <div style={{textAlign: 'center'}}>
+  <Button color="primary" variant="contained" style={{backgroundColor: '#A958F4',borderRadius: 35,padding: "10px 10px", borderWidth: '0px', textTransform: 'uppercase', fontSize: '.873rem', fontFamily: 'Roboto', color:'white', fontWeight:'500', lineHeight: '1.43', marginTop:'16px', marginBottom: '6px'}}
     
     className={`SubmitButton ${error ? 'SubmitButton--error' : ''}`}
     type="submit"
+    onClick={{}}
     disabled={processing || disabled}
   >
     {submitted ? 'Success' : ''}
     {processing ? 'Processing...' : ''}
     {!submitted & !processing ? children: ''}
-  </button>
+  </Button>
+  </div>
 );
 
 const ErrorMessage = ({children}) => (
@@ -253,7 +259,7 @@ const CheckoutForm = (props) => {
       setProcessing(true);
     }
     console.log(props.customer)
-    var client_secret = await axiosWrap.patch('/customer/get-ClientSecret', {
+    var client_secret = await axiosWrap.post('/customer/get-ClientSecret', {
       customer: props.customer
 
       // We need to add these to the DB as input fields if we want to add them, so let's not do that yet MongoDB
@@ -276,7 +282,7 @@ const CheckoutForm = (props) => {
     } else {
       console.log(result.setupIntent.payment_method)
       console.log("arbok")
-      axiosWrap.patch('/customer/update-customer', {
+      axiosWrap.post('/customer/update-customer', {
         customer: props.customer,
         stripePaymentMethod: result.setupIntent.payment_method,
   
@@ -332,6 +338,7 @@ const CheckoutForm = (props) => {
   };
   //mongo=require("../../../../../../models/business")
   return submitted ? (
+    
     <div className="Result">
       <div className="ResultTitle" role="alert">
         Success
@@ -342,25 +349,25 @@ const CheckoutForm = (props) => {
       <ResetButton onClick={reset} />
     </div>
   ) : (
+    <Card>
     <form className="Form" onSubmit={handleSubmit}>
-      <fieldset className="FormGroup">
+      <fieldset className="FormGroup" style={{borderWidth: '0px'}}>
         <Field
           label="Name"
           id="name"
           type="text"
-          placeholder="Jane Doe"
           required
           autoComplete="name"
           value={billingDetails.name}
           onChange={(e) => {
             setBillingDetails({...billingDetails, name: e.target.value});
           }}
+          
         />
         <Field
           label="Email"
           id="email"
           type="email"
-          placeholder="janedoe@gmail.com"
           required
           autoComplete="email"
           value={billingDetails.email}
@@ -372,7 +379,6 @@ const CheckoutForm = (props) => {
           label="Phone"
           id="phone"
           type="tel"
-          placeholder="(941) 555-0123"
           required
           autoComplete="tel"
           value={billingDetails.phone}
@@ -382,7 +388,7 @@ const CheckoutForm = (props) => {
         />
       </fieldset>
       {/* {stripeCustomerID!=undefined & stripePaymentMethod!=undefined ? "Payment is set up" : "Payment is not set up yet"} */}
-      <fieldset className="FormGroup">
+      <fieldset className="FormGroup" style={{borderBottomWidth: '1px solid',borderTopWidth: '0px',borderLeftWidth: '0px',borderRightWidth: '0px', borderColor: '#f0f0f0', marginInlineStart: '12.5px', marginInlineEnd: '12.5px'}}>
         <CardField
           onChange={(e) => {
             setError(e.error);
@@ -395,7 +401,10 @@ const CheckoutForm = (props) => {
         Set up Payment
       </SubmitButton>
     </form>
+    
+    </Card>
   );
+  
 };
 
 const ELEMENTS_OPTIONS = {
@@ -542,25 +551,22 @@ export const EditAccount = (props) => {
       <Typography className={style.pageTitle} variant="h4">
         Store Settings
       </Typography>
-      <div className={style.storeName}>
-        Please enter your store's information:
-      </div>
-      <div className={style.container}>
+      <div className={style.container} style={{width: '325px'}}>
         <Card className={style.root}>
           <CardContent>
             <FormHelperText className={style.inputSpacing}>
-              Company Name
+              Name
             </FormHelperText> 
             <Input
               id="companyName"
               label="Company Name"
-              placeholder="e.g. Kahzum"
+              placeholder="e.g. Kah Zap"
               multiline
               fullWidth
               variant="filled"
             />
             <FormHelperText className={style.inputSpacing}>
-              Company Address
+              Address
             </FormHelperText> 
             <Input
               id="address"
@@ -571,7 +577,7 @@ export const EditAccount = (props) => {
               variant="filled"
             />
             <FormHelperText className={style.inputSpacing}>
-              Company Phone
+              Phone
             </FormHelperText> 
             <Input
               id="phone"
@@ -581,29 +587,22 @@ export const EditAccount = (props) => {
               fullWidth
               variant="filled"
             />
-            <FormHelperText className={style.inputSpacing}>
-              Locality
-            </FormHelperText>
-            <Select
-              labelId="demo-simple-select-label"
-              id="locality"
-              displayEmpty
-              fullWidth
-              align = "left"
-              value={locality}
-              onChange={(e) => handleDropdownChange(e)}
-            >
-              <MenuItem value="auburn">Auburn</MenuItem>
-              <MenuItem value="santa cruz">Santa Cruz</MenuItem>
-            </Select>
           </CardContent>
+          <div style={{textAlign: 'center'}}>
+          <Button onClick={saved} color="primary" className={style.saveButton} variant="contained" style={{backgroundColor: '#A958F4',borderRadius: 35,marginBottom:'6px', alignItems: 'center', justifyContent: 'center'}}>Save</Button>
+          </div>
         </Card>
         <div>
-          <Button onClick={saved} className={style.saveButton} variant="contained">Save</Button>
+          
         </div>
-        {stripePromise ? <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
+        
+        {stripePromise ? 
+        <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
         <br/><br/>
         <br/><br/>
+        <Typography className={style.pageTitle} variant="h4">
+        Stripe
+      </Typography>
         <CheckoutForm customer={props.customer}/>
     </Elements> : 'stripe not ready'}
       </div>

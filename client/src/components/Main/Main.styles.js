@@ -42,7 +42,7 @@ export const styles = makeStyles((theme) => ({
   //       backgroundColor: "red"
   //     }
   //   },
-    fill: "#add8e6",
+    fill: "#A958F4",
     marginLeft: "auto",
     marginRight: theme.spacing(2),
   },

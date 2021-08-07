@@ -21,6 +21,13 @@ import {
   TableRow,
   Paper,
 } from "@material-ui/core";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.info.light,
@@ -49,53 +56,55 @@ const useStyles = makeStyles({
 export const CheckoutProducts = (props) => {
   const style = styles();
   const classes = useStyles();
-  const [requests, setRequests] = useState(undefined);
-
-  // http route to get all requests
+  const todayDate = new Date();
+  const [requests, setProducts] = useState(undefined);
+  var [space, setSpace] = useState("ekans");
+  // http route to get all requests from MongoDB
   useEffect( () => {
     const requests= axiosWrap
-  .get("/request/all-requests", {
-  }).then((result) => {
-  setRequests(result.data)})
+  .get("/customer/" + props.customer, {
+  }).then((result) => {console.log(result)
+  setProducts(result.data.receipts)})
   },[])
 
   return(
-    // --- initial return to set the top row of the checkout Products grid
+    //-- initial return to create the top row of the grid
     <React.Fragment>
-      <div className={style.pageTitle}>Checkout Products</div>
+      <div className={style.pageTitle}>Received</div>
     {requests ?
    <TableContainer component={Paper}>
    <Table className={classes.table} aria-label="customized table">
      <TableHead>
        <TableRow>
-         <StyledTableCell>Product</StyledTableCell>
+         <StyledTableCell>Invoice Link</StyledTableCell>
          <StyledTableCell align="right">Price</StyledTableCell>
-         <StyledTableCell align="right">Date Requested</StyledTableCell>
-         <StyledTableCell align="right">Delivery info</StyledTableCell>
-         <StyledTableCell align="right">Trial End Date</StyledTableCell>
+         <StyledTableCell align="right">Email</StyledTableCell>
+         <StyledTableCell align="right">Items</StyledTableCell>
+         <StyledTableCell align="right">Date Paid</StyledTableCell>
        </TableRow>
      </TableHead>
      <TableBody>
-        {/* changed requests order since the original order lists oldest request first */}
-       {requests.slice(0).reverse().map((request) => {
-        // --- second return to return only the requests that pertain to the current specific user
-        if (request.customerID == props.customer)
-          return (
-          <StyledTableRow key={request.name}>
-            <StyledTableCell component="th" scope="row">
-            {request.itemName}<br></br>
-            <img className={style.image} src={logo} alt="kahzum-logo">
-              </img>
-            </StyledTableCell>
-            <StyledTableCell align="right">${request.price}</StyledTableCell>
-            <StyledTableCell align="right">{request.date}</StyledTableCell>
-            <StyledTableCell align="right">{request.deliveryInfo}</StyledTableCell>
-            {/* display the trial end date but only the date and not the time */}
-            <StyledTableCell align="right">{request.returnOpt[1].substring(0, request.returnOpt[1].indexOf("T"))
-            }</StyledTableCell>
-          </StyledTableRow>
-        );
-      })}
+       {/* request content mapping to grid */}
+       {requests.map((request) => {
+         // checks if today's date is later than last return day, and checks if the request has the correct customerID
+         if ( (Date.parse(todayDate) > Date.parse(request.createdAt)))
+         return (
+         <StyledTableRow key={request._id}>
+           <StyledTableCell component="th" scope="row">
+           <Router  ><Link to={"/".concat(request._id)} onClick={() => {props.deepChangePage("1", request._id)}}>{request._id}</Link></Router><br></br>
+           {/* <img className={style.image} src={logo} alt="kahzum-logo">
+             </img> */}
+
+           </StyledTableCell>
+           <StyledTableCell align="right">{request.total}</StyledTableCell>
+           <StyledTableCell align="right">{request.email}</StyledTableCell>
+           {/* display the trial end date but only the date and not the time */}
+           <StyledTableCell align="right">{request.items
+           }</StyledTableCell>
+           <StyledTableCell align="right">{request.updatedAt}</StyledTableCell>
+         </StyledTableRow>
+       ) ;
+          })}
      </TableBody>
    </Table>
  </TableContainer>

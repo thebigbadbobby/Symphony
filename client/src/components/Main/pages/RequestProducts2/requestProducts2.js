@@ -15,6 +15,7 @@ import {
 import SaveIcon from "@material-ui/icons/Save";
 import AddIcon from '@material-ui/icons/Add';
 import SendIcon from '@material-ui/icons/Send';
+import BackIcon from '@material-ui/icons/ArrowBack';
 import Bitcoin from "../../../../assets/Bitcoin-Logo.png";
 import Litecoin from "../../../../assets/Litecoin-Logo.png";
 import Kahzum from "../../../../assets/Checkout Coin.png"
@@ -184,14 +185,14 @@ export const RequestProducts2 = (props) => {
   
     console.log("koffing", id, customer)
     axiosWrap
-        .patch("/customer/payInvoice", {
+        .post("/customer/payInvoice", {
           customer: result.data,
           invoice: customer,
         })
         .then((response)=> {
           console.log("ekans", response)
           axiosWrap
-          .patch("/invoice/update-invoice", {
+          .post("/invoice/update-invoice", {
             invoice: customer,
             fulfilled: true,
           }
@@ -251,6 +252,23 @@ export const RequestProducts2 = (props) => {
                 <h3>{key}: ${value[0]} x{value[1]} = {value[0]*value[1]}</h3>
               )
       })}
+      <Link to={"/"}> 
+      <Button
+        style={{
+          borderRadius: 35,
+          backgroundColor: "#A958F4",
+          padding: "18px 18px",
+          fontSize: "18px"
+        }}
+        variant="contained"
+        color="primary"
+        type="submit"
+        startIcon={<BackIcon />}
+        onClick={() => {props.deepChangePage(props.redirectID, "none"); }}
+      >
+        Back to Home
+      </Button>
+      </Link> 
   </Router>)
   }
   else{
@@ -261,7 +279,7 @@ export const RequestProducts2 = (props) => {
     <React.Fragment>
       <Router>
       <script src="./js/bolt11.min.js"></script>
-      <div className={style.pageTitle}>"Checkout"</div>
+      <div className={style.pageTitle}>Checkout</div>
       {isPaid? "":" "}
     {/* To get it to reload when isPaid changes */}
       {products&&customer&&customer.items ?
@@ -369,9 +387,9 @@ export const RequestProducts2 = (props) => {
                   <div>
 
                   </div>
-                  <div className={style.deliveryInfo}>{key}</div>
-                  <div className={style.deliveryInfo}>${value[0]}</div>
-                  <div className={style.deliveryInfo}>Qty:{value[1]}</div>
+                  <h3>{key}</h3>
+                  <h4>${value[0]} x {value[1]}</h4>
+                  <h3>${value[0] * value[1]}</h3>
                   {/* <div className={style.itemDesc}>{product.itemDescription}</div>           */}
                 </div>
               );
@@ -394,7 +412,12 @@ export const RequestProducts2 = (props) => {
       {products&&customer&&customer.items ?
       
       <Button
-        className={style.save}
+        style={{
+          borderRadius: 35,
+          backgroundColor: "#A958F4",
+          padding: "18px 18px",
+          fontSize: "18px"
+        }}
         variant="contained"
         color="primary"
         type="submit"

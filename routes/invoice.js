@@ -72,7 +72,7 @@ router.get('/:invoice', (req, res) => {
     });
 });
 
-router.patch('/update-invoice', async (req, res) => {
+router.post('/update-invoice', async (req, res) => {
     if (!req.body.hasOwnProperty('invoice')) {
       console.log("ERROR");
       res.status(400).send('Missing invoice');
@@ -91,8 +91,33 @@ router.patch('/update-invoice', async (req, res) => {
     }
   });
 
+router.post("/attach-address", async (req, res) => {
+  if (!req.body.hasOwnProperty('invoice')) {
+    console.log("ERROR");
+    res.status(400).send('Missing invoice');
+    return;
+  }
+  if (!req.body.hasOwnProperty('address')) {
+    console.log("ERROR");
+    res.status(400).send('Missing address');
+    return;
+  }
+  try {
+    const invoice = await Invoice.findOne({ _id: req.body.invoice });
+    console.log("found customer")
+    if (!invoice.fulfilled){
+    invoice.address = req.body.address;
+    console.log(invoice)
+    invoice.save();
+    }
+    res.status(200).send(invoice);
+  } catch (e) {
+    res.status(404).send(JSON.stringify(e));
+  }
+});
 
-router.patch("/add-items", async (req,res) => {
+
+router.post("/add-items", async (req,res) => {
   if (!req.body.hasOwnProperty('invoiceID')) {
     console.log("ERROR");
     res.status(400).send('Missing invoiceID');

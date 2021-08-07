@@ -21,6 +21,10 @@ const customerSchema = new Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: false
+  },
   bread: {
     type: Array,
     required: false,
@@ -32,6 +36,14 @@ const customerSchema = new Schema({
   stripePaymentMethod: {
     type: String,
     required: false,
+  },
+  receipts:{
+    type: Array,
+    required: false
+  },
+  invoices:{
+    type: Array,
+    required: false
   },
 }, { timestamps: true });
 

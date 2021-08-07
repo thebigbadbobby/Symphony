@@ -20,18 +20,18 @@ export const Drawer = (props) => {
     const style = styles()
     const itemsList = [
         {
-            text: "Request Products",
+            text: "Kahzap Rewards",
             icon: <AddShoppingCartIcon />,
             onClick: () => changePage("4")
         },
 
         {
-            text: "Checkout Products",
+            text: "Received",
             icon: <DashboardIcon />,
             onClick: () => changePage("1")
         },
         {
-            text: "Purchase History",
+            text: "Paid",
             icon: <HistoryIcon />,
             onClick: () => changePage("2")
         },

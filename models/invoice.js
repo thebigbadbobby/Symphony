@@ -15,6 +15,10 @@ const invoiceSchema = new Schema({
     type: String,
     required: true
   },
+  address: { 
+    type: String,
+    required: false
+  },
   fulfilled: { 
     type: Boolean,
     required: true

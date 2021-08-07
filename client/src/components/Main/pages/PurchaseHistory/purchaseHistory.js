@@ -21,10 +21,17 @@ import {
   TableRow,
   Paper,
 } from "@material-ui/core";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams
+} from "react-router-dom";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: theme.palette.info.light,
+    backgroundColor: "#A958F4",
     color: theme.palette.common.white,
   },
   body: {
@@ -56,46 +63,46 @@ export const PurchaseHistory = (props) => {
   // http route to get all requests from MongoDB
   useEffect( () => {
     const requests= axiosWrap
-  .get("/request/all-requests", {
+  .get("/customer/" + props.customer, {
   }).then((result) => {console.log(result)
-  setProducts(result.data)})
+  setProducts(result.data.invoices)})
   },[])
 
   return(
     //-- initial return to create the top row of the grid
-    <React.Fragment>
-      <div className={style.pageTitle}>Purchase History</div>
+<React.Fragment>
+      <div className={style.pageTitle}>Paid</div>
     {requests ?
    <TableContainer component={Paper}>
    <Table className={classes.table} aria-label="customized table">
      <TableHead>
        <TableRow>
-         <StyledTableCell>Product</StyledTableCell>
+         <StyledTableCell>Invoice Link</StyledTableCell>
          <StyledTableCell align="right">Price</StyledTableCell>
-         <StyledTableCell align="right">Date Requested</StyledTableCell>
-         <StyledTableCell align="right">Date Purchased</StyledTableCell>
-         <StyledTableCell align="right">Delivery Info</StyledTableCell>
+         <StyledTableCell align="right">Email</StyledTableCell>
+         <StyledTableCell align="right">Address</StyledTableCell>
+         <StyledTableCell align="right">Date Paid</StyledTableCell>
        </TableRow>
      </TableHead>
      <TableBody>
        {/* request content mapping to grid */}
        {requests.map((request) => {
          // checks if today's date is later than last return day, and checks if the request has the correct customerID
-         if ( (Date.parse(todayDate) > Date.parse(request.returnOpt[1])) && (request.customerID == props.customer) )
+         if ( (Date.parse(todayDate) > Date.parse(request.createdAt)))
          return (
-         <StyledTableRow key={request.name}>
+         <StyledTableRow key={request._id}>
            <StyledTableCell component="th" scope="row">
-           {request.itemName}<br></br>
-           <img className={style.image} src={logo} alt="kahzum-logo">
-             </img>
+           <Router  ><Link to={"/".concat(request._id)} onClick={() => {props.deepChangePage("2", request._id)}}>{request._id}</Link></Router><br></br>
+           {/* <img className={style.image} src={logo} alt="kahzum-logo">
+             </img> */}
 
            </StyledTableCell>
-           <StyledTableCell align="right">{request.price}</StyledTableCell>
-           <StyledTableCell align="right">{request.date}</StyledTableCell>
+           <StyledTableCell align="right">{request.total}</StyledTableCell>
+           <StyledTableCell align="right">{request.email}</StyledTableCell>
            {/* display the trial end date but only the date and not the time */}
-           <StyledTableCell align="right">{request.returnOpt[1].substring(0, request.returnOpt[1].indexOf("T"))
+           <StyledTableCell align="right">{request.address
            }</StyledTableCell>
-           <StyledTableCell align="right">{request.deliveryInfo}</StyledTableCell>
+           <StyledTableCell align="right">{request.updatedAt}</StyledTableCell>
          </StyledTableRow>
        ) ;
           })}

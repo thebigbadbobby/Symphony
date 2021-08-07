@@ -88,6 +88,21 @@ router.post('/sign-in', (req, res) => {
       res.send({ customerID: undefined, newUser: true });
     });
 });
+router.post('/valid-email', (req, res) => {
+  if (!req.body.hasOwnProperty('email')) {
+    res.status(400).send('Missing email');
+    return;
+  }
+  console.timeLog(req.body.email)
+  console.log(req.body.email)
+  Customer.findOne({ email: req.body.email })
+    .then((customer) => {
+            res.status(200).send(true);
+    })
+    .catch(() => {
+      res.status(400).send(false);
+    });
+});
 // @description returns the pending orders for a specific business
 // @params
 // {
@@ -188,7 +203,7 @@ router.get('/:customer', (req, res) => {
     });
 });
 
-router.patch('/get-ClientSecret', (req, res) => {
+router.post('/get-ClientSecret', (req, res) => {
   console.log("ekans")
   console.log(req.body.customer)
   if (!req.body.hasOwnProperty('customer')) {
@@ -225,7 +240,7 @@ router.patch('/get-ClientSecret', (req, res) => {
   }
 });
 
-router.patch('/payInvoice', (req, res) => {
+router.post('/payInvoice', (req, res) => {
   console.log("ekans")
   console.log(req.body.customer)
   if (!req.body.hasOwnProperty('customer')) {
@@ -264,7 +279,7 @@ router.patch('/payInvoice', (req, res) => {
     })
     .then((response) => {
         console.log(response.data)
-        rewardCustomer(req.body.customer._id, req.body.invoice.total)
+        rewardCustomer(req.body.customer._id, req.body.invoice)
         res.status(200).send(response.data)
     }, (error) => {
         res.status(500).send("payment failed", error)
@@ -277,7 +292,7 @@ router.patch('/payInvoice', (req, res) => {
 });
 
 
-router.patch("/send", async (req,res) => {
+router.post("/send", async (req,res) => {
   if (!req.body.hasOwnProperty('customer')) {
     console.log("ERROR");
     res.status(400).send('Missing customer');
@@ -298,10 +313,24 @@ router.patch("/send", async (req,res) => {
     res.status(400).send('Missing recipient email');
     return;
   }
+  console.log(req.body.recipient)
+  const goodaddress= await Customer.findOne({ email: req.body.recipient })
+  if (!goodaddress){
+    res.status(404).send("bad address")
+    return
+  }
+  if (req.body.amount<0){
+    res.status(401).send("Hey! No negative transfers!")
+    return
+  }
   try {
     console.log("a", req.body.amount)
     const customer = await Customer.findOne({ _id: req.body.customer });
     console.log("b", req.body.customer)
+    if(customer.bread[req.body.assetnum]<req.body.amount){
+      res.status(402).send("Insufficient Funds")
+      return
+    }
     customer.bread[req.body.assetnum]=Number(customer.bread[req.body.assetnum]-req.body.amount)
     console.log("c", customer.bread[req.body.assetnum])
     customer.markModified("bread");
@@ -317,7 +346,7 @@ router.patch("/send", async (req,res) => {
     res.status(404).send(JSON.stringify(e));
   }
 });
-router.patch('/update-customer', async (req, res) => {
+router.post('/update-customer', async (req, res) => {
   if (!req.body.hasOwnProperty('customer')) {
     console.log("ERROR");
     res.status(400).send('Missing customer');
@@ -360,13 +389,33 @@ router.patch('/update-customer', async (req, res) => {
     res.status(404).send(JSON.stringify(e));
   }
 });
-const rewardCustomer = async (customerID, amount) => {
+const rewardCustomer = async (customerID, invoice) => {
+  let amount=invoice.total
   console.log(customerID)
   const customer = await Customer.findOne({ _id: customerID });
+  console.log(customer.bread[0])
   customer.bread[0]+=amount*REWARD_FACTOR
-  customer.markModified("bread");
+  console.log(customer)
+  console.log(customer.bread[0])
+  if (customer.invoices){
+    customer.invoices.push(invoice) 
+  }
+  else{
+    customer.invoices=[invoice]
+  }
+  customer.markModified("bread"); 
   customer.save()
-  console.log(customer.bread)
+  console.log(customer)
+  const recipient = await Customer.findOne({ email: invoice.email });
+  temp=invoice
+  temp.email=customer.email
+  if (recipient.receipts){
+    recipient.receipts.push(temp) 
+  }
+  else{
+    recipient.receipts=[temp]
+  }
+  recipient.save()
 }
 
 module.exports = router;

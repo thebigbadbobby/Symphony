@@ -3,12 +3,17 @@ Content-Type: application/json
 
 {"email": "ramissir@ucsc.edu"}
 ###
-POST http://localhost:5000/invoice/add-items
+POST http://13.57.233.151/invoice/add-items
 Content-Type: application/json
 
-{"invoiceID":"610d0a60c60130799d29ea05","items":{"greenscarf": [20,1]}}
+{"invoiceID":"61151d11a7bf94004e176bde","items":{"greenscarf": [20,1]}}
 ###
 POST http://localhost:5000/invoice/attach-address
 Content-Type: application/json
 
 {"invoice":"610d0a60c60130799d29ea05","address":"1179 Barbara Avenue"}
+###
+POST http://13.57.233.151/invoice/add-invoice
+Content-Type: application/json
+
+{"email": "ramissir@ucsc.edu"}

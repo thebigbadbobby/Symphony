@@ -90,7 +90,7 @@ const App = (props) => {
       window.gapi.client
         .init({
           clientId:
-            "1086476349516-dst8kdd0jq632n50p09p7dn728sihr6j.apps.googleusercontent.com",
+            "927100574754-01n7pgbv4m48tvgomdpmla91cco4cfd9.apps.googleusercontent.com",
           scope: "email", // and whatever else passed as a string...
         })
         .then(() => {
